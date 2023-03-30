@@ -8,9 +8,26 @@ import { checkSchema, validationResult } from 'express-validator';
 import Session from './models/sessions';
 import Om from './models/om';
 import axios from 'axios';
+import Sound from './models/sound';
+const crypto = require('crypto');
+const session = require('cookie-session');
+const multer = require('multer');
+const upload = multer({dest: "data/sounds/"})
 // defining app
 const app: Express = express()
 app.use(express.json());
+
+const expiryDate = new Date(Date.now() + 1209600000);
+app.use(session({
+  name: 'session',
+  keys: ['user'],
+  cookie: {
+    secure: true,
+    httpOnly: true,
+    expires: expiryDate
+  }
+}))
+  
 
 function random(len: number): string {
   let options = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~!@-#$'
@@ -61,6 +78,7 @@ app.post('/login',
     }
   }),
   async (req: Request, res: Response) => {
+    
     // error handeling for headers/formdata
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
@@ -70,28 +88,12 @@ app.post('/login',
     if (!user) return res.sendStatus(401); // in case no user with username exits
     if (user.password != req.headers.password) return res.sendStatus(401); // in case password is incorrect
 
-    // finding user session
-    let user_session = await Session.findOne({
-      where: {
-        user: user.id
-      }
-    })
+  
+    // @ts-ignore: idk 
+    req.session.user = user.id;
 
-    // in case already has session
-    if (user_session) return res.send(user_session.token);
-
-    user_session = await Session.create({
-      user: user.id,
-      token: random(128),
-      // 2 week expiry
-      expires: Date.now() + 1209600000
-    })
-
-    // sending session token
-    res.send({
-      token: user_session.token,
-      expiry: user_session.expires
-    })
+   // in case already has session
+    res.sendStatus(200)
   });
 
 app.post('/register',
@@ -162,6 +164,24 @@ app.post('/register',
     })
   }
 )
+app.post('/sounds/add',
+  upload.single('sound'),
+  checkSchema({
+    
+  }),
+  async (req: Request, res: Response) => {
+    
+    // @ts-ignore
+    console.log(req.session.user)
+    // @ts-ignore
+    console.log(req.files, req.file)
+
+    Sound.create({
+      path: req.file.filename as string,
+      name: req.body.name,
+    })
+
+  } )
 
 
 app.listen(port, () => {
