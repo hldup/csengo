@@ -1,4 +1,4 @@
-import { DataTypes, Model } from 'sequelize'
+import { DataTypes, Model, Optional } from 'sequelize'
 import connection from '../database'
 
 interface SoundAttributes {
@@ -7,7 +7,7 @@ interface SoundAttributes {
   path: string,
   votes: number,
 }
-export interface SoundInput  extends Required<SoundAttributes> { name: string }
+export interface SoundInput  extends Optional<SoundAttributes, "name" | "path" | "votes" | "id" > {}
 export interface SoundOutput extends Required<SoundAttributes> {}
 
 class Sound extends Model<SoundAttributes, SoundInput> implements SoundAttributes {
@@ -29,7 +29,7 @@ class Sound extends Model<SoundAttributes, SoundInput> implements SoundAttribute
       votes: {
         type: DataTypes.BIGINT,
       },
-    path: {
+      path: {
             type: DataTypes.STRING,
           }
       },

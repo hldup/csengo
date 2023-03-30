@@ -9,24 +9,18 @@ import Session from './models/sessions';
 import Om from './models/om';
 import axios from 'axios';
 import Sound from './models/sound';
+import { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
 const crypto = require('crypto');
-const session = require('cookie-session');
 const multer = require('multer');
 const upload = multer({dest: "data/sounds/"})
+const jwt = require('jsonwebtoken');
+const bodyParser = require('body-parser');
 // defining app
 const app: Express = express()
 app.use(express.json());
+app.use(bodyParser.json());
 
-const expiryDate = new Date(Date.now() + 1209600000);
-app.use(session({
-  name: 'session',
-  keys: ['user'],
-  cookie: {
-    secure: true,
-    httpOnly: true,
-    expires: expiryDate
-  }
-}))
+require('dotenv').config()
   
 
 function random(len: number): string {
@@ -36,7 +30,6 @@ function random(len: number): string {
     .join('')
   return token
 }
-require('dotenv').config()
 
 // dotENV
 const port = process.env.PORT;
@@ -87,13 +80,21 @@ app.post('/login',
     let user = await User.findOne({ where: { username: req.headers.username } })
     if (!user) return res.sendStatus(401); // in case no user with username exits
     if (user.password != req.headers.password) return res.sendStatus(401); // in case password is incorrect
+    let session = await Session.findOne({where:{user: user.id}})
+    if(session) return res.send( {
+      token: jwt.sign({ session: session.token, expiry: session.expires  }, process.env.TOKEN_SECRET)
+    }
+    );
 
-  
-    // @ts-ignore: idk 
-    req.session.user = user.id;
+     session = await Session.create({
+      user: user.id,
+      token: random(128),
+      expires: (Date.now()+ 604_800_000 ) 
+    })
+    let token = jwt.sign({ session: session.token, expiry: session.expires  }, process.env.TOKEN_SECRET)
 
-   // in case already has session
-    res.sendStatus(200)
+    // in case already has session
+    res.send({token:token});
   });
 
 app.post('/register',
@@ -149,39 +150,48 @@ app.post('/register',
       administrator: false,
     })
 
-
     // creating a session for the user
-    let user_session = await Session.create({
+    let session = await Session.create({
       user: user.id,
       token: random(128),
       // 2 week expiry
       expires: Date.now() + 1209600000
     });
+    
+    let token = jwt.sign({ session: session.token, expiry: session.expires  }, process.env.TOKEN_SECRET)
 
     res.send({
-      token: user_session.token,
-      expiry: user_session.expires
+      token: token
     })
+
   }
 )
+
 app.post('/sounds/add',
   upload.single('sound'),
   checkSchema({
-    
+   name: {
+    isString: true,
+    notEmpty: true,
+   },
+
   }),
   async (req: Request, res: Response) => {
-    
-    // @ts-ignore
-    console.log(req.session.user)
-    // @ts-ignore
-    console.log(req.files, req.file)
 
+      let token = jwt.verify(req.headers.authorization?.split(' ')[1], process.env.TOKEN_SECRET, (err: JsonWebTokenError,data: JwtPayload) =>{
+        return data
+      })
+      if(!token) return res.sendStatus(403);
+    
+      // @ts-ignore
+    let filename = req.file?.filename;
+    
     Sound.create({
-      path: req.file.filename as string,
+      path: filename,
       name: req.body.name,
     })
-
-  } )
+    res.sendStatus(200)
+} )
 
 
 app.listen(port, () => {
