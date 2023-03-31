@@ -177,11 +177,17 @@ app.post('/sounds/add',
 
   }),
   async (req: Request, res: Response) => {
+
     let token = jwt.verify(req.headers.authorization?.split(' ')[1], process.env.TOKEN_SECRET, (err: JsonWebTokenError,data: JwtPayload) =>{
       return data
     })
     if(!token) return res.sendStatus(403);
-  
+    // error handeling for headers/formdata
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+
+
     // @ts-ignore
     let filename = req.file?.filename;
     

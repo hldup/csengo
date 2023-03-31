@@ -28,6 +28,7 @@ class Sound extends Model<SoundAttributes, SoundInput> implements SoundAttribute
       },
       votes: {
         type: DataTypes.BIGINT,
+        defaultValue: 0
       },
       path: {
             type: DataTypes.STRING,
