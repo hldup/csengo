@@ -5,17 +5,29 @@ import { open } from 'sqlite'
 import dbInit from "./init";
 import User from './models/users';
 import { checkSchema, validationResult } from 'express-validator';
-import Session from './models/sessions';
 import Om from './models/om';
-import axios from 'axios';
 import Sound from './models/sound';
 import { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
 import Vote from './models/votes';
 const crypto = require('crypto');
+
+
 const multer = require('multer');
-const upload = multer({dest: "data/sounds/"})
+const storage = multer.diskStorage({
+  // @ts-ignore
+  destination: function (req, file, cb) {
+    cb(null, './data/sounds')
+  },
+  // @ts-ignore
+  filename: function (req, file, cb) {
+    cb(null, random(64) + '.mp3')
+  }
+})
+const upload = multer({storage: storage})
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
+
+
 // defining app
 const app: Express = express()
 app.use(express.json());
@@ -43,7 +55,7 @@ const port = process.env.PORT;
       driver: sqlite3.Database
     })
     await db.close();
-
+    
     await dbInit();
     await User.create({
       administrator: true,
@@ -51,6 +63,9 @@ const port = process.env.PORT;
       username: "admin",
       om: 1,
     })
+  }
+  if (!fs.existsSync("./data/sounds")){
+     fs.mkdirSync("./data/sounds", {recursive: true});
   }
 })()
 
@@ -152,7 +167,7 @@ app.post('/register',
 )
 
 app.post('/sounds/add',
-  upload.single('sound'),
+  upload.single("sound"),
   checkSchema({
    name: {
     isString: true,
@@ -176,6 +191,8 @@ app.post('/sounds/add',
       ) return res.sendStatus(401);
 
     // @ts-ignore
+    if(req.file?.mimetype != "audio/mpeg") return res.sendStatus(400)
+    // @ts-ignore
     let filename = req.file?.filename;
     
     Sound.create({
@@ -191,6 +208,7 @@ app.get('/sounds',
     const sounds = await Sound.findAll({
       attributes: ["id","name","votes"]
     });
+    if(!sounds) return res.sendStatus(404) 
 
     res.send(sounds)
 } )
@@ -214,6 +232,16 @@ app.post('/sounds/vote',
     await Vote.create({user: token.id, sound: sound.id })
     res.sendStatus(200)
 } )
+app.get('/sounds/:id',
+  async (req: Request, res: Response) => {    
+    if(!req.params.id) return res.sendStatus(400);
+
+    let sound = await Sound.findOne({where:{ id: req.params.id }});
+    if(!sound) return res.sendStatus(404);
+
+    res.sendFile(`/data/sounds/${sound.path}`, {root: __dirname })
+} )
+
 
 
 
