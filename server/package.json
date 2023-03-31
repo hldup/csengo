@@ -23,6 +23,7 @@
     "jsonwebtoken": "^9.0.0",
     "multer": "^1.4.5-lts.1",
     "sequelize": "^6.30.0",
+    "sequelize-typescript": "^2.1.5",
     "sqlite": "^4.1.2",
     "sqlite3": "^5.1.6"
   },

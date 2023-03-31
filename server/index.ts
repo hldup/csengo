@@ -10,6 +10,7 @@ import Om from './models/om';
 import axios from 'axios';
 import Sound from './models/sound';
 import { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
+import Vote from './models/votes';
 const crypto = require('crypto');
 const multer = require('multer');
 const upload = multer({dest: "data/sounds/"})
@@ -80,19 +81,10 @@ app.post('/login',
     let user = await User.findOne({ where: { username: req.headers.username } })
     if (!user) return res.sendStatus(401); // in case no user with username exits
     if (user.password != req.headers.password) return res.sendStatus(401); // in case password is incorrect
-    let session = await Session.findOne({where:{user: user.id}})
-    if(session) return res.send( {
-      token: jwt.sign({ session: session.token, expiry: session.expires  }, process.env.TOKEN_SECRET)
-    }
-    );
 
-     session = await Session.create({
-      user: user.id,
-      token: random(128),
-      expires: (Date.now()+ 604_800_000 ) 
-    })
-    let token = jwt.sign({ session: session.token, expiry: session.expires  }, process.env.TOKEN_SECRET)
 
+    let token = jwt.sign({ id: user.id, expires: Date.now() + 1209600000  }, process.env.TOKEN_SECRET)
+   
     // in case already has session
     res.send({token:token});
   });
@@ -118,16 +110,16 @@ app.post('/register',
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
-    // hcaptcha key validation
-    let response = await axios({
-      method: "GET",
-      url: "https://hcaptcha.com/siteverify",
-      params: {
-        response: req.body.hcaptchaKey,
-        secret: process.env.HCAPTCHA_SECRET as string
-      }
-    })
-    if (!response.data.success) return res.sendStatus(401);
+    // // hcaptcha key validation
+    // let response = await axios({
+    //   method: "GET",
+    //   url: "https://hcaptcha.com/siteverify",
+    //   params: {
+    //     response: req.body.hcaptchaKey,
+    //     secret: process.env.HCAPTCHA_SECRET as string
+    //   }
+    // })
+    // if (!response.data.success) return res.sendStatus(401);
 
 
     let user = await User.findOne({ where: { username: req.body.username } });
@@ -147,18 +139,10 @@ app.post('/register',
       username: req.body.username,
       password: req.body.password,
       om: req.body.om,
-      administrator: false,
+      administrator: false
     })
-
-    // creating a session for the user
-    let session = await Session.create({
-      user: user.id,
-      token: random(128),
-      // 2 week expiry
-      expires: Date.now() + 1209600000
-    });
-    
-    let token = jwt.sign({ session: session.token, expiry: session.expires  }, process.env.TOKEN_SECRET)
+ 
+    let token = jwt.sign({ id: user.id, expires: Date.now() + 1209600000  }, process.env.TOKEN_SECRET)
 
     res.send({
       token: token
@@ -178,6 +162,7 @@ app.post('/sounds/add',
   }),
   async (req: Request, res: Response) => {
 
+    if(!req.headers.authorization) return res.sendStatus(401);
     let token = jwt.verify(req.headers.authorization?.split(' ')[1], process.env.TOKEN_SECRET, (err: JsonWebTokenError,data: JwtPayload) =>{
       return data
     })
@@ -185,8 +170,10 @@ app.post('/sounds/add',
     // error handeling for headers/formdata
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-
-
+    // if user is not administrator
+    if ( 
+      !(await User.findOne({where: {id: token.id }}))?.administrator
+      ) return res.sendStatus(401);
 
     // @ts-ignore
     let filename = req.file?.filename;
@@ -197,6 +184,37 @@ app.post('/sounds/add',
     })
     res.sendStatus(200)
 } )
+
+app.get('/sounds',
+  async (req: Request, res: Response) => {    
+    
+    const sounds = await Sound.findAll({
+      attributes: ["id","name","votes"]
+    });
+
+    res.send(sounds)
+} )
+
+app.post('/sounds/vote',
+  async (req: Request, res: Response) => {    
+    if(!req.query.id) return res.sendStatus(400);
+    let token = jwt.verify(req.headers.authorization?.split(' ')[1], process.env.TOKEN_SECRET, (err: JsonWebTokenError,data: JwtPayload) =>{
+      return data
+    })
+    if(!token) return res.send(401);
+    
+    // in case user has already voted reject
+    const vote = await Vote.findOne({where: {user: token.id, sound: req.query.id as string }});
+    if(vote) return res.sendStatus(201)
+
+    let sound = await Sound.findOne({ where:{id: req.query.id as string}})
+    if(!sound) return res.sendStatus(404);
+    await sound.update({ votes: sound.votes + 1})
+    
+    await Vote.create({user: token.id, sound: sound.id })
+    res.sendStatus(200)
+} )
+
 
 
 app.listen(port, () => {

@@ -95,7 +95,7 @@ button{
     transform-origin: 13px 25px;
 }
 .in-top {
-    animation: rotate 3s linear infinite;
+    animation: rotate 5s linear infinite;
     transform-origin: 13px 25px;
 }
 .outBottom {
