@@ -10,7 +10,7 @@ body{
     overflow: hidden;
 }
 
-form{
+.form{
     height: 30em;
     width: 23em;
     background-color: rgba(255,255,255,0.13);
@@ -24,20 +24,20 @@ form{
     box-shadow: 0 0 40px rgba(8,7,16,0.6);
     padding: 50px 35px;
 }
-form *{
+.form *{
     font-family: 'Poppins',sans-serif;
     color: #ffffff;
     letter-spacing: 0.5px;
     outline: none;
     border: none;
 }
-form h3{
+.form h3{
     font-size: 32px;
     font-weight: 500;
     line-height: 42px;
     text-align: center;
 }
-form p, a{
+.form p, a{
   color: rgb(223, 215, 215);
   margin-top: 1em;
 }
@@ -72,6 +72,7 @@ button{
     border-radius: 5px;
     cursor: pointer;
 }
+
 
 
 /* blobs */
