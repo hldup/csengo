@@ -1,4 +1,5 @@
 <template>
+<div>
   <div class="background" :class="{reappear: reapear}">
     <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" viewBox="0 0 100 120">
        <path fill="#9b5de5"   class="out-top" d="M37-5C25.1-14.7,5.7-19.1-9.2-10-28.5,1.8-32.7,31.1-19.8,49c15.5,21.5,52.6,22,67.2,2.3C59.4,35,53.7,8.5,37-5Z"/>
@@ -10,8 +11,11 @@
       <path fill="#700FA" class="in-bottom" d="M102,67.1c-9.6-6.1-22-3.1-29.5,2-15.4,10.7-19.6,37.5-7.6,47.8s35.9,3.9,44.5-12.5C115.5,92.6,113.9,74.6,102,67.1Z"/>
     </svg>
   </div>
-<div>
-  asd
+
+  <div class="container">
+      asdashdkajshdkuhkhjasdkjh
+  </div>
+
 </div>
 </template>
 
@@ -27,22 +31,34 @@ export default {
 
 }
 </script>
-<style scoped src="@/assets/css/main.css"></style>
-<style scoped>
+<style>
+body{
+  background-color: black;
+}
+.container{
+  color: white; 
+  background-color: black;
+  position: absolute;
+  left: 5em;
+  width: 5em;
+  height: 5em;
+
+}
 .reappear {
-    animation: reappear 2s linear normal forwards;
+  animation: reappear 2s linear normal forwards;
     visibility: 0;
 }
 @keyframes reappear {
-
-    0% { 
-      visibility: 1;
+  
+  0% { 
+    visibility: 1;
       opacity: 0;
 
     }
 
     100% {
-        opacity: 1;
+      opacity: 1;
     }
 }
 </style>
+<style scopedu src="@/assets/css/main.css"></style>

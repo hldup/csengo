@@ -19,7 +19,7 @@
         <h6>Csengetés szavazó (Alpha 1.1.3)</h6>
         <p v-if="showError" class="error" >Hiba! Lehetséges hogy ezzel az om azonositóval vagy felhasználó névvel már valaki regisztrált!</p>
         <label for="username">Felhasználó név</label>
-        <input type="text" placeholder="Felhasználó név" v-model="form.username">
+        <input tpe="text" placeholder="Felhasználó név" v-model="form.username">
 
         <label for="password">Jelszó</label>
         <input type="password" placeholder="Jelszó" v-model="form.password">
@@ -74,14 +74,18 @@ export default {
                 setTimeout(()=>{ this.shake = false },400)
                 return
             }
+            // error handeling
             try {
-                await axios.post(`${process.env.VUE_APP_SERVER_API}/register`,{
+                // await axios.post(`${process.env.VUE_APP_SERVER_API}/register`,this.form).then((response)=>{
+                //    console.log(response.headers)
+                // })
+                await axios({
+                    url: process.env.VUE_APP_SERVER_API+"/register",
+                    method: "post",
                     data: this.form,
-                }).then((response)=>{
-                   console.log(response.status)
+                    withCredentials: true
                 })                
             } catch (error) {
-                
                 if(error.code == "ERR_BAD_REQUEST"){
                     this.showError = true
                 }
@@ -92,13 +96,12 @@ export default {
             setTimeout(() => {
                 this.$router.push({path: "/"})
             }, 1000);
-
         }
     }
 }
 </script>
 
-<style src="@/assets/css/login-register.css"></style>
+<style scoped src="@/assets/css/login-register.css"></style>
 <style scoped>
 
 .form {

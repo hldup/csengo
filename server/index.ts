@@ -9,10 +9,12 @@ import Om from './models/om';
 import Sound from './models/sound';
 import { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
 import Vote from './models/votes';
+import axios from 'axios';
 const crypto = require('crypto');
-
-
+const cors = require("cors")
 const multer = require('multer');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 const storage = multer.diskStorage({
   // @ts-ignore
   destination: function (req, file, cb) {
@@ -25,13 +27,14 @@ const storage = multer.diskStorage({
 })
 const upload = multer({storage: storage})
 const jwt = require('jsonwebtoken');
-const bodyParser = require('body-parser');
 
 
 // defining app
 const app: Express = express()
 app.use(express.json());
 app.use(bodyParser.json());
+app.use(cors({ credentials: true, origin: true }))
+app.use(cookieParser())
 
 require('dotenv').config()
   
@@ -76,32 +79,47 @@ app.post('/login',
   // header checking
   checkSchema({
     username: {
-      in: ["headers"],
       isString: true,
       notEmpty: true,
     },
     password: {
-      in: ["headers"],
       isString: true,
       notEmpty: true,
-    }
+    },
+    hcaptchaKey: {
+      isString: true,
+      notEmpty: true
+    },   
   }),
   async (req: Request, res: Response) => {
     
     // error handeling for headers/formdata
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-
+  
+    if(!process.env.DEV){
+      // // hcaptcha key validation
+      let response = await axios({
+        method: "GET",
+        url: "https://hcaptcha.com/siteverify",
+        params: {
+              response: req.body.hcaptchaKey,
+              secret: process.env.HCAPTCHA_SECRET as string
+        }
+      })
+      if (!response.data.success) return res.sendStatus(401);
+    }
     // cache useragent/ip and check if the requests sent in the past 10 minutes is less then 10
-    let user = await User.findOne({ where: { username: req.headers.username } })
+    let user = await User.findOne({ where: { username: req.body.username } })
     if (!user) return res.sendStatus(401); // in case no user with username exits
-    if (user.password != req.headers.password) return res.sendStatus(401); // in case password is incorrect
+    if (user.password != req.body.password) return res.sendStatus(401); // in case password is incorrect
 
 
     let token = jwt.sign({ id: user.id, expires: Date.now() + 1209600000  }, process.env.TOKEN_SECRET)
    
     // in case already has session
-    res.send({token:token});
+    res.cookie('Ptoken', token);
+    res.sendStatus(200);
   });
 
 app.post('/register',
@@ -124,22 +142,22 @@ app.post('/register',
     // error handeling for headers/formdata
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-
-    // // hcaptcha key validation
-    // let response = await axios({
-    //   method: "GET",
-    //   url: "https://hcaptcha.com/siteverify",
-    //   params: {
-    //     response: req.body.hcaptchaKey,
-    //     secret: process.env.HCAPTCHA_SECRET as string
-    //   }
-    // })
-    // if (!response.data.success) return res.sendStatus(401);
-
+    if(!process.env.DEV){
+      // // hcaptcha key validation
+      let response = await axios({
+        method: "GET",
+        url: "https://hcaptcha.com/siteverify",
+        params: {
+              response: req.body.hcaptchaKey,
+              secret: process.env.HCAPTCHA_SECRET as string
+        }
+      })
+      if (!response.data.success) return res.sendStatus(401);
+    }
 
     let user = await User.findOne({ where: { username: req.body.username } });
     // if user already exists return
-    if (user) return res.sendStatus(201);
+    if (user) return res.sendStatus(403);
 
     let user_om = await Om.findOne({ where: { id: req.body.om } });
     // if the om id given by user is not in db return as 401 
@@ -147,7 +165,7 @@ app.post('/register',
 
     user = await User.findOne({ where: { om: req.body.om } });
     // if there is an user already with the om
-    if (user) return res.sendStatus(201);
+    if (user) return res.sendStatus(403);
 
     // creating user in DB
     user = await User.create({
@@ -157,11 +175,14 @@ app.post('/register',
       administrator: false
     })
  
-    let token = jwt.sign({ id: user.id, expires: Date.now() + 1209600000  }, process.env.TOKEN_SECRET)
+    let token = jwt.sign({ id: user.id  }, process.env.TOKEN_SECRET)
 
-    res.send({
-      token: token
+    res.cookie("Ptoken", token,
+    {
+      httpOnly: true,
+      expires: new Date(Date.now() + 1209600000) 
     })
+    res.sendStatus(200)
 
   }
 )
@@ -203,8 +224,12 @@ app.post('/sounds/add',
 } )
 
 app.get('/sounds',
-  async (req: Request, res: Response) => {    
-    
+  async (req: Request, res: Response) => {     
+    let token = jwt.verify(req.cookies['Ptoken'], process.env.TOKEN_SECRET, (err: JsonWebTokenError,data: JwtPayload) =>{
+      return data
+    })
+    if(!token) return res.send(401);
+
     const sounds = await Sound.findAll({
       attributes: ["id","name","votes"]
     });
