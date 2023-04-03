@@ -1,20 +1,32 @@
+
+/*
+Class/models imports
+*/
+import dbInit from "./init";
+import User from './models/users';
+import Sound from './models/sound';
+import Om from './models/om';
+import Vote from './models/votes';
+
+/*
+Application imports
+*/
 import express, { Express, Request, response, Response } from 'express';
 import fs from 'fs';
 import sqlite3 from 'sqlite3'
 import { open } from 'sqlite'
-import dbInit from "./init";
-import User from './models/users';
 import { checkSchema, validationResult } from 'express-validator';
-import Om from './models/om';
-import Sound from './models/sound';
 import { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
-import Vote from './models/votes';
-import axios from 'axios';
-const crypto = require('crypto');
+import axios from 'axios'; // better than js fetch
+const crypto = require('crypto'); 
 const cors = require("cors")
-const multer = require('multer');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
+const multer = require('multer'); // smart body parser for getting files out of form
+const cookieParser = require('cookie-parser'); // for parsing cookies that store jwt
+const bodyParser = require('body-parser'); // body parser for parsing da body
+
+/*
+    Defining storage for mp3s
+*/
 const storage = multer.diskStorage({
   // @ts-ignore
   destination: function (req, file, cb) {
@@ -26,17 +38,37 @@ const storage = multer.diskStorage({
   }
 })
 const upload = multer({storage: storage})
-const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken'); // jwt for token verification
 
-
-// defining app
+require('dotenv').config()
+/*
+    Creating app
+*/
 const app: Express = express()
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors({ credentials: true, origin: true }))
 app.use(cookieParser())
 
-require('dotenv').config()
+/**
+ * Middleware for handeling bad requests 
+ */
+let unprotected_paths = ["/register","/login"]
+app.use((req, res, next) => {
+  
+  console.log(`Request to ${req.path} from ${req.hostname} (${req.get('user-agent')}) | ${new Date()}`)
+  if(unprotected_paths.includes(req.path)) {
+    // check for brute force attacks via redis caching
+    return next();
+  }
+  if(!req.cookies['Ptoken']) return res.sendStatus(401);
+  let token = jwt.verify(req.cookies['Ptoken'], process.env.TOKEN_SECRET, (err: JsonWebTokenError,data: JwtPayload) =>{
+      return data
+    })
+  if(!token) return res.sendStatus(403);
+  res.locals.token = token
+  next()
+})
   
 
 function random(len: number): string {
@@ -79,15 +111,18 @@ app.post('/login',
   // header checking
   checkSchema({
     username: {
+      in: ['body'],
       isString: true,
       notEmpty: true,
     },
     password: {
+      in: ['body'],
       isString: true,
       notEmpty: true,
     },
     hcaptchaKey: {
       isString: true,
+      in: ['body'],
       notEmpty: true
     },   
   }),
@@ -96,7 +131,7 @@ app.post('/login',
     // error handeling for headers/formdata
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-  
+    
     if(!process.env.DEV){
       // // hcaptcha key validation
       let response = await axios({
@@ -109,6 +144,7 @@ app.post('/login',
       })
       if (!response.data.success) return res.sendStatus(401);
     }
+
     // cache useragent/ip and check if the requests sent in the past 10 minutes is less then 10
     let user = await User.findOne({ where: { username: req.body.username } })
     if (!user) return res.sendStatus(401); // in case no user with username exits
@@ -198,18 +234,11 @@ app.post('/sounds/add',
   }),
   async (req: Request, res: Response) => {
 
-    if(!req.headers.authorization) return res.sendStatus(401);
-    let token = jwt.verify(req.headers.authorization?.split(' ')[1], process.env.TOKEN_SECRET, (err: JsonWebTokenError,data: JwtPayload) =>{
-      return data
-    })
-    if(!token) return res.sendStatus(403);
     // error handeling for headers/formdata
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
     // if user is not administrator
-    if ( 
-      !(await User.findOne({where: {id: token.id }}))?.administrator
-      ) return res.sendStatus(401);
+    if (  !(await User.findOne({where: {id: res.locals.token.id }}))?.administrator ) return res.sendStatus(401);
 
     // @ts-ignore
     if(req.file?.mimetype != "audio/mpeg") return res.sendStatus(400)
@@ -225,10 +254,6 @@ app.post('/sounds/add',
 
 app.get('/sounds',
   async (req: Request, res: Response) => {     
-    let token = jwt.verify(req.cookies['Ptoken'], process.env.TOKEN_SECRET, (err: JsonWebTokenError,data: JwtPayload) =>{
-      return data
-    })
-    if(!token) return res.send(401);
 
     const sounds = await Sound.findAll({
       attributes: ["id","name","votes"]
@@ -241,20 +266,17 @@ app.get('/sounds',
 app.post('/sounds/vote',
   async (req: Request, res: Response) => {    
     if(!req.query.id) return res.sendStatus(400);
-    let token = jwt.verify(req.headers.authorization?.split(' ')[1], process.env.TOKEN_SECRET, (err: JsonWebTokenError,data: JwtPayload) =>{
-      return data
-    })
-    if(!token) return res.send(401);
-    
+   
+    console.log(res.locals)
     // in case user has already voted reject
-    const vote = await Vote.findOne({where: {user: token.id, sound: req.query.id as string }});
+    const vote = await Vote.findOne({where: {user: res.locals.token.id, sound: req.query.id as string }});
     if(vote) return res.sendStatus(201)
 
     let sound = await Sound.findOne({ where:{id: req.query.id as string}})
     if(!sound) return res.sendStatus(404);
     await sound.update({ votes: sound.votes + 1})
     
-    await Vote.create({user: token.id, sound: sound.id })
+    await Vote.create({user: res.locals.token.id, sound: sound.id })
     res.sendStatus(200)
 } )
 app.get('/sounds/:id',

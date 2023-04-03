@@ -16,7 +16,6 @@ class Vote extends Model<VoteAttributes, VoteOutput> implements VoteAttributes {
   Vote.init({
     user: {
         type: DataTypes.UUIDV4,
-        primaryKey: true,
     },
     sound: {
         type: DataTypes.UUIDV4

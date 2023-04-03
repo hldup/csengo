@@ -86,6 +86,7 @@ export default {
                     withCredentials: true
                 })                
             } catch (error) {
+                // if timeout warn user
                 if(error.code == "ERR_BAD_REQUEST"){
                     this.showError = true
                 }
