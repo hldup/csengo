@@ -12,22 +12,46 @@
     </svg>
   </div>
 
-  <div class="container">
-      asdashdkajshdkuhkhjasdkjh
+  <div class="container reappear" v-if="dataReady">
+    asd
+    <div class="soundbox" v-for="sound in sounds" :key="sound.id">
+       
+       <img src="play-fill.svg"  alt="Lejátszás" height="64">
+       <h3>{{sound.name}} </h3> 
+       </div> 
+
   </div>
 
 </div>
 </template>
 
 <script>
+import axios from 'axios'
+import { inject } from 'vue';
 
 export default {
   name: 'HomeView',
   data(){
     return{
-      reapear: true
+      reapear: true,
+      sounds: [],
+      dataReady: false,
     }
   },
+  async mounted(){
+      const $cookies = inject('$cookies');
+      $cookies.get('Ptoken') 
+
+    await axios({
+        url: process.env.VUE_APP_SERVER_API+"/sounds",
+        method: "get",
+        withCredentials: true
+    }).then((response)=>{
+      this.sounds = response.data 
+      this.dataReady = true
+    
+    })
+  }
 
 }
 </script>
@@ -35,15 +59,7 @@ export default {
 body{
   background-color: black;
 }
-.container{
-  color: white; 
-  background-color: black;
-  position: absolute;
-  left: 5em;
-  width: 5em;
-  height: 5em;
 
-}
 .reappear {
   animation: reappear 2s linear normal forwards;
     visibility: 0;

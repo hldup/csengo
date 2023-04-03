@@ -17,7 +17,8 @@
     <div :class="{ shake: shake , disappear: disappear}" class="form">
         <h2>Pollák</h2>
         <h6>Csengetés szavazó (Alpha 1.1.3)</h6>
-        <p v-if="showError" class="error" >Hiba! Lehetséges hogy ezzel az om azonositóval vagy felhasználó névvel már valaki regisztrált!</p>
+        <p>Csak pollákos diákok regisztrálhatnak!</p>
+        <p v-if="showError" class="error" >{{error}}</p>
         <label for="username">Felhasználó név</label>
         <input tpe="text" placeholder="Felhasználó név" v-model="form.username">
 
@@ -32,7 +33,7 @@
         <button @click="register" style="color: black">Regisztráció</button>
         
         <p>Már van profilod? 
-          <router-link to="/regisztracio">Lépj be itt</router-link>
+          <router-link to="/belepes">Lépj be itt</router-link>
         </p>
 
     </div>
@@ -50,11 +51,11 @@ export default {
             disappear: false,
             fadeOut: false,
             showError: false,
-
+            error: "",
             form: {
-                username: "asd",
-                password: "asd",
-                om: "asd",
+                username: "",
+                password: "",
+                om: "",
                 hcaptchaKey: "asd"
             }
         }
@@ -86,10 +87,19 @@ export default {
                     withCredentials: true
                 })                
             } catch (error) {
-                // if timeout warn user
-                if(error.code == "ERR_BAD_REQUEST"){
-                    this.showError = true
+                console.log(error);                    
+                switch(error.code){
+                    case "ERR_BAD_REQUEST":
+                        this.error = "Hiba! Lehetséges hogy ezzel a felhasználónévvel vagy OM azonosítóval már valaki regisztrált vagy elírtad!" 
+                        this.showError = true
+                    break;
+
+                    case "ERR_NETWORK":
+                        this.error = "Hiba! Nem lehet a szervert elérni!" 
+                        this.showError = true 
+                    break;
                 }
+                setTimeout(() => { this.showError = false    }, 10000);
                 return 
             }
 
@@ -113,15 +123,23 @@ export default {
     background-color: rgba(255, 0, 0, 0.177);
     border-radius: .2em;
     padding: .4em;
-     animation: appear 0.6s  linear normal forwards;
+     animation: appear 10s  linear normal forwards;
 }
 @keyframes appear {
 
     0% { 
        opacity: 0; 
      }
-    100% {
+    5% {
         opacity: 1;
+     }
+     80%{
+        opacity: 1;
+     }
+
+    100% {
+        opacity: 0;
+        visibility: 0;
     }
 }
 
