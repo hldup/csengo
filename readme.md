@@ -35,3 +35,4 @@ If you want to contact me about the project go ahead and do that at
 
 
 # Developed listening to 
+![Song](https://github.com/berryes/csengo/blob/main/assets/view.svg?raw=true)(https://open.spotify.com/track/2G0c5XvospcOSyA3t1W2X2?si=67f3ee577ce74012)
