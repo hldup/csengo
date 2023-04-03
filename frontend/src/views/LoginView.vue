@@ -43,12 +43,13 @@ export default {
     components: { VueHcaptcha },
     data() {
         return{
+
             // css triggers
             shake: false,
             disappear: false,
             fadeOut: false,
             showError: false,
-
+            
             form: {
                 username: "",
                 password: "",

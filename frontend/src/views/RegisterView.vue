@@ -26,14 +26,14 @@
         <input type="password" placeholder="Jelszó" v-model="form.password">
 
         <label for="password">OM azonosito</label>
-        <input type="text" placeholder="OM Azonosito" v-model="form.om">
+        <input type="number" placeholder="OM Azonosito" v-model="form.om">
 
         <vue-hcaptcha @verify="catptchaFilled" sitekey="a844f21a-f2be-48d3-8adc-4ebb0c7caa11" style="margin-top: 2em"></vue-hcaptcha>
 
         <button @click="register" style="color: black">Regisztráció</button>
         
         <p>Már van profilod? 
-          <router-link to="/belepes">Lépj be itt</router-link>
+          <router-link to="/login">Lépj be itt</router-link>
         </p>
 
     </div>
@@ -54,7 +54,7 @@ export default {
             error: "",
             form: {
                 username: "",
-                password: "",
+                password: "sdf",
                 om: "",
                 hcaptchaKey: "asd"
             }
@@ -98,6 +98,7 @@ export default {
                         this.error = "Hiba! Nem lehet a szervert elérni!" 
                         this.showError = true 
                     break;
+
                 }
                 setTimeout(() => { this.showError = false    }, 10000);
                 return 
@@ -114,7 +115,6 @@ export default {
 
 <style scoped src="@/assets/css/login-register.css"></style>
 <style scoped>
-
 .form {
     height: 46em;
     overflow:auto;

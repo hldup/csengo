@@ -10,6 +10,7 @@ body{
 }
 .container{
     height: 45em;
+    overflow: auto;
     font-family: 'Poppins',sans-serif;
     width: 23em;
     background-color: rgba(255,255,255,0.13);
@@ -22,9 +23,9 @@ body{
     backdrop-filter: blur(.3em);
     border: 2px solid rgba(255,255,255,0.1);
     box-shadow: 0 0 40px rgba(8,7,16,0.6);
-    padding: 50px 35px;
-    
+    padding: 50px 35px;    
 }
+
 .container h3{
     float: right;
     margin-right: 6em;
@@ -112,11 +113,29 @@ body{
        visibility:hidden;
     }
 }
-
-
+ 
 .soundbox{
-    background-color: red;
+    display: flex;
+    align-items: center;
     margin: 1em;
-    height: 5em;
-
+    height: 5em; 
+    background-color: rgba(255, 255, 255, 0.089);
+    backdrop-filter: blur(.3em);
+    box-shadow: 0 0 40px rgba(8,7,16,0.6);
+    border-radius: 1em;
 }
+.vote img{
+
+    right: 1em;
+    background-color: red;
+}
+.soundbox img{
+    filter: invert(1);
+}
+@media (max-width: 600px), screen and (orientation: portrait) and (max-width: 1200)  {
+  .form{
+    margin: 0;
+    width: 100%;
+  }
+}
+

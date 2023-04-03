@@ -215,7 +215,7 @@ app.post('/register',
 
     res.cookie("Ptoken", token,
     {
-      httpOnly: true,
+      httpOnly: false,
       expires: new Date(Date.now() + 1209600000) 
     })
     res.sendStatus(200)
@@ -244,7 +244,6 @@ app.post('/sounds/add',
     if(req.file?.mimetype != "audio/mpeg") return res.sendStatus(400)
     // @ts-ignore
     let filename = req.file?.filename;
-    
     Sound.create({
       path: filename,
       name: req.body.name,
@@ -259,8 +258,23 @@ app.get('/sounds',
       attributes: ["id","name","votes"]
     });
     if(!sounds) return res.sendStatus(404) 
+    const user_votes = await Vote.findAll(
+      {
+        where: {user: res.locals.token.id },
+        attributes: ["sound"]
+      }).then((data)=>{
+        let raw: string[] = []
+        for(let sound of data){
+          raw.push(sound.dataValues.sound)
+        }
+        return raw
+      })
 
-    res.send(sounds)
+
+    res.send({
+      sounds: sounds,
+      user_votes: user_votes
+    })
 } )
 
 app.post('/sounds/vote',
@@ -277,6 +291,21 @@ app.post('/sounds/vote',
     await sound.update({ votes: sound.votes + 1})
     
     await Vote.create({user: res.locals.token.id, sound: sound.id })
+    res.sendStatus(200)
+} )
+app.post('/sounds/devote',
+  async (req: Request, res: Response) => {    
+    if(!req.query.id) return res.sendStatus(400);
+   
+    // in case user hasn't voted reject
+    const vote = await Vote.findOne({where: {user: res.locals.token.id, sound: req.query.id as string }});
+    if(!vote) return res.sendStatus(404)
+
+    let sound = await Sound.findOne({ where:{id: req.query.id as string}})
+    await sound?.update({ votes: sound.votes - 1})
+    
+    await Vote.destroy({where: {user: res.locals.token.id, sound: sound?.id }})
+
     res.sendStatus(200)
 } )
 app.get('/sounds/:id',
