@@ -14,11 +14,10 @@
   <div class="container reappear" v-if="dataReady">
     <div class="soundbox" v-for="sound in sounds" :key="sound.id">
        <img :id="sound.id" @click="playSound(sound.id)" src="play-fill.svg"  alt="Lejátszás" height="64" >
-       <p>{{sound.name}}</p>
-  
-       <img height="32" src="hand-thumbs-up-fill.svg" alt="Tetszik" class="vote" @click="vote(sound)">
+       <p>{{sound.name}}</p> 
+       <img v-if="uservotes.includes(sound.id)" height="32" src="hand-thumbs-up-fill.svg" alt="Tetszik" class="vote" @click="vote(sound)">
+       <img  v-if="!uservotes.includes(sound.id)" height="32" src="hand-thumbs-up.svg" alt="Tetszik" class="vote" @click="vote(sound)">
        <p>{{sound.votes}}</p>
-
        </div> 
   </div>
 
@@ -36,7 +35,9 @@ export default {
       sounds: [],
       dataReady: false,
       soundPlaying: false,
-      uservotes: []
+      uservotes: [],
+      audio: null,
+      icon: '',
     }
   },
   methods:{
@@ -76,19 +77,22 @@ export default {
       }
     },
     playSound: async function( uuid ){
-      if(this.soundPlaying) return;
-      
-      this.soundPlaying = true;
-      const audio = new Audio(process.env.VUE_APP_SERVER_API+"/sounds/"+uuid)
-      
-      audio.play().then(()=>{
-        this.soundPlaying = false;
-      });
+      if(this.audio != null ){ 
+        if(!this.audio.ended) {
+           document.getElementById(this.icon).src = "play-fill.svg"
+           this.icon = uuid;
+           this.audio.pause()
+           this.audio = null;
+            return
+        }
+      }
+
+      this.audio = new Audio(process.env.VUE_APP_SERVER_API+"/sounds/"+uuid)
+      this.audio.play()
+      this.icon = uuid
       document.getElementById(uuid).src = "pause-fill.svg"
       
-      audio.addEventListener("ended", function(){
-          this.soundPlaying = false
-          audio.currentTime = 0;
+      this.audio.addEventListener("ended", function(){
           document.getElementById(uuid).src = "play-fill.svg"
        });
 
@@ -104,6 +108,19 @@ export default {
       this.uservotes = response.data.user_votes 
       this.dataReady = true 
     })
+
+    // updating every 4 seconds for "realtime" display
+    setInterval(async ()=>{
+      await axios({
+          url: process.env.VUE_APP_SERVER_API+"/sounds",
+          method: "get",
+          withCredentials: true
+      }).then((response)=>{
+        this.sounds = response.data.sounds
+        this.uservotes = response.data.user_votes 
+        this.dataReady = true 
+      })
+      },4000)
 
   }
 

@@ -11,7 +11,7 @@
 A really basic voting system for deciding which sound becomes the bell at my school.
 
 # Techstack
-I choose a rather ez to program techstack because this is a small project. It doesn't need to be that fast either since its just a voting system. (*i was thinking of writing it in rust with rocket & diesel but that a bit of too much commitment*)
+I choose a rather ez to program techstack because this is a small project. It doesn't need to be that fast either since its just a voting system.
 
 Backend: Typescript
 - ORM: [Sequelize](https://sequelize.org/)
@@ -31,7 +31,10 @@ If you want to contact me about the project go ahead and do that at
 # Authors 
 - Máté - *frontend & backend* - [**berryes**](https://matrix.to/#/@berry:berryez.xyz)
 
-# Acknowledgements
+# Acknowledgments
+- [Login](https://codepen.io/fghty/pen/PojKNEG) - foolish developer
+- [Animated blobs](https://codepen.io/ksenia-k/pen/jXbWaJ) - Ksenia Kondrashova
+- [Shake animation](https://codepen.io/johholl/pen/GpbgJW) - Joh Holl
 
 
 # Developed listening to 

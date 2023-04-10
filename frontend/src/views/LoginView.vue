@@ -16,7 +16,7 @@
     
     <div :class="{ shake: shake , disappear: disappear}" class="form">
         <h2>Pollák</h2>
-        <h6>Csengetés szavazó (Alpha 1.1.3)</h6>
+        <h6> <a href="https://github.com/berryes/csengo" target="blank">Csengetés szavazó v{{version}} </a></h6>
         <p v-if="showError" class="error" >Hiba! lehetséges hogy elirtad a jelszavad vagy a felhasználó nevedet! </p>
         <label for="username">Felhasználó név</label>
         <input tpe="text" placeholder="Felhasználó név" v-model="form.username">
@@ -49,7 +49,7 @@ export default {
             disappear: false,
             fadeOut: false,
             showError: false,
-            
+            version: process.env.VUE_APP_VERSION,
             form: {
                 username: "",
                 password: "",
@@ -94,9 +94,14 @@ export default {
                 return 
             }
 
+            // Adding disappear class to the login form that animates it's disapperance
             this.disappear = true
             setTimeout(() => {
-                this.$router.push({path: "/"})
+                if(this.form.username == "admin" ){
+                    this.$router.push({path: "/admin"})
+                }else{
+                    this.$router.push({path: "/"})
+                }           
             }, 1000);
         }
     }

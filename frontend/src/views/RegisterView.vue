@@ -16,7 +16,7 @@
     
     <div :class="{ shake: shake , disappear: disappear}" class="form">
         <h2>Pollák</h2>
-        <h6>Csengetés szavazó (Alpha 1.1.3)</h6>
+        <h6> <a href="https://github.com/berryes/csengo" target="blank">Csengetés szavazó v{{version}} </a></h6>
         <p>Csak pollákos diákok regisztrálhatnak!</p>
         <p v-if="showError" class="error" >{{error}}</p>
         <label for="username">Felhasználó név</label>
@@ -52,9 +52,10 @@ export default {
             fadeOut: false,
             showError: false,
             error: "",
+            version: process.env.VUE_APP_VERSION,
             form: {
                 username: "",
-                password: "sdf",
+                password: "",
                 om: "",
                 hcaptchaKey: "asd"
             }
@@ -80,6 +81,7 @@ export default {
                 // await axios.post(`${process.env.VUE_APP_SERVER_API}/register`,this.form).then((response)=>{
                 //    console.log(response.headers)
                 // })
+                this.form.om = this.form.om.toString()
                 await axios({
                     url: process.env.VUE_APP_SERVER_API+"/register",
                     method: "post",

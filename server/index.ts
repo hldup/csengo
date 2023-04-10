@@ -66,7 +66,10 @@ app.use((req, res, next) => {
       return data
     })
   if(!token) return res.sendStatus(403);
+  if(token.expires < Date.now() ) return res.sendStatus(498);
+
   res.locals.token = token
+
   next()
 })
   
@@ -106,7 +109,6 @@ const port = process.env.PORT;
 
 
 // api route for /login
-// TODO encrypt data on client side with PGP or something like that
 app.post('/login',
   // header checking
   checkSchema({
@@ -281,7 +283,6 @@ app.post('/sounds/vote',
   async (req: Request, res: Response) => {    
     if(!req.query.id) return res.sendStatus(400);
    
-    console.log(res.locals)
     // in case user has already voted reject
     const vote = await Vote.findOne({where: {user: res.locals.token.id, sound: req.query.id as string }});
     if(vote) return res.sendStatus(201)
@@ -293,6 +294,7 @@ app.post('/sounds/vote',
     await Vote.create({user: res.locals.token.id, sound: sound.id })
     res.sendStatus(200)
 } )
+
 app.post('/sounds/devote',
   async (req: Request, res: Response) => {    
     if(!req.query.id) return res.sendStatus(400);
