@@ -4,26 +4,30 @@ Class/models imports
 */
 import dbInit from "./init";
 import User from './models/users';
-import Sound, { SoundOutput } from './models/sound';
+import Sound from './models/sound';
 import Om from './models/om';
 import Vote from './models/votes';
 
 /*
 Application imports
 */
-import express, { Express, Request, response, Response } from 'express';
+import express, { Express, Request,  Response } from 'express';
 import fs from 'fs';
 import sqlite3 from 'sqlite3'
 import { open } from 'sqlite'
 import { checkSchema, validationResult } from 'express-validator';
 import { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
 import axios from 'axios'; // better than js fetch
-import Weekly from "./models/weekly";
+import dayjs from "dayjs"; //getting week of the year with this 2kb package cus im lazy
+import votingSession from "./models/weekly";
 const crypto = require('crypto'); 
 const cors = require("cors")
 const multer = require('multer'); // smart body parser for getting files out of form
 const cookieParser = require('cookie-parser'); // for parsing cookies that store jwt
 const bodyParser = require('body-parser'); // body parser for parsing da body
+const weekofyear = require('dayjs/plugin/weekOfYear')
+const jwt = require('jsonwebtoken'); // jwt for token verification
+dayjs.extend(weekofyear)
 
 /*
     Defining storage for mp3s
@@ -39,7 +43,7 @@ const storage = multer.diskStorage({
   }
 })
 const upload = multer({storage: storage})
-const jwt = require('jsonwebtoken'); // jwt for token verification
+
 
 require('dotenv').config()
 /*
@@ -53,25 +57,39 @@ app.use(cookieParser())
 
 /**
  * Middleware for handeling bad requests 
-  TODO: implement session based auth checking
-*/
+  TODO: implement session based auth checking 
+  */
 let unprotected_paths = ["/register","/login"]
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   
-  console.log(`Request to ${req.path} from ${req.hostname} (${req.get('user-agent')}) | ${new Date()}`)
   if(unprotected_paths.includes(req.path)) {
     // check for brute force attacks via redis caching
     return next();
   }
+  
   if(!req.cookies['Ptoken']) return res.sendStatus(401);
   let token = jwt.verify(req.cookies['Ptoken'], process.env.TOKEN_SECRET, (err: JsonWebTokenError,data: JwtPayload) =>{
-      return data
-    })
+    return data
+  })
   if(!token) return res.sendStatus(403);
   if(token.expires < Date.now() ) return res.sendStatus(498);
-
+  if(req.get('user-agent') != token.agent ) return res.status(401).send("User-agent mismatch!") 
+  
+  if(req.path == "/sounds/vote" || req.path == "/sounds/devote" ){
+   
+    let this_week = await votingSession.findOne({where:{
+      // @ts-ignore
+      week: dayjs(Date.now()).week(),
+      year: new Date().getFullYear(),
+    }})
+    if(!this_week ) return res.status(204).send("No voting session for this week")
+  }
+  
   res.locals.token = token
-
+  res.on("finish", ()=> {
+    console.log(`${res.statusCode} | Request to ${req.path} from ${req.hostname} (${req.get('user-agent')}) | ${new Date()}`)
+  })
+  
   next()
 })
   
@@ -150,7 +168,7 @@ app.post('/login',
         }
       })
       if (!response.data.success) return res.sendStatus(401);
-    }
+      }
 
     // cache useragent/ip and check if the requests sent in the past 10 minutes is less then 10
     let user = await User.findOne({ where: { username: req.body.username } })
@@ -158,9 +176,18 @@ app.post('/login',
     if (user.password != req.body.password) return res.sendStatus(401); // in case password is incorrect
 
 
-    let token = jwt.sign({ id: user.id, expires: Date.now() + 1209600000  }, process.env.TOKEN_SECRET)
-   
-    // in case already has session
+    let token = jwt.sign(
+      {
+         
+         id: user.id, 
+         expires: Date.now() + 1209600000,
+         agent: req.get('user-agent'),
+         login: new Date().toISOString(),
+         session: "sessionid"
+
+      }, process.env.TOKEN_SECRET) 
+    
+      // in case already has session
     res.cookie('Ptoken', token);
     res.sendStatus(200);
   });
@@ -237,7 +264,6 @@ app.post('/sounds/add',
     isString: true,
     notEmpty: true,
    },
-
   }),
   async (req: Request, res: Response) => {
 
@@ -263,16 +289,19 @@ app.post('/sounds/add',
 
 app.get('/sounds',
   async (req: Request, res: Response) => {
+    let sess = await votingSession.findOne({where:{
+      // @ts-ignore 
+      week: dayjs(Date.now()).week(),
+      year: new Date().getFullYear()
+    }})
 
-    const weekly_vote = await Weekly.findOne({where:{current_week: true}})
-    if(!weekly_vote) return res.status(404).send("no voting available for this week")
+    if( !sess ) return res.status(204).send("no voting for this week yet")
+
     // @ts-ignore
     let sounds = []
     
     // @ts-ignore
-    for(let sound of weekly_vote?.sounds ){
-      
-      
+    for(let sound of sess?.sounds ){  
       let dbrecord = await Sound.findOne({
       attributes: ["id","name","votes"],
       where: {id: sound}
@@ -281,9 +310,7 @@ app.get('/sounds',
         // @ts-ignore
          sounds.push(dbrecord)
        }
-
-    }
-     
+    }     
     if(sounds.length == 0) return res.sendStatus(404)
 
     const user_votes = await Vote.findAll(
@@ -298,7 +325,6 @@ app.get('/sounds',
         return raw
       })
 
-
     res.send({
       // @ts-ignore
       this_week: sounds,
@@ -310,14 +336,14 @@ app.post('/sounds/vote',
   async (req: Request, res: Response) => {    
     if(!req.query.id) return res.sendStatus(400);
    
+
     // in case user has already voted reject
     const vote = await Vote.findOne({where: {user: res.locals.token.id, sound: req.query.id as string }});
-    if(vote) return res.sendStatus(201)
-
+    if(vote) return res.status(201).send("You have already voted for this")
     let sound = await Sound.findOne({ where:{id: req.query.id as string}})
-    if(!sound) return res.sendStatus(404);
+    if(!sound) return res.status(404).send("No sound is found under that id");
     await sound.update({ votes: sound.votes + 1})
-    
+
     await Vote.create({user: res.locals.token.id, sound: sound.id })
     res.sendStatus(200)
 } )
@@ -325,18 +351,20 @@ app.post('/sounds/vote',
 app.post('/sounds/devote',
   async (req: Request, res: Response) => {    
     if(!req.query.id) return res.sendStatus(400);
-   
-    // in case user hasn't voted reject
+       // in case user has already voted reject
     const vote = await Vote.findOne({where: {user: res.locals.token.id, sound: req.query.id as string }});
-    if(!vote) return res.sendStatus(404)
-
+    if(!vote) return res.status(404).send("You have not voted for this!")
+    
+    // checking if sound exists which is pretty retarded but who cares
     let sound = await Sound.findOne({ where:{id: req.query.id as string}})
-    await sound?.update({ votes: sound.votes - 1})
+    if(!sound) return res.status(404).send("No sound is found under that id");
+    await sound.update({ votes: sound.votes - 1})
     
     await Vote.destroy({where: {user: res.locals.token.id, sound: sound?.id }})
 
     res.sendStatus(200)
 } )
+
 app.get('/sounds/:id',
   async (req: Request, res: Response) => {    
     if(!req.params.id) return res.sendStatus(400);
@@ -347,16 +375,11 @@ app.get('/sounds/:id',
     res.sendFile(`/data/sounds/${sound.path}`, {root: __dirname })
 } )
 
+/*
+    needs a better implementation
+*/
 app.post('/weekly/new',
   checkSchema({
-    start: {
-      exists: true,
-      isString:true,
-    },
-    end: {
-      exists: true,
-      isString:true,
-    },
     sounds: {
       exists: true,
       isArray:true,
@@ -365,6 +388,16 @@ app.post('/weekly/new',
       isString:true,
       isUUID: true,
     },
+    week: {
+      in: "query",
+      exists: true,
+      isNumeric: true,
+    },
+    year:{
+      in: "query",
+      exists: true,
+      isNumeric: true,
+    }
   }),
   async (req: Request, res: Response) => {    
   
@@ -374,24 +407,21 @@ app.post('/weekly/new',
 
     if ( new Date(req.body.start) > new Date(req.body.end)) return res.status(400).send("Start date cannot be after end date");
 
+    // checking if sounds exist
     for (let id of req.body.sounds){
       if( !await Sound.findOne({where:{id: id}}) ) return res.status(400).send()
     }
 
-    let current_week = false
-    if(
-      new Date(req.body.start) <= new Date() &&
-      new Date(req.body.end) >= new Date() 
-      ) {current_week = true};
+    // checking if a Vsession exists 
+    if( await votingSession.findOne({where:{week: req.query["week"] as string }})) return res.status(409).send("There is already a voting declared for that week, maybe edit it istead!")
 
-    Weekly.create({
+    await votingSession.create({
       sounds: req.body.sounds,
-      start: req.body.start,
-      end: req.body.end,
-      current_week: current_week,
+      week: parseInt(req.query["week"] as string),
+      year: parseInt(req.query["year"] as string),
     })
 
-    res.send()
+    res.send("Created the voting session")
 } )
 
 

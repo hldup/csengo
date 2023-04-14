@@ -2,54 +2,40 @@
 import { DataTypes, Model, Optional } from 'sequelize'
 import connection from '../database'
 
-interface weeklyAttributes {
+interface votingSessionAttributes {
   id: number;
-  
-  start: string,
-  end: string,
-
-  sounds: string,
-  closed: boolean,
-  
-  current_week: boolean
+  sounds: string, // ["8bdb3bc5-52c2-4b54-abad-4ec8a711e9ad"]
+  week: number, // 15
+  year: number, // 2023
 }
-export interface weeklyInput extends Optional<weeklyAttributes, "current_week" | "closed" | "id" | "start" | "end" | "sounds" > { start: string, end: string, sounds: string }
-export interface weeklyOutput extends Required<weeklyAttributes> {}
+export interface votingSessionInput extends Optional<votingSessionAttributes, 
+"id" | "sounds" | "week" | "year"  > { week: number, year: number, sounds: string }
+export interface votingSesisonOutput extends Required<votingSessionAttributes> {}
 
-class Weekly extends Model<weeklyAttributes, weeklyInput> implements weeklyAttributes {
+class votingSession extends Model<votingSessionAttributes, votingSessionInput> implements votingSessionAttributes {
     public  id!: number
-    public start!: string
-    public end!: string
-    public sounds!: string
-    public closed!: boolean
-    public current_week!: boolean;
+    public sounds!: string 
+    public week!: number
+    public year!: number
 };
   
-  Weekly.init({
+  votingSession.init({
     id: {
         type: DataTypes.UUIDV4,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
-      start: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
-       end: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
       sounds: {
         type: DataTypes.JSON,
         allowNull: false
       },
-      closed: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
+      week: {
+        type: DataTypes.BIGINT,
+        allowNull: false,
       },
-      current_week: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
+      year: {
+        type: DataTypes.BIGINT,
+        allowNull: false
       }
   },
   {
@@ -60,4 +46,4 @@ class Weekly extends Model<weeklyAttributes, weeklyInput> implements weeklyAttri
 
 
 
-export default Weekly
+export default votingSession
