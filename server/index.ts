@@ -4,7 +4,7 @@ Class/models imports
 */
 import dbInit from "./init";
 import User from './models/users';
-import Sound from './models/sound';
+import Sound, { SoundOutput } from './models/sound';
 import Om from './models/om';
 import Vote from './models/votes';
 
@@ -18,6 +18,7 @@ import { open } from 'sqlite'
 import { checkSchema, validationResult } from 'express-validator';
 import { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
 import axios from 'axios'; // better than js fetch
+import Weekly from "./models/weekly";
 const crypto = require('crypto'); 
 const cors = require("cors")
 const multer = require('multer'); // smart body parser for getting files out of form
@@ -52,7 +53,8 @@ app.use(cookieParser())
 
 /**
  * Middleware for handeling bad requests 
- */
+  TODO: implement session based auth checking
+*/
 let unprotected_paths = ["/register","/login"]
 app.use((req, res, next) => {
   
@@ -101,6 +103,9 @@ const port = process.env.PORT;
       username: "admin",
       om: 1,
     })
+  }
+  else if(process.env.DEV){
+    await dbInit()
   }
   if (!fs.existsSync("./data/sounds")){
      fs.mkdirSync("./data/sounds", {recursive: true});
@@ -243,7 +248,10 @@ app.post('/sounds/add',
     if (  !(await User.findOne({where: {id: res.locals.token.id }}))?.administrator ) return res.sendStatus(401);
 
     // @ts-ignore
-    if(req.file?.mimetype != "audio/mpeg") return res.sendStatus(400)
+    if(req.file?.mimetype != "audio/mpeg"){
+      res.statusCode = 400
+      return res.send("File not audio")
+    }
     // @ts-ignore
     let filename = req.file?.filename;
     Sound.create({
@@ -254,12 +262,30 @@ app.post('/sounds/add',
 } )
 
 app.get('/sounds',
-  async (req: Request, res: Response) => {     
+  async (req: Request, res: Response) => {
 
-    const sounds = await Sound.findAll({
-      attributes: ["id","name","votes"]
-    });
-    if(!sounds) return res.sendStatus(404) 
+    const weekly_vote = await Weekly.findOne({where:{current_week: true}})
+    if(!weekly_vote) return res.status(404).send("no voting available for this week")
+    // @ts-ignore
+    let sounds = []
+    
+    // @ts-ignore
+    for(let sound of weekly_vote?.sounds ){
+      
+      
+      let dbrecord = await Sound.findOne({
+      attributes: ["id","name","votes"],
+      where: {id: sound}
+       })   
+       if (dbrecord) {
+        // @ts-ignore
+         sounds.push(dbrecord)
+       }
+
+    }
+     
+    if(sounds.length == 0) return res.sendStatus(404)
+
     const user_votes = await Vote.findAll(
       {
         where: {user: res.locals.token.id },
@@ -274,7 +300,8 @@ app.get('/sounds',
 
 
     res.send({
-      sounds: sounds,
+      // @ts-ignore
+      this_week: sounds,
       user_votes: user_votes
     })
 } )
@@ -319,6 +346,54 @@ app.get('/sounds/:id',
 
     res.sendFile(`/data/sounds/${sound.path}`, {root: __dirname })
 } )
+
+app.post('/weekly/new',
+  checkSchema({
+    start: {
+      exists: true,
+      isString:true,
+    },
+    end: {
+      exists: true,
+      isString:true,
+    },
+    sounds: {
+      exists: true,
+      isArray:true,
+    },
+    "sounds.*":{
+      isString:true,
+      isUUID: true,
+    },
+  }),
+  async (req: Request, res: Response) => {    
+  
+    // error handeling for headers/formdata
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+    if ( new Date(req.body.start) > new Date(req.body.end)) return res.status(400).send("Start date cannot be after end date");
+
+    for (let id of req.body.sounds){
+      if( !await Sound.findOne({where:{id: id}}) ) return res.status(400).send()
+    }
+
+    let current_week = false
+    if(
+      new Date(req.body.start) <= new Date() &&
+      new Date(req.body.end) >= new Date() 
+      ) {current_week = true};
+
+    Weekly.create({
+      sounds: req.body.sounds,
+      start: req.body.start,
+      end: req.body.end,
+      current_week: current_week,
+    })
+
+    res.send()
+} )
+
 
 
 
