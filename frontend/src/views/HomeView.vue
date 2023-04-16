@@ -12,6 +12,12 @@
   </div>
 
   <div class="container reappear" v-if="dataReady">
+      <a-statistic-countdown
+        title="Countdown"
+        :value="deadline"
+        style="color: red"
+
+      />
     <div class="soundbox" v-for="sound in sounds" :key="sound.id">
        <img :id="sound.id" @click="playSound(sound.id)" src="play-fill.svg"  alt="Lejátszás" height="64" >
        <p>{{sound.name}}</p> 
@@ -26,9 +32,13 @@
 
 <script>
 import axios from 'axios'
+import { Countdown } from 'ant-design-vue'
 
 export default {
   name: 'HomeView',
+  components: {
+    "a-statistic-countdown": Countdown,
+  },
   data(){
     return{
       reapear: true,
@@ -38,7 +48,9 @@ export default {
       uservotes: [],
       audio: null,
       icon: '',
-    }
+      deadline: Date.now() + 199999999
+
+}
   },
   methods:{
     vote: async function( sound ){
@@ -121,7 +133,6 @@ export default {
         this.dataReady = true 
       })
       },4000)
-
   }
 
 }

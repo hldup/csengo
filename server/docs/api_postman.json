@@ -1,0 +1,361 @@
+{
+	"info": {
+		"_postman_id": "c428d78e-99ee-4a20-8d6b-e1abd4e42651",
+		"name": "Csengo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Voting session",
+			"item": [
+				{
+					"name": "Create voting session for week",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sounds\": [\"8bdb3bc5-52c2-4b54-abad-4ec8a711e9ad\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/weekly/new?week=16&year=2023",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"weekly",
+								"new"
+							],
+							"query": [
+								{
+									"key": "week",
+									"value": "16"
+								},
+								{
+									"key": "year",
+									"value": "2023"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit voting session",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sounds\": [\n        \"ec16065f-294b-4a27-8b24-6d39634fb6e8\",\"c10cec4c-f523-446c-a4e9-c078bafba84b\",\"b8a39778-0fcf-426d-b0b3-666714df116a\",\"b4554f74-dadd-4b11-84ef-a83df6ce50ee\"\n\n        ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/weekly/edit?id=061e3f7d-1cd3-4026-91c0-ddb4518ff52b",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"weekly",
+								"edit"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "061e3f7d-1cd3-4026-91c0-ddb4518ff52b"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get voting sessions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/weekly",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"weekly"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sessions",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "username",
+								"value": "admin",
+								"type": "default",
+								"disabled": true
+							},
+							{
+								"key": "password",
+								"value": "-sfHvK8ZN5#78tYOkK#YpWuVTpQj$!r$0Z9Hx3@7fv~5tHXaru5gKVlJuxFNJ9Yo",
+								"type": "default",
+								"disabled": true
+							},
+							{
+								"key": "username",
+								"value": "testuser2",
+								"type": "default",
+								"disabled": true
+							},
+							{
+								"key": "password",
+								"value": "securepassword123",
+								"type": "default",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"asd\",\n    \"hcaptchaKey\": \"asd\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"123\",\n    \"password\":\"asd\",\n    \"om\": \"23\",\n    \"hcaptchaKey\": \"P1_eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.hKdwYXNza2V5xQaW4HHZuBS2lBp77V2Slp2vCdXWO5NvBUBIGJtd-pHxLaCNdEh1bdJ-gUPbhbMXavkJWhlZ5BCvNWJdS74JKeIl-4zAchAOvFUKgoQvcufZGthDCMtxjeuq7NptJ497jnr0nGbfYXTNNwhyepxbv9Wujp8K7ALUEq0ZZc7Ywo6FzQhn9rKCVYfdnqu5AQTnx7zHzxirAE-_n9CtnoZgggbJDxIcOGocySynmTaD59YrC3VxTw4eZuj-d2UU-G410ztVyh_fxhR4c3R64BgT6x2pxHxoIFTO1b8mkVJwhM-YyinaDOAOBNjBYTNd0qyV4MqTNbE6SbtQG1g1my6KgFZIJQuw9XTP7XzbNR6CYbW3je16EIRnKJehTN50YE_t4e2LLFeiZG9_VRRMnkQXdvI7ESRA9uH6qzDJqYRVXdnDm7ktU018YnoR5D7qpnqapNGyyelqMiXjCOc1K7jZGQ4vHehiDp9rz-NOyvnTwrGtv2XZZnnmOxOOtZCB7CHySaxaKGX9lgKGqHVoxzoJN5kHv3QWLZDHKQj0C0--l64LZZgYe82TxvEMvTDTfUlkgqG_sOdTxR5JxS0b-kafLQ2nkuQmzaUnHZ2GWGPKHSaMdFM7NlF043qbPkH_KKb_-xhEPam5hnH-5n6E3G8r1InrVH4vmvm__XJeoB5mk4bqkvOZRyAfJxp1TMZL7ZNbV6avvhmepbpRXCUhK43F_D53ToXoCVz5ZfFkyW3g87vp8kG3bYSMCJ_9Bv4ciByWcC-HqeZOBC3JHRrIQUdARebYhlR7-Aeqcq6v0IVXAHBUywPAUW7O0UqFyffmczrXXxSdn8L4YPMCs3Q0OHHcUiHnFAlXXVjogKVqszw8McPETPdTSWvvQu3rmBwNRXZC_kFEFcrE9RUCYAZHp3bcPvnsQJYZxAEL75KA0nE3OR1ctRPw1P9I_lZpbq7swcXBSifmerc9MLPcIvGVbGIV4Sd4vWwcnNAz961lP2zMStISVZK4f_yvhvJCmjaeuwPDa_-zTA-ieVI7KPce1b5N_8b7-y5h_qiWo54wc18KceqSKREWqp3TwZ4RDLHHuywT_JuMEZh4_jvPbHZZq6DGDIF6Dd-EmCyMKdbApWwPuix-uyy-a081IUd7Y9qv6ZVuQMXvkQ6AKvFJzcZKhGVXhlJgcConJIckC3Z8bIDibA02Hu-gJ6Tm8MdTsV76oSDMpvuzQJlaEPPhmKB0dpOcSOx9rdNfYj3b03F9nhwl6HHvrNShQYe_g4DcsKYf52a-kWLK_ofxt7pt-QCDbzlUONb4Do0iE3ZahnyfR4bH-khXzXUkW1PIqqn_pRvcawrEna3PK1vFMPIKAHX01XibfuaGa-WUdT58HPrjPXBloZt8RE8WEaRP1Rd4_ycRrWF3F8yRHdaaLjTG0yYW6-sQ7N9eguKjdhsJw7M_aBVuL6g3_XX_HNe_IjTJgbhUHiSmufRwj2F5GzVpcjKZY3w8qUq0G0P8UQrMJh5AVuEC0G1x7PzvGzLIjRIlqD4hbrDco2nlNF29tWFYWDy66P5IpPFTYzEqcJvz9futScjtqToBB6QJoNk89CZa7lFuSnzrSIUGTOWt0dxcHp36tHViSed3Wb8lGl-IBtQi29PZM27TgAdOwTO3SjZJH6-qrKk7RfR8lAk8rTMO5b3gFrTeHSHX9L3yA-8F_9j3VqmA5E-2QyCDmYsa9F0w-UxXg-yxVgzfFYHarhf1xcHlpIr16JU7ockxTxWbXrANAeXqPAPvXcXx4QMsZkXm8OJlyc1h5FO4lSB1W6IH2nRThIhAPI1ElW_SEuMOJMFBVntxeot-byuzfEVPlNM4SrKJNpwG7X9Bak3syd_ZG2gX6GympAuC0m03pXPjNgSHgAhRp6lDBmvHNbpFnIXAXInnQNmFw1_amLtXsEdxfKLnaVLUMRqNc6Cvb2XHdRo44WBcGjYQ9peqNn0JmG4lD2pnNaAAoV3jFcRYIIsw1_OTVPZDiE5OnrxX4UcYxZz-RS-ELJh8vfQOW4OOo9KNy2XkQDQLjTV1DB4fhZvUWfpXyaJHvIe3IJQK0UibBwM8FhtFhHTGmZPl6hTcwFgSOrn9J9MRi8ob4RKlLRXzTnRrpVGpvBu2y2TM26bgzNbYrEtcLRRA-Q8_038Ri_GrpbisuRll4tTYRhUpe9M-06ZMahAgV9E04mkhX0KBoRf5lH7gGnFq2h7Ziz-Y40Jjzn2TvwDp2n972p99B8E5o2V4cM5kJHA1qHNoYXJkX2lkzhQ8hB-icGQA.AIEEwuJ5KTl1wlNTvO0gGIQcMEJUAr8ciNfoe6n7Fs8\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/register",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sound management",
+			"item": [
+				{
+					"name": "Add sound",
+					"protocolProfileBehavior": {
+						"disableCookies": false
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "sound",
+									"type": "file",
+									"src": "/home/berryes/Music/dramatic_boom_effect.mp3"
+								},
+								{
+									"key": "name",
+									"value": "light skin rizz",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/sounds/add",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sounds",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get sounds",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/sounds",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sounds"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Serve sound",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/sounds/a6c0ec51-f203-4dd3-ba80-8147c2696a59",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sounds",
+								"a6c0ec51-f203-4dd3-ba80-8147c2696a59"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Vote sound",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNiOWVjNDM2LTA3N2ItNDRlMi05YTE5LTFhOGI3ZjIwMWNjMCIsImV4cGlyZXMiOjE2ODE0ODQyNTYyODgsImlhdCI6MTY4MDI3NDY1Nn0.AFhxHnuQqbtn3SNCyv3pCdkU7EteuFkTUIOEym3snaw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/sounds/vote?id=8bdb3bc5-52c2-4b54-abad-4ec8a711e9ad",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sounds",
+								"vote"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "8bdb3bc5-52c2-4b54-abad-4ec8a711e9ad"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Devote sound",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/sounds/devote?id=a6c0ec51-f203-4dd3-ba80-8147c2696a59",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sounds",
+								"devote"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "a6c0ec51-f203-4dd3-ba80-8147c2696a59"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all sounds",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "http://localhost:3000",
+			"type": "default"
+		}
+	]
+}
