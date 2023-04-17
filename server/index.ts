@@ -11,7 +11,7 @@ import Vote from './models/votes';
 /*
 Application imports
 */
-import express, { Express, Request,  Response, query } from 'express';
+import express, { Express, Request,  Response } from 'express';
 import fs from 'fs';
 import sqlite3 from 'sqlite3'
 import { open } from 'sqlite'
@@ -20,14 +20,15 @@ import { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
 import axios from 'axios'; // better than js fetch
 import dayjs from "dayjs"; //getting week of the year with this 2kb package cus im lazy
 import votingSession from "./models/weekly";
-const crypto = require('crypto'); 
-const cors = require("cors")
-const multer = require('multer'); // smart body parser for getting files out of form
-const cookieParser = require('cookie-parser'); // for parsing cookies that store jwt
-const bodyParser = require('body-parser'); // body parser for parsing da body
-const weekofyear = require('dayjs/plugin/weekOfYear')
-const jwt = require('jsonwebtoken'); // jwt for token verification
+import crypto  from "crypto";
+import multer from "multer";
+import bodyParser from "body-parser";
+import weekofyear from "dayjs/plugin/weekOfYear";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 dayjs.extend(weekofyear)
+const jwt = require("jsonwebtoken");
+
 
 /*
     Defining storage for mp3s
@@ -348,7 +349,8 @@ app.get('/sounds',
     res.send({
       // @ts-ignore
       sounds: sounds,
-      user_votes: user_votes
+      user_votes: user_votes,
+      week: dayjs(Date.now()).week()
     })
 } )
 

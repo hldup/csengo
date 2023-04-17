@@ -139,3 +139,31 @@ body{
   }
 }
 
+.error{
+    position: absolute;
+    background-color: rgba(206, 60, 60, 0.476);
+
+     animation: errorFade 1s  linear normal forwards;
+    font-size: 1.5em;
+    top: 2em;
+    color: white;
+    border-radius: 1.5em;
+    padding: .4em;
+
+    font-family: 'Poppins',sans-serif;
+    left: 35dvw;
+}
+
+@keyframes errorFade {
+
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1; 
+    }
+}
+.week {
+    text-align: center;
+    padding: .2em;
+} 
