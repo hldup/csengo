@@ -1,9 +1,37 @@
 <template>
-  <div>
-  asdasd
+    <div class="prompt" v-if="prompt">
+      <h1>Biztosan végbe viszed ezt a müveletet?</h1>
+      <div class="buttons">
+        <button class="true">Igen</button>
+        <button class="false">Mégsem</button>
+      </div>
+
+  </div>
+  <div class="a-container">
+    <h1>Hangok</h1>
+
+     <div class="soundbox" v-for="sound in sounds" :key="sound.id">
+       <img :id="sound.id" @click="playSound(sound.id)" src="play-fill.svg"  alt="Lejátszás" height="64" >
+       <p>{{sound.name}} <br> {{sound.votes}} szavazat </p>
+      
+      <img class="trash" src="trash.svg" alt="Torles" height="24" @click="delSound(sound.id)">
+
+  </div> 
+
+  </div>
+  <div class="a-container">
+  
   </div>
 
 </template>
+
+<style scoped src="@/assets/css/admin.css"></style>
+<style>
+body{
+  background-color: black;
+  
+}
+</style>
 
 <script>
 import axios from 'axios'
@@ -11,21 +39,53 @@ import axios from 'axios'
 export default {
   data(){
     return{
-      sounds: []
+      sounds: [],
+      error: '',
+      prompt: false,
+
+    }
+  },
+  methods:{
+  playSound: async function( uuid ){
+      if(this.audio != null ){ 
+        if(!this.audio.ended) {
+           document.getElementById(this.icon).src = "play-fill.svg"
+           this.icon = uuid;
+           this.audio.pause()
+           this.audio = null;
+            return
+        }
+      }
+
+      this.audio = new Audio(process.env.VUE_APP_SERVER_API+"/sounds/"+uuid)
+      this.audio.play()
+      this.icon = uuid
+      document.getElementById(uuid).src = "pause-fill.svg"
+      
+      this.audio.addEventListener("ended", function(){
+          document.getElementById(uuid).src = "play-fill.svg"
+       });
+
+    },
+    delSound: async function( uuid ){
+      
     }
   },
   async mounted(){
-      try {
+    try {
         await axios({
-          method: "post",
+          method: "get",
           url: (process.env.VUE_APP_SERVER_API+"/sounds/all"),
-          withcredentials: true
+          withCredentials: true
+
       }).then((response)=>{
-      console.log(response.code)
-       this.sounds = response.data 
+         this.sounds = response.data 
       })
-      } catch (error) {
-        console.log(error.code)   
+
+      }catch (error) { 
+        this.error = error
+        console.log(error.code + "asd")
+
       }
   }
 }

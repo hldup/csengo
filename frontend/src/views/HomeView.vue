@@ -12,14 +12,13 @@
   </div>
   
   <div class="error" v-if="showError">  Valami hiba történt! {{error}} </div>
+  
+
+  <div class="s-container reappear" v-if="noVote">
+    <h1>Ezen a héten nincs szavazás :( </h1>
+  </div>
+
   <div class="container reappear" v-if="dataReady">
-      <a-statistic-countdown
-        title="Countdown"
-        :value="deadline"
-        style="color: red"
-
-      />
-
     <h1 class="week"> {{week}}. hét </h1>
     <div class="soundbox" v-for="sound in sounds" :key="sound.id">
        <img :id="sound.id" @click="playSound(sound.id)" src="play-fill.svg"  alt="Lejátszás" height="64" >
@@ -27,21 +26,20 @@
        <img v-if="uservotes.includes(sound.id)" height="32" src="hand-thumbs-up-fill.svg" alt="Tetszik" class="vote" @click="vote(sound)">
        <img  v-if="!uservotes.includes(sound.id)" height="32" src="hand-thumbs-up.svg" alt="Tetszik" class="vote" @click="vote(sound)">
        <p>{{sound.votes}}</p>
-       </div> 
-  </div>
+  </div> 
+  
+</div>
+
 
 </div>
 </template>
 
 <script>
 import axios from 'axios'
-import { Countdown } from 'ant-design-vue'
 
+import VueCookies from 'vue-cookies';
 export default {
   name: 'HomeView',
-  components: {
-    "a-statistic-countdown": Countdown,
-  },
   data(){
     return{
       reapear: true,
@@ -55,15 +53,13 @@ export default {
       week: "",
       showError: false,      
       icon: '',
-      deadline: Date.now() + 199999999
-
+      deadline: Date.now() + 199999999,
+      noVote: false
 }
   },
   methods:{
     vote: async function( sound ){
-    
       try{
-        
         if(this.uservotes.includes(sound.id)){
             this.uservotes.splice(this.uservotes.indexOf(sound.id),1)
             
@@ -124,15 +120,28 @@ export default {
         method: "get",
         withCredentials: true
     }).then((response)=>{
+      
+      if(response.status == 204 ){
+        this.noVote = true;
+        return
+      }
+
       this.sounds = response.data.sounds
       this.uservotes = response.data.user_votes
       this.week = response.data.week, 
       this.dataReady = true 
+
     })
     } catch(error){
-      this.error = error;
+
+      VueCookies.remove("Ptoken")
+      this.$router.push({path: "/login"})
       
+      this.error = error;
+      this.showError = true
+      return
     }
+
     // updating every 4 seconds for "realtime" display
     setInterval(async ()=>{
       await axios({
@@ -140,6 +149,14 @@ export default {
           method: "get",
           withCredentials: true
       }).then((response)=>{
+        if(this.noVote){this.noVote = false}
+        
+        if(response.status == 204){
+          this.noVote = true;
+           this.dataReady = false
+           return
+           }
+
         this.sounds = response.data.sounds
         this.uservotes = response.data.user_votes 
         this.week = response.data.week
@@ -150,8 +167,10 @@ export default {
 
 }
 </script>
-<style>
+<style src="@/assets/css/main.css"></style>
+<style scoped>
 body{
+  overflow: hidden;
   background-color: black;
 }
 
@@ -172,4 +191,3 @@ body{
     }
 }
 </style>
-<style scopedu src="@/assets/css/main.css"></style>

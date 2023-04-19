@@ -75,42 +75,6 @@ button{
 
 
 
-/* blobs */
-.background {
-    /* blur here */
-    height: 100dvh;
-    width: 100dvw;
-    filter: blur(0.2em);
- }
-.background svg{
-    height: 50vh;
-    width: 100%;
- }
-@keyframes rotate {
-    100% {
-        transform: rotate(360deg);
-    }
-}
-.out-top {
-    animation: rotate 10s linear infinite;
-    transform-origin: 13px 25px;
-}
-.in-top {
-    animation: rotate 5s linear infinite;
-    transform-origin: 13px 25px;
-}
-.outBottom {
-    animation: rotate 10s linear infinite;
-    transform-origin: 84px 93px;
-
-}
-.in-bottom {
-    animation: rotate 6s linear infinite;
-    transform-origin: 84px 93px;
-}
-
-
-
 .shake  {
     animation: shake 0.4s linear infinite;
 }

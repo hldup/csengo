@@ -1,0 +1,83 @@
+
+body{
+    overflow: scroll;
+}
+.a-container{
+    height: 45em;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5em;
+    margin-bottom: 5em;
+    overflow: auto;
+    font-family: 'Poppins',sans-serif;
+    width: 23em;
+    background-color: rgba(255,255,255,0.13);
+    border-radius: 1em;
+    color: white;
+    backdrop-filter: blur(.3em);
+    border: 2px solid rgba(255,255,255,0.1);
+    box-shadow: 0 0 40px rgba(8,7,16,0.6);
+    padding: 50px 35px;    
+}
+.a-container h1 {
+    text-align: center;
+}
+.soundbox .trash{
+    position:fixed;
+    right: .8em;
+}
+
+.prompt {
+    overflow: auto;
+    font-family: 'Poppins',sans-serif;
+    width: 50%;
+    background-color: rgba(246, 6, 6, 0.383);
+    position: absolute;
+    transform: translate(-50%,-50%);
+    top: 50%;
+    left: 50%;
+    z-index: 1;
+
+    border-radius: 1em;
+    color: white;
+    backdrop-filter: blur(1em);
+    border: 2px solid rgba(255,255,255,0.1);
+    box-shadow: 0 0 40px rgba(8,7,16,0.6);
+    padding: 50px 35px;    
+    
+    animation: appear 0.4s linear normal forwards;
+
+}
+
+.prompt .buttons{
+    display: flex;
+    justify-content: center;
+    margin-top: 1em;
+}
+.prompt button{
+    height: 2.5em;
+    color: rgb(211, 210, 210);
+    border-radius: .2em;
+    width: 5em;
+    margin-left: 1em;
+    border: none;
+}
+.true {
+    background-color: rgb(22, 66, 22);
+}
+.false{
+    background-color: red;
+}
+
+@keyframes appear {
+
+    0% { 
+       opacity: 0; 
+     }
+
+    100% {
+        opacity: 1;
+        visibility: 1;
+    }
+}
+
