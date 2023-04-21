@@ -22,17 +22,23 @@ body{
 .a-container h1 {
     text-align: center;
 }
-.soundbox .trash{
+.a-container  button{
+
+}
+.a-soundbox .trash{
     position:fixed;
-    right: .8em;
+    right: 1em;
 }
 
 .prompt {
     overflow: auto;
+
     font-family: 'Poppins',sans-serif;
     width: 50%;
     background-color: rgba(246, 6, 6, 0.383);
-    position: absolute;
+    
+    position: sticky;
+
     transform: translate(-50%,-50%);
     top: 50%;
     left: 50%;
@@ -80,4 +86,29 @@ body{
         visibility: 1;
     }
 }
-
+.a-soundbox{
+    display: flex;
+    align-items: center;
+    margin: 1em;
+    height: 5em; 
+    background-color: rgba(255, 255, 255, 0.089);
+    backdrop-filter: blur(.3em);
+    box-shadow: 0 0 40px rgba(8,7,16,0.6);
+    border-radius: 1em;
+}
+.a-soundbox img{
+    filter: invert(1);
+}
+.blur {
+    filter: blur(3em);
+    animation: appear 0.4s linear normal forwards;
+}
+@keyframes blur {
+   
+    0%{
+        filter: blur(0px);
+    }
+    100%{
+        filter: blur(2em)
+    }
+}

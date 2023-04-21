@@ -7,9 +7,10 @@
 }
 body{
     background-color: black;
+}
+.register{
     overflow: hidden;
 }
-
 .form{
     height: 30em;
     width: 23em;

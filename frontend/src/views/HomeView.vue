@@ -167,7 +167,7 @@ export default {
 
 }
 </script>
-<style src="@/assets/css/main.css"></style>
+<style scoped src="@/assets/css/main.css"></style>
 <style scoped>
 body{
   overflow: hidden;

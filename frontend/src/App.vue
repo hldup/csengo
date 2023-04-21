@@ -1,5 +1,5 @@
 <template>
-  <div class="background" v-if="$router.path == '/admin'" >
+  <div class="background" v-if="$router.path == '/admin' " >
     <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" viewBox="0 0 120 120">
        <path fill="#9b5de5"   class="out-top" d="M37-5C25.1-14.7,5.7-19.1-9.2-10-28.5,1.8-32.7,31.1-19.8,49c15.5,21.5,52.6,22,67.2,2.3C59.4,35,53.7,8.5,37-5Z"/>
       <path fill="#00000" class="in-top" d="M20.6,4.1C11.6,1.5-1.9,2.5-8,11.2-16.3,23.1-8.2,45.6,7.4,50S42.1,38.9,41,24.5C40.2,14.1,29.4,6.6,20.6,4.1Z"/>
@@ -13,6 +13,7 @@
   <div class="profile" v-if="
   $route.path != '/login' && $route.path != '/register'
   " aria-label="Profil">
+
     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#FFFFFF" class="bi bi-person" viewBox="0 0 16 16">
     <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
     </svg>
@@ -23,9 +24,7 @@
     </div>
   </div>
 
-  <router-view/>
-
-
+  <router-view />
 
 </template>
 <style scoped>

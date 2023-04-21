@@ -1,6 +1,6 @@
 <template>
-  
-    
+<div class="register">
+
     <div :class="{ shake: shake , disappear: disappear}" class="form">
         <h2>Pollák</h2>
         <h6> <a href="https://github.com/berryes/csengo" target="blank">Csengetés szavazó v{{version}} </a></h6>
@@ -25,6 +25,7 @@
 
     </div>
 
+</div>
 </template>
 <script>
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
@@ -102,7 +103,7 @@ export default {
 }
 </script>
 
-<style scoped src="@/assets/css/login-register.css"></style>
+<style src="@/assets/css/login-register.css"></style>
 <style scoped>
 .form {
     height: 46em;

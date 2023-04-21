@@ -107,7 +107,9 @@ app.use(async (req, res, next) => {
     "/sounds/add",
     "/sounds/add/",
     "/sounds/all",
-    "/sounds/all/"
+    "/sounds/all/",
+    "/sounds/delete",
+    "/sounds/delete/"
   ].includes(req.path) &&
   !token.administrator  
   ) return res.status(401).send("You are not the administrator")
@@ -363,6 +365,18 @@ app.get('/sounds/all',
     if(sounds.length == 0) return res.sendStatus(404)
     res.send(sounds)
 } )
+app.post('/sounds/delete',
+  async (req: Request, res: Response) => {
+    if(!req.query.id) return res.status(400).send("id is missing from query")
+
+    let sound = await Sound.findOne({where:{id: req.query.id as string }})
+    if(!sound) return res.status(404).send("No sound under  that id")
+    
+    await sound.destroy()
+
+    res.send()
+} )
+
 
 
 app.post('/sounds/vote',
@@ -474,7 +488,7 @@ app.post('/weekly/edit',
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
-    // checking if a Vsession exists 
+    // checking if a Vsession exists i
     if(!await votingSession.findOne({where:{id: req.query.id as string }})) return res.status(404).send("There isn't a voting session under this id")
 
     // checking if sounds exist
@@ -514,14 +528,37 @@ app.get('/weekly',
       attributes: ["id","sounds","week","year"]
     })
     if(!sessions || sessions.length == 0) return res.status(404).send("Ther are no voting sessions!")
-    res.send(sessions);
+    
+    for(let sess of sessions ){
+      let sounds = []
+
+      for(let sound of sess.sounds){
+          const dbsound = await Sound.findOne({
+            where:{id: sound as string},
+            attributes: ["id","name","votes","createdAt"]
+          });
+
+          // @ts-ignore
+          sounds.push(dbsound)
+      }
+      // @ts-ignore
+      sess.sounds = sounds;
+    }
+    
+    res.send(sessions.reverse());
 
 } )
 
 
 
 
+/*
+i just realised now that im writing this in ts ts and i used 
+let for variables that can just be  a constant instead
 
+*cries in rust*
+
+*/
 
 app.listen(port, () => {
   console.log(`Listening on ${port}`)
