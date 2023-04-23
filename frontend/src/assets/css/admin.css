@@ -112,3 +112,10 @@ body{
         filter: blur(2em)
     }
 }
+
+.select-box{
+    margin-top: 5em;
+    border-radius: 2em;
+    height: 25em;
+    overflow: scroll;
+}

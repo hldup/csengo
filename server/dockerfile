@@ -1,8 +1,9 @@
+# 
 FROM node:alpine
-WORKDIR /usr/csengoserver
+WORKDIR /usr/csengo
 COPY package.json .
 RUN npm install\
     && npm install typescript -g
 COPY . .
 RUN tsc
-CMD ["node", "./dist/index.js"]
+CMD ["node", "./dist/server.js"]
