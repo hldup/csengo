@@ -25,9 +25,9 @@ Frontend: JS
 - UI framework: *Ant vue design (adminpanel only)*
 
 # Contributing & feature request
-You can always make a [issue](https://github.com/berryes/csengo/issues) if you found a vulnerability / bug.
+You can always make an [issue](https://github.com/berryes/csengo/issues) if you found a vulnerability / bug.
 Or you could just fork the repo and fix it yourself then pull a request. <br>
-For any more contact me at [@berry:berryez.xyz](https://matrix.to/#/@berry:berryez.xyz) (matrix)
+For anymore contact me at [@berry:berryez.xyz](https://matrix.to/#/@berry:berryez.xyz) (matrix)
 
 # Authors 
 - Máté - *frontend & backend* - [**berryes**](https://matrix.to/#/@berry:berryez.xyz)

@@ -1,9 +1,4 @@
 <template>
-
-  <div class="error" v-if="showError">
-      {{error}}
-  </div>
-
     <div class="prompt" v-if="prompt">
       <h1>Biztosan végbe viszed ezt a müveletet?</h1>
       <div class="buttons">
@@ -13,19 +8,24 @@
 
   </div>
 
-  <div class="prompt" v-if="uploadPrompt">
-    <h1>tolston fel egy hangot</h1>
+  <div class="prompt soundUpload" v-if="uploadPrompt">
+    <h1>Töltsön fel egy hangot</h1>
     <input type="file" ref="file" @change="fileUploaded">
     
+    <h4>Adjon meg egy nevet</h4>
     <input type="text" name="hang neve" v-model="filename">
 
-    <button @click="upload">feltoltes</button>
+    <button @click="upload">Feltöltés</button>
+    <button @click="uploadPrompt = false" style="background-color: red">Mégse</button>
   </div>
   
-  <div class="prompt" v-if="create_session_prompt">
+  <div class="prompt create" v-if="create_session_prompt">
     <h1>Hozzon létre egy szavazást</h1>
     
     <form>
+    <div class="error" v-if="showError">
+        {{error}}
+    </div>
 
     <label for="het">Hét </label>
     <input type="number" id="het" min="1" max="52" v-model="week"  placeholder="Hét">
@@ -46,8 +46,10 @@
       </div>
  
     <button @click="createVotingSession">Letrehozas</button>
-    
+    <button @click="create_session_prompt = false" style="background-color: red">Megse</button>
+
   </div>
+
 
 
 <div :class="{blur: uploadPrompt, blur: create_session_prompt}"  >
@@ -267,7 +269,9 @@ export default {
            this.getVotings()
         })
         } catch (error) { 
-          this.error = error
+          if(409 in error ){
+            this.error = " Erre a hetre mar letezik szavazas"
+          }
           console.log(error.code + "asd")
         }
   }

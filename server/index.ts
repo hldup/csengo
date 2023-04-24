@@ -461,7 +461,14 @@ app.post('/weekly/new',
       sounds: req.body.sounds,
       week: parseInt(req.query["week"] as string),
       year: parseInt(req.query["year"] as string),
-    })
+    });
+
+    for(let sound of req.body.sounds ){
+      await Vote.destroy({where: {sound: sound}})
+      
+      sound = await Sound.findOne({where: {id: sound as string }})
+      await sound.update({votes: 0})
+    };
 
     res.send("Created the voting session")
 } )
