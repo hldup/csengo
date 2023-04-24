@@ -1,5 +1,9 @@
 <template>
 
+  <div class="error" v-if="showError">
+      {{error}}
+  </div>
+
     <div class="prompt" v-if="prompt">
       <h1>Biztosan végbe viszed ezt a müveletet?</h1>
       <div class="buttons">
@@ -41,7 +45,7 @@
         </div>
       </div>
  
-    <button @click="upload">feltoltes</button>
+    <button @click="createVotingSession">Letrehozas</button>
     
   </div>
 
@@ -105,9 +109,12 @@ export default {
     return{
 
       sounds: [],
-      error: '',
       prompt: false,
       votings: [],
+
+      // errors
+      showError: true,
+      error: "asdjasojd",
 
       uploadPrompt: false,
       createPropmt: false,
@@ -128,6 +135,8 @@ export default {
     async mounted(){
         // getting sounds 
         this.getSounds()
+        this.getVotings()
+
       // getting voting sessions
       try {
           await axios({
@@ -144,6 +153,19 @@ export default {
         }
     },
   methods:{
+    getVotings: async function(){
+       try {
+          await axios({
+            method: "get",
+            url: (process.env.VUE_APP_SERVER_API+"/weekly"),
+            withCredentials: true,
+        }).then((response)=>{
+           this.votings = response.data;
+        })
+        } catch (error) { 
+          console.log(error.code + "asd")
+        }
+    },
     getSounds: async function() {
      try {
           await axios({
@@ -228,7 +250,26 @@ export default {
 
 
   createVotingSession: async function(){
-    // TODO send request 
+      try {
+          await axios({
+            method: "post",
+            url: (process.env.VUE_APP_SERVER_API+"/weekly/new"),
+            withCredentials: true,
+            params:{
+              week: this.week,
+              year: this.year,
+            },
+            data: {
+              sounds: this.session_sounds
+            }
+        }).then((response)=>{
+           console.log(response)
+           this.getVotings()
+        })
+        } catch (error) { 
+          this.error = error
+          console.log(error.code + "asd")
+        }
   }
 
 }
