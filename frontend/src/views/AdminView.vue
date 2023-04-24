@@ -199,6 +199,8 @@ export default {
           console.log(error.code + "asd")
         }
       this.getSounds()
+      this.form = new FormData();
+      this.filename = ""
     },
 
     showUploadPromt: function(){ this.uploadPrompt = true},

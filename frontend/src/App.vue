@@ -10,7 +10,7 @@
     </svg>
   </div>
  
-  <div class="profile" v-if="
+  <!-- <div class="profile" v-if="
   $route.path != '/login' && $route.path != '/register'
   " aria-label="Profil">
 
@@ -22,7 +22,7 @@
         <li>Logout</li>
       </ul>
     </div>
-  </div>
+  </div> -->
 
   <router-view />
 

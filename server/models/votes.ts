@@ -3,8 +3,11 @@ import { DataTypes, Model } from 'sequelize'
 import connection from '../database'
 
 interface VoteAttributes {
-  user: string; // uuidv4 of user the session belongs to
-  sound: string, //64bit seesiontoken
+  user: string; 
+  sound: string, 
+  week: number, 
+  year: number, 
+
 }
 export interface VoteInput extends Required<VoteAttributes> { user: string }
 export interface VoteOutput extends Required<VoteAttributes> {}
@@ -12,6 +15,8 @@ export interface VoteOutput extends Required<VoteAttributes> {}
 class Vote extends Model<VoteAttributes, VoteOutput> implements VoteAttributes {
     public  user!: string
     public sound!: string
+    public week!: number
+    public year!: number
   };
   Vote.init({
     user: {
@@ -19,6 +24,12 @@ class Vote extends Model<VoteAttributes, VoteOutput> implements VoteAttributes {
     },
     sound: {
         type: DataTypes.UUIDV4
+    },
+    week: {
+      type: DataTypes.BIGINT,
+    },
+    year: {
+      type: DataTypes.BIGINT
     }
   },
   {

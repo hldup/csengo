@@ -147,4 +147,11 @@
 .week {
     text-align: center;
     padding: .2em;
-} 
+}
+.votestats{
+     position: fixed;
+     right: 1em;
+}
+.votestats p{
+    text-align: center;
+}

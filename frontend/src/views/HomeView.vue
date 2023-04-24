@@ -23,9 +23,11 @@
     <div class="soundbox" v-for="sound in sounds" :key="sound.id">
        <img :id="sound.id" @click="playSound(sound.id)" src="play-fill.svg"  alt="Lejátszás" height="64" >
        <p>{{sound.name}}</p> 
+       <div class="votestats"> 
        <img v-if="uservotes.includes(sound.id)" height="32" src="hand-thumbs-up-fill.svg" alt="Tetszik" class="vote" @click="vote(sound)">
        <img  v-if="!uservotes.includes(sound.id)" height="32" src="hand-thumbs-up.svg" alt="Tetszik" class="vote" @click="vote(sound)">
        <p>{{sound.votes}}</p>
+       </div>
   </div> 
   
 </div>
@@ -38,6 +40,7 @@
 import axios from 'axios'
 
 import VueCookies from 'vue-cookies';
+import moment from 'moment';
 export default {
   name: 'HomeView',
   data(){
@@ -69,6 +72,9 @@ export default {
                 url: process.env.VUE_APP_SERVER_API+"/sounds/devote",
                 params: {
                   id: sound.id,
+                  week: moment(Date.now()).week(),
+                  year: moment(Date.now()).year(),
+
                 },
                 withCredentials: true,
               })  
@@ -82,6 +88,9 @@ export default {
               url: process.env.VUE_APP_SERVER_API+"/sounds/vote",
               params: {
                 id: sound.id,
+                // wish i could have used dayjs
+                week: moment(Date.now()).week(),
+                year: moment(Date.now()).year(),
               },
               withCredentials: true,
     

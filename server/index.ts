@@ -94,7 +94,8 @@ app.use(async (req, res, next) => {
     if(!this_week) return res.status(204).send("No voting session for this week")
     res.locals.votingSession = this_week;
   }
- if(
+ // retarded filtering for administrator only routes
+  if(
   [
     "/weekly",
     "/weekly/",
@@ -113,6 +114,7 @@ app.use(async (req, res, next) => {
   ].includes(req.path) &&
   !token.administrator  
   ) return res.status(401).send("You are not the administrator")
+
   res.locals.token = token
   res.on("finish", ()=> {
     console.log(`${res.statusCode} | Request to ${req.path} from ${req.hostname} (${req.get('user-agent')}) | ${new Date()}`)
@@ -147,7 +149,7 @@ const port = process.env.PORT;
       administrator: true,
       password: random(64),
       username: "admin",
-      om: 1,
+      om: 1000,
     })
   }
   else if(process.env.DEV){
@@ -380,10 +382,29 @@ app.post('/sounds/delete',
 
 
 app.post('/sounds/vote',
-  async (req: Request, res: Response) => {    
-    if(!req.query.id) return res.sendStatus(400);
-   
-
+  checkSchema({
+    week: {
+      in: ['query'],
+      exists: true,
+      isNumeric: true,
+    },
+    year: {
+      in: ['query'],
+      exists: true,
+      isNumeric: true,
+    },
+    id: {
+      in: ['query'],
+      isString: true,
+      notEmpty: true,
+      isUUID: true, 
+    },
+     
+  }),
+async (req: Request, res: Response) => {    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+    
     // in case user has already voted reject
     const vote = await Vote.findOne({where: {user: res.locals.token.id, sound: req.query.id as string }});
     if(vote) return res.status(201).send("You have already voted for this")
@@ -391,14 +412,40 @@ app.post('/sounds/vote',
     if(!sound) return res.status(404).send("No sound is found under that id");
     await sound.update({ votes: sound.votes + 1})
 
-    await Vote.create({user: res.locals.token.id, sound: sound.id })
-    res.sendStatus(200)
+    await Vote.create({
+      user: res.locals.token.id,
+      sound: sound.id,
+      year: parseInt(req.query.year as string),
+      week: parseInt(req.query.week as string),
+     })
+
+     res.sendStatus(200)
 } )
 
 app.post('/sounds/devote',
-  async (req: Request, res: Response) => {    
-    if(!req.query.id) return res.sendStatus(400);
-       // in case user has already voted reject
+   checkSchema({
+    week: {
+      in: ['query'],
+      exists: true,
+      isNumeric: true,
+    },
+    year: {
+      in: ['query'],
+      exists: true,
+      isNumeric: true,
+    },
+    id: {
+      in: ['query'],
+      isString: true,
+      notEmpty: true,
+      isUUID: true, 
+    },
+     
+  }), async (req: Request, res: Response) => {    
+     const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+    
+    // in case user has already voted reject
     const vote = await Vote.findOne({where: {user: res.locals.token.id, sound: req.query.id as string }});
     if(!vote) return res.status(404).send("You have not voted for this!")
     
@@ -407,7 +454,13 @@ app.post('/sounds/devote',
     if(!sound) return res.status(404).send("No sound is found under that id");
     await sound.update({ votes: sound.votes - 1})
     
-    await Vote.destroy({where: {user: res.locals.token.id, sound: sound?.id }})
+    await Vote.destroy({
+      where: {
+        user: res.locals.token.id,
+        sound: sound?.id,
+        week: parseInt( req.query.week as string),
+        year: parseInt( req.query.year as string),
+       }})
 
     res.sendStatus(200)
 } )
