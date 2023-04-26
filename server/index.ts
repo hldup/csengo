@@ -58,7 +58,6 @@ app.use(cookieParser())
 
 /**
  * Middleware for handeling bad requests 
-  TODO: implement session based auth checking 
   */
 let unprotected_paths = ["/register","/login"]
 app.use(async (req, res, next) => {
@@ -85,10 +84,12 @@ app.use(async (req, res, next) => {
     "/sounds/",
     "/sounds"
     ].includes(req.path)){
+    if(!req.query.week || !req.query.year) return res.status(400).send("week/year neeeds to be specified")
+    
     let this_week = await votingSession.findOne({where:{
       // @ts-ignore
-      week: dayjs(Date.now()).week(),
-      year: new Date().getFullYear(),
+      week: parseInt(req.query.week as string),
+      year: parseInt(req.query.year as string),
     }})
 
     if(!this_week) return res.status(204).send("No voting session for this week")
@@ -222,13 +223,17 @@ app.post('/register',
   checkSchema({
     username: {
       isString: true,
-      notEmpty: true
+      notEmpty: true,
+      isLength:{ options: { min: 3, max: 64 } },
+      // TODO, check for any special charachters that should not be in the db
     },
     password: {
       isString: true,
-      notEmpty: true
+      notEmpty: true,
+      isLength:{ options: { min: 3, max: 64 } }
     },
     om: { isString: true, notEmpty: true },
+      // TODO, check for any special charachters that should not be in the db
     hcaptchaKey: {
       isString: true,
       notEmpty: true
@@ -320,6 +325,7 @@ app.post('/sounds/add',
     res.sendStatus(200)
 } )
 app.get('/sounds',
+
   async (req: Request, res: Response) => {
     // @ts-ignore
     let sounds = []
@@ -561,7 +567,7 @@ app.post('/weekly/edit',
     res.send("Voting session edited")
 } )
 
-app.post('/weekly/edit',
+app.post('/weekly/delete',
   checkSchema({
     id: {
       in: "query",

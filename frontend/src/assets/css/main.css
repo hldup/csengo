@@ -24,6 +24,10 @@
     padding: 50px 35px;    
 }
 
+.container h4 {
+    text-align: center;
+
+}
 .container h3{
     float: right;
     margin-right: 6em;

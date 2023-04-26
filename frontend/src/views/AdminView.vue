@@ -1,4 +1,6 @@
 <template>
+  <div v-if="showError" class="errorPrompt">{{error}}</div>
+
     <div class="prompt" v-if="prompt">
       <h1>Biztosan végbe viszed ezt a müveletet?</h1>
       <div class="buttons">
@@ -23,10 +25,7 @@
     <h1>Hozzon létre egy szavazást</h1>
     
     <form>
-    <div class="error" v-if="showError">
-        {{error}}
-    </div>
-
+      <h4 style="color: red"> Figyelem! Egy szavazás létrehozásánál az összes kijelölt hangnak szavazatai törlődni fognak!</h4>
     <label for="het">Hét </label>
     <input type="number" id="het" min="1" max="52" v-model="week"  placeholder="Hét">
 
@@ -35,7 +34,7 @@
 
     </form>
 
-    <h2>Válasszon ki hangokat</h2>
+    <h2 style="margin-top: 1em;">Válasszon ki hangokat</h2>
       <div class="select-box">
 
        <div class="a-soundbox" @click=" selectSound(sound.id) " v-for="sound in sounds" :key="sound.id" :id="sound.id">
@@ -45,7 +44,7 @@
         </div>
       </div>
  
-    <button @click="createVotingSession">Letrehozas</button>
+    <button @click="createVotingSession" :disabled="session_sounds.length == 0">Letrehozas</button>
     <button @click="create_session_prompt = false" style="background-color: red">Megse</button>
 
   </div>
@@ -72,16 +71,18 @@
   </div>
 
   <div class="a-container">
-      <h1>Szavazasok</h1>
+      <h1>Szavazasok ({{week}}.hét)</h1>
       <button @click="create_session_prompt = true">Letrehozas</button>
       <div v-if="votings.length != 0">
-        <div v-for="vote in votings" :key="vote.id">
+        <div v-for="vote in votings" :key="vote.id" class="votebox">
           <h3>{{vote.week}}.heti ({{vote.year}})</h3>
           Hangok:
         <div class="a-soundbox" v-for="hang in vote.sounds" :key="hang.id">
           <img :id="hang.id" @click="playSound(hang.id)" src="play-fill.svg"  alt="Lejátszás" height="64" >
           <p>{{hang.name}} <br> {{hang.votes}} szavazat </p>
+        
         </div>
+        <img :id="vote.id" @click="deleteSession(vote.id)" src="trash.svg" style="filter: invert(1)" alt="Lejátszás" height="32" >
       </div>
     </div>
 
@@ -115,8 +116,8 @@ export default {
       votings: [],
 
       // errors
-      showError: true,
-      error: "asdjasojd",
+      showError: false,
+      error: "",
 
       uploadPrompt: false,
       createPropmt: false,
@@ -135,26 +136,20 @@ export default {
   }
   },
     async mounted(){
-        // getting sounds 
+         // getting sounds 
         this.getSounds()
         this.getVotings()
-
-      // getting voting sessions
-      try {
-          await axios({
-            method: "get",
-            url: (process.env.VUE_APP_SERVER_API+"/weekly"),
-            withCredentials: true
-        }).then((response)=>{
-           this.votings = response.data
-        })
-
-        }catch (error) { 
-          this.error = error
-          console.log(error.code + "asd")
-        }
     },
   methods:{
+    errorPrompt: function(data){
+      
+      if(data.message.includes(409)) {this.error="Erre a napra már létezik szavazás"}
+      this.showError = true;
+      setTimeout(()=>{
+        this.showError = false;
+      },3000)
+    },
+
     getVotings: async function(){
        try {
           await axios({
@@ -164,8 +159,8 @@ export default {
         }).then((response)=>{
            this.votings = response.data;
         })
-        } catch (error) { 
-          console.log(error.code + "asd")
+        } catch (error) {
+            this.errorPrompt(error);
         }
     },
     getSounds: async function() {
@@ -177,8 +172,9 @@ export default {
         }).then((response)=>{
            this.sounds = response.data;
         })
-        } catch (error) { 
-          console.log(error.code + "asd")
+        } catch (error) {
+
+          console.log(error)
         }
     },
     upload: async function(){
@@ -195,9 +191,9 @@ export default {
            this.getSounds()
         })
         } catch (error) { 
-          this.error = error
-          console.log(error.code + "asd")
+          this.showError(error) 
         }
+
       this.getSounds()
       this.form = new FormData();
       this.filename = ""
@@ -239,7 +235,7 @@ export default {
         this.getSounds()
       })
       }catch (error) { 
-        console.log(error.code + "asd")
+          this.errorPrompt(error) 
     }
   },
   selectSound: function( uuid ){
@@ -266,19 +262,37 @@ export default {
             data: {
               sounds: this.session_sounds
             }
-        }).then((response)=>{
-           console.log(response)
+        }).then(()=>{
+          this.create_session_prompt = false;
            this.getVotings()
         })
         } catch (error) { 
           if(409 in error ){
             this.error = " Erre a hetre mar letezik szavazas"
           }
-          console.log(error.code + "asd")
+          this.errorPrompt(error)
         }
-  }
+  },
+  deleteSession: async function(  uuid ){
+       console.log(uuid)
+       try {
+          await axios({
+            method: "post",
+            url: (process.env.VUE_APP_SERVER_API+"/weekly/delete"),
+            withCredentials: true,
+            params:{
+              id: uuid
+            },
+        }).then((response)=>{
+           console.log(response)
+           this.getVotings()
+        })
+        } catch (error) { 
+          console.log(error.code + "asd")
+          }
+        }
+  },
 
-}
 }
 </script>
 
