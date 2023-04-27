@@ -57,6 +57,7 @@ export default {
                 setTimeout(()=>{ this.shake = false },400)
                 return
             }
+
             // error handeling
             try {
                 // await axios.post(`${process.env.VUE_APP_SERVER_API}/register`,this.form).then((response)=>{
@@ -69,13 +70,14 @@ export default {
                     withCredentials: true
                 })                
             } catch (error) {
+                this.form.hcaptchaKey = ""
                 if(error.code == "ERR_BAD_REQUEST"){
                     this.showError = true
                     setTimeout(() => {
                       this.showError = false;
                     }, 2000);
                 }
-                
+
                 return 
             }
 

@@ -77,7 +77,8 @@ export default {
                     withCredentials: true
                 })                
             } catch (error) {
-                console.log(error);                    
+                this.form.hcaptchaKey = ""
+                
                 switch(error.code){
                     case "ERR_BAD_REQUEST":
                         this.error = "Hiba! Lehetséges hogy ezzel a felhasználónévvel vagy OM azonosítóval már valaki regisztrált vagy elírtad!" 
