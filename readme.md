@@ -56,8 +56,7 @@ docker run -it -p 8080:8080 --name csengofrontend berryes/csengoclient
 # Contributing & feature request
 You can always make an [issue](https://github.com/berryes/csengo/issues) if you found a vulnerability / bug.
 Or you could just fork the repo and fix it yourself then pull a request. <br>
-For anymore contact me at [@berry:berryez.xyz](https://matrix.to/#/@berry:berryez.xyz) (matrix)
-
+For anymore contact me at [@berry:berryez.xyz](https://matrix.to/#/@berry:berryez.xyz) on the matrix or just join the project room for a discussion [#csengo:berryez.xyz](https://matrix.to/#/#csengo:berryez.xyz)
 # Authors 
 - Máté - *frontend & backend* - [**berryes**](https://matrix.to/#/@berry:berryez.xyz)
 

@@ -39,7 +39,7 @@ export default {
             form: {
                 username: "",
                 password: "",
-                hcaptchaKey: "a"
+                hcaptchaKey: ""
             }
         }
     },

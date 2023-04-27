@@ -131,3 +131,5 @@ server/package-lock.json
 server/data/sounds
 
 *.local
+tanulok.csv
+output.txt
