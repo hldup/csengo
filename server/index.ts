@@ -62,16 +62,19 @@ app.use(cookieParser())
 let unprotected_paths = ["/register","/login"]
 app.use(async (req, res, next) => {
   
+  res.on("finish", ()=> {
+    console.log(`${res.statusCode} | Request to ${req.path} from ${req.hostname} (${req.get('user-agent')}) | ${new Date()}`)
+  })
+  
   if(unprotected_paths.includes(req.path)) {
-    // check for brute force attacks via redis caching
     return next();
   }
   
-  if(!req.cookies['Ptoken']) return res.sendStatus(401);
+  if(!req.cookies['Ptoken']) return res.status(401).send("no cookies");
   let token = jwt.verify(req.cookies['Ptoken'], process.env.TOKEN_SECRET, (err: JsonWebTokenError,data: JwtPayload) =>{
     return data
   })
-  if(!token) return res.sendStatus(403);
+  if(!token) return res.status(403).send("tokeninvalid");
   if(token.expires < Date.now() ) return res.sendStatus(498);
   if(req.get('user-agent') != token.agent ) return res.status(401).send("User-agent mismatch!") 
   
@@ -117,10 +120,7 @@ app.use(async (req, res, next) => {
   ) return res.status(401).send("You are not the administrator")
 
   res.locals.token = token
-  res.on("finish", ()=> {
-    console.log(`${res.statusCode} | Request to ${req.path} from ${req.hostname} (${req.get('user-agent')}) | ${new Date()}`)
-  })
-  
+
   next()
 })
   
