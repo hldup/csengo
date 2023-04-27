@@ -3,6 +3,7 @@ version: "3.9"
 services:
   server:
     image: berryes/csengoserver
+    
     volumes:
       - /root/pollak/database.sqlite:/database.sqlite
       - /root/pollak/sounds/:./data/sounds
@@ -15,8 +16,6 @@ services:
       
   client:
     image: berryes/csengoclient
-    environment:
-      VUE_APP_SERVER_API: "http://localhost:3000"
     networks:
       - csengo
 

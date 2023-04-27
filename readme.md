@@ -8,6 +8,9 @@
  ![GitHub issues](https://img.shields.io/github/issues/berryes/csengo?color=%23BF1363&style=for-the-badge) ![GitHub last commit](https://img.shields.io/github/last-commit/berryes/csengo?color=%23BF1363&logoColor=%23BF1363&style=for-the-badge) ![GitHub](https://img.shields.io/github/license/berryes/csengo?color=%23BF1363&logoColor=%23BF1363&style=for-the-badge)
 </h1>
 
+# Disclaimer
+This project is still in Alpha and needs testing.
+
 # What's this?
 A really basic voting system for deciding which sound becomes the bell at my school.
 
@@ -32,7 +35,7 @@ git clone https://github.com/berryes/csengo
 
 2. Build docker image for server
 ```
-cd csengo/server && docker build -t berryes/csengoserver .
+cd csengo/server && docker build -t berryes/csengoserver . 
 ```
 
 3. Run server
@@ -42,7 +45,7 @@ docker run -it -p 3000:3000 --name csengoserver berryes/csengoserver
 
 4. Build docker image for the frontend
 ```
-cd .. && cd frontend && docker build -t berryes/csengoclient .
+cd .. && cd frontend && docker build -t berryes/csengoclient . --build-arg VUE_APP_SERVER_API=https://domain.example
 ```
 
 3. Run frontend

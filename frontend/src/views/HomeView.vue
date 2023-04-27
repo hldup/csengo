@@ -4,7 +4,7 @@
   <div class="error" v-if="showError">  Valami hiba történt! {{error}} </div>
 
   <div class="s-container reappear" v-if="noVote">
-    <h1>Ezen a héten nincs szavazás :(  </h1>
+    <h1>Nincs a következő hétre szavazás :(  </h1>
   </div>
 
   <div class="container reappear" v-if="dataReady">

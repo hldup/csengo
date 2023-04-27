@@ -96,7 +96,10 @@
 </template>
 
 <style scoped src="@/assets/css/admin.css"></style>
-<style>
+<style >
+.background {
+  display: none;
+}
 body{
   
   background-color: black;
@@ -142,8 +145,9 @@ export default {
     },
   methods:{
     errorPrompt: function(data){
-      
+
       if(data.message.includes(409)) {this.error="Erre a napra már létezik szavazás"}
+      else return;
       this.showError = true;
       setTimeout(()=>{
         this.showError = false;
@@ -173,7 +177,6 @@ export default {
            this.sounds = response.data;
         })
         } catch (error) {
-
           console.log(error)
         }
     },
@@ -299,5 +302,7 @@ export default {
 </script>
 
 <style>
-
+body{
+  overflow: scroll;
+}
 </style>

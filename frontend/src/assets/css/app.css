@@ -33,3 +33,13 @@
     animation: rotate 6s linear infinite;
     transform-origin: 84px 93px;
 }
+
+footer {
+  position: absolute;
+  bottom: 4em;
+  left: 1em;
+}
+
+body{
+    overflow: hidden;
+}

@@ -26,13 +26,15 @@
   </div> -->
 
   <router-view />
-  <footer>
+
+  <footer v-if=" !['/login','/register'].includes($route.path) ">
     <a href="https://github.com/berryes/csengo" target="blank"> v{{version}}</a>
     Made with  ❤️ by <a href="https://github.com/berryes" target="blank">berryes</a>
   </footer>
  
 </template>
 <style scoped>
+
 .profile{
   position: absolute;
   right: 1em;
