@@ -13,7 +13,7 @@ Application imports
 */
 import express, { Express, Request,  Response } from 'express';
 import fs from 'fs';
-import sqlite3 from 'sqlite3'
+import sqlite3, { Database } from 'sqlite3'
 import { open } from 'sqlite'
 import { checkSchema, validationResult } from 'express-validator';
 import { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
@@ -141,11 +141,12 @@ const port = process.env.PORT;
 (async () => {
 
   if (!fs.existsSync('./database.sqlite')) {
-    const db = await open({
-      filename: './database.sqlite',
-      driver: sqlite3.Database
-    })
-    await db.close();
+
+     new sqlite3.Database("./database.sqlite", 
+    sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, 
+    (err) => { 
+        return console.error(err)
+    });
     
     await dbInit();
     await User.create({
@@ -161,10 +162,12 @@ const port = process.env.PORT;
   if (!fs.existsSync("./data/sounds")){
      fs.mkdirSync("./data/sounds", {recursive: true});
   }
+
   try {
   await connection.authenticate()
   } catch (err) {
-  console.error('Unable to connect to the database:', err)
+
+  return console.error('Unable to connect to the database:', err)
   }
 
 })()
