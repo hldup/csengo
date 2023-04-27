@@ -129,3 +129,5 @@ server/database.sqlite
 server/package-lock.json
 
 server/data/sounds
+
+*.local

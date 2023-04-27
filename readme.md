@@ -24,6 +24,35 @@ Frontend: JS
 - CSS: Custom & examples from codepen (GPLv3)
 - UI framework: *Ant vue design (adminpanel only)*
 
+# Running
+1. Clone the repo
+```
+git clone https://github.com/berryes/csengo
+```
+
+2. Build docker image for server
+```
+cd csengo/server && docker build -t berryes/csengoserver .
+```
+
+3. Run server
+```
+docker run -it -p 3000:3000 --name csengoserver berryes/csengoserver
+```
+
+4. Build docker image for the frontend
+```
+cd .. && cd frontend && docker build -t berryes/csengoclient .
+```
+
+3. Run frontend
+```
+docker run -it -p 8080:8080 --name csengofrontend berryes/csengoclient
+```
+
+
+
+
 # Contributing & feature request
 You can always make an [issue](https://github.com/berryes/csengo/issues) if you found a vulnerability / bug.
 Or you could just fork the repo and fix it yourself then pull a request. <br>
