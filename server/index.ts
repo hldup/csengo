@@ -26,6 +26,7 @@ import bodyParser from "body-parser";
 import weekofyear from "dayjs/plugin/weekOfYear";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import connection from "./database";
 dayjs.extend(weekofyear)
 const jwt = require("jsonwebtoken");
 
@@ -138,6 +139,7 @@ const port = process.env.PORT;
 
 // checking if db exits -> create one 
 (async () => {
+
   if (!fs.existsSync('./database.sqlite')) {
     const db = await open({
       filename: './database.sqlite',
@@ -159,6 +161,12 @@ const port = process.env.PORT;
   if (!fs.existsSync("./data/sounds")){
      fs.mkdirSync("./data/sounds", {recursive: true});
   }
+  try {
+  await connection.authenticate()
+  } catch (err) {
+  console.error('Unable to connect to the database:', err)
+  }
+
 })()
 
 

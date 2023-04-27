@@ -1,5 +1,5 @@
 
-import { Dialect, Sequelize } from 'sequelize'
+import {  Sequelize } from 'sequelize'
 
 
 const connection = new Sequelize({

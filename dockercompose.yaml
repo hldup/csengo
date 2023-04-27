@@ -4,8 +4,8 @@ services:
   server:
     image: berryes/csengoserver
     volumes:
-      - /root/pollak/database.sqlite:/database.sqlite
-      - /root/pollak/sounds:/sounds
+      - /root/pollak/database.sqlite:./database.sqlite
+      - /root/pollak/sounds/:./data/sounds
     environment:
       PORT: 3000
       HCAPTCHA_SECRET: "paste here"
