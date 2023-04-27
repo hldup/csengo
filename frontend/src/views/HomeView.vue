@@ -112,6 +112,7 @@ export default {
       }
 
       this.audio = new Audio(process.env.VUE_APP_SERVER_API+"/sounds/"+uuid)
+      this.audio.volume = 0.2
       this.audio.play()
       this.icon = uuid
       document.getElementById(uuid).src = "pause-fill.svg"

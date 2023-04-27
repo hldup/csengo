@@ -204,6 +204,7 @@ export default {
       this.file = this.$refs.file.files[0]
     },
     playSound: async function( uuid ){
+
       if(this.audio != null ){ 
         if(!this.audio.ended) {
            document.getElementById(this.icon).src = "play-fill.svg"
@@ -214,6 +215,7 @@ export default {
         }
       }
       this.audio = new Audio(process.env.VUE_APP_SERVER_API+"/sounds/"+uuid)
+      this.audio.volume = 0.2
       this.audio.play()
       this.icon = uuid
       document.getElementById(uuid).src = "pause-fill.svg"

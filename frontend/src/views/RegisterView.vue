@@ -49,6 +49,11 @@ export default {
             }
         }
     },
+    mounted(){
+        if(process.env.VUE_APP_DEV == "1"){
+            this.form.hcaptchaKey = "asd"
+        }
+    }, 
     methods: {
         catptchaFilled: function(token){
             this.form.hcaptchaKey = token;

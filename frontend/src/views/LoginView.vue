@@ -43,6 +43,13 @@ export default {
             }
         }
     },
+    mounted(){
+        console.log(process.env.VUE_APP_DEV, process.env.VUE_APP_SERVER_API)
+        if(typeof process.env.VUE_APP_DEV != "undefined"   ){
+            this.form.hcaptchaKey = "asd"
+            console.log("DEVMODE ENABLED")
+        }
+    },
     methods: {
         catptchaFilled: function(token){
             this.form.hcaptchaKey = token;
