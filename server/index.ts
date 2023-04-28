@@ -293,7 +293,6 @@ app.post('/register',
          agent: req.get('user-agent'),
          login: new Date().toISOString(),
          session: "sessionid"
-
       }, process.env.TOKEN_SECRET) 
     
     res.cookie("Ptoken", token,
@@ -344,12 +343,13 @@ app.get('/sounds',
     // @ts-ignore
     for(let sound of res.locals.votingSession?.sounds ){  
       let dbrecord = await Sound.findOne({
-      attributes: ["id","name","votes"],
-      where: {id: sound}
+      attributes: ["id","name"],
+        where: {id: sound}
        })   
        if (dbrecord) {
         // @ts-ignore
-         sounds.push(dbrecord)
+        dbrecord.dataValues.votes = (await Vote.findAndCountAll({where:{sound: sound}})).count
+        sounds.push(dbrecord)
        }
     }     
     if(sounds.length == 0) return res.sendStatus(404)
@@ -379,11 +379,12 @@ app.get('/sounds/all',
   async (req: Request, res: Response) => {
     
     // @ts-ignore
-    let sounds= await Sound.findAll({ attributes: ["id","name","votes"] })
+    let sounds= await Sound.findAll({ attributes: ["id","name"] })
+    if(sounds.length == 0) return res.sendStatus(404);
 
-    if(sounds.length == 0) return res.sendStatus(404)
     res.send(sounds)
 } )
+
 app.post('/sounds/delete',
   async (req: Request, res: Response) => {
     if(!req.query.id) return res.status(400).send("id is missing from query")
@@ -391,6 +392,9 @@ app.post('/sounds/delete',
     let sound = await Sound.findOne({where:{id: req.query.id as string }})
     if(!sound) return res.status(404).send("No sound under  that id")
     
+    // destroying all votes
+    await Vote.destroy({where:{sound: sound.id}})
+
     await sound.destroy()
 
     res.send()
@@ -423,11 +427,10 @@ async (req: Request, res: Response) => {
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
     
     // in case user has already voted reject
-    const vote = await Vote.findOne({where: {user: res.locals.token.id, sound: req.query.id as string }});
+    const vote = await Vote.findOne({where: {user: res.locals.token.id, sound: req.query.id as string, year: req.query.year as string, week: req.query.week as string }});
     if(vote) return res.status(201).send("You have already voted for this")
     let sound = await Sound.findOne({ where:{id: req.query.id as string}})
     if(!sound) return res.status(404).send("No sound is found under that id");
-    await sound.update({ votes: sound.votes + 1})
 
     await Vote.create({
       user: res.locals.token.id,
@@ -463,13 +466,12 @@ app.post('/sounds/devote',
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
     
     // in case user has already voted reject
-    const vote = await Vote.findOne({where: {user: res.locals.token.id, sound: req.query.id as string }});
+    const vote = await Vote.findOne({where: {user: res.locals.token.id, sound: req.query.id as string, year: req.query.year as string, week: req.query.week as string }});
     if(!vote) return res.status(404).send("You have not voted for this!")
     
     // checking if sound exists which is pretty retarded but who cares
     let sound = await Sound.findOne({ where:{id: req.query.id as string}})
     if(!sound) return res.status(404).send("No sound is found under that id");
-    await sound.update({ votes: sound.votes - 1})
     
     await Vote.destroy({
       where: {
@@ -537,7 +539,6 @@ app.post('/weekly/new',
       await Vote.destroy({where: {sound: sound}})
       
       sound = await Sound.findOne({where: {id: sound as string }})
-      await sound.update({votes: 0})
     };
 
     res.send("Created the voting session")
@@ -601,9 +602,11 @@ app.post('/weekly/delete',
 } )
 app.get('/weekly',
   async (req: Request, res: Response) => {    
+    
     let sessions = await votingSession.findAll({
       attributes: ["id","sounds","week","year"]
     })
+
     if(!sessions || sessions.length == 0) return res.status(404).send("Ther are no voting sessions!")
     
     for(let sess of sessions ){
@@ -612,8 +615,11 @@ app.get('/weekly',
       for(let sound of sess.sounds){
           const dbsound = await Sound.findOne({
             where:{id: sound as string},
-            attributes: ["id","name","votes","createdAt"]
+            attributes: ["id","name","createdAt"]
           });
+
+          // @ts-ignore
+          dbsound?.votes = await (await Vote.findAndCountAll({where:{sound: sound as string, week:sess.week, year: sess.year }})).count
 
           // @ts-ignore
           sounds.push(dbsound)
