@@ -24,7 +24,7 @@ Backend: Typescript
 
 Frontend: JS
 - Framework: [Vue](https://vuejs.org/)
-- CSS: Custom & examples from codepen (GPLv3)
+- CSS: Custom & examples from codepen (MIT)
 
 # Running
 1. Clone the repo
