@@ -25,7 +25,6 @@ Backend: Typescript
 Frontend: JS
 - Framework: [Vue](https://vuejs.org/)
 - CSS: Custom & examples from codepen (GPLv3)
-- UI framework: *Ant vue design (adminpanel only)*
 
 # Running
 1. Clone the repo
