@@ -22,6 +22,7 @@
         <p>Már van profilod? 
           <router-link to="/login">Lépj be itt</router-link>
         </p>
+        <p><a href="https://berryez.xyz/privacy" target="blank">Adatvédelem</a></p>
 
     </div>
 
@@ -91,7 +92,7 @@ export default {
                     break;
 
                     case "ERR_NETWORK":
-                        this.error = "Hiba! Nem lehet a szervert elérni!" 
+                        this.error = "Hiba! Nem lehet a szervert elérni! " 
                         this.showError = true 
                     break;
 
