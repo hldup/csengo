@@ -27,7 +27,10 @@ import weekofyear from "dayjs/plugin/weekOfYear";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import connection from "./database";
+import bcrypt from 'bcrypt';
+
 dayjs.extend(weekofyear)
+
 const jwt = require("jsonwebtoken");
 
 
@@ -151,7 +154,7 @@ const port = process.env.PORT;
     await dbInit();
     await User.create({
       administrator: true,
-      password: random(64),
+      password: (await bcrypt.hash(random(64), await bcrypt.genSalt(10))),
       username: "admin",
       om: 1000,
     })
@@ -214,7 +217,9 @@ app.post('/login',
     // cache useragent/ip and check if the requests sent in the past 10 minutes is less then 10
     let user = await User.findOne({ where: { username: req.body.username } })
     if (!user) return res.sendStatus(401); // in case no user with username exits
-    if (user.password != req.body.password) return res.sendStatus(401); // in case password is incorrect
+    // if hashed pass dont match
+    if (!await bcrypt.compare(req.body.password, user.password)) return res.status(401).send();
+
     let token = jwt.sign(
       {
          id: user.id, 
@@ -251,6 +256,7 @@ app.post('/register',
     },
   }),
   async (req: Request, res: Response) => {
+
     // error handeling for headers/formdata
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
@@ -282,7 +288,7 @@ app.post('/register',
     // creating user in DB
     user = await User.create({
       username: req.body.username,
-      password: req.body.password,
+      password: await bcrypt.hash(req.body.password, await bcrypt.genSalt(10)),
       om: req.body.om,
       administrator: false
     })
