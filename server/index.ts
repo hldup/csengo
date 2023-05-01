@@ -4,130 +4,20 @@ Class/models imports
 */
 import dbInit from "./init";
 import User from './models/users';
-import Sound from './models/sound';
-import Om from './models/om';
-import Vote from './models/votes';
 
 /*
 Application imports
 */
-import express, { Express, Request,  Response } from 'express';
+import express, { Express } from 'express';
 import fs from 'fs';
-import sqlite3, { Database } from 'sqlite3'
-import { open } from 'sqlite'
-import { checkSchema, validationResult } from 'express-validator';
-import { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
-import axios from 'axios'; // better than js fetch
-import dayjs from "dayjs"; //getting week of the year with this 2kb package cus im lazy
-import votingSession from "./models/weekly";
+import sqlite3 from 'sqlite3'
 import crypto  from "crypto";
-import multer from "multer";
 import bodyParser from "body-parser";
-import weekofyear from "dayjs/plugin/weekOfYear";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import connection from "./database";
 import bcrypt from 'bcrypt';
-
-dayjs.extend(weekofyear)
-
-const jwt = require("jsonwebtoken");
-
-
-/*
-    Defining storage for mp3s
-*/
-const storage = multer.diskStorage({
-  // @ts-ignore
-  destination: function (req, file, cb) {
-    cb(null, './data/sounds')
-  },
-  // @ts-ignore
-  filename: function (req, file, cb) {
-    cb(null, random(64) + '.mp3')
-  }
-})
-const upload = multer({storage: storage})
-
-
 require('dotenv').config()
-/*
-    Creating app
-*/
-const app: Express = express()
-app.use(express.json());
-app.use(bodyParser.json());
-app.use(cors({ credentials: true, origin: true }))
-app.use(cookieParser())
 
-/**
- * Middleware for handeling bad requests 
-  */
-let unprotected_paths = ["/register","/login"]
-app.use(async (req, res, next) => {
-  
-  res.on("finish", ()=> {
-    console.log(`${res.statusCode} | Request to ${req.path} from ${req.hostname} (${req.get('user-agent')}) | ${new Date()}`)
-  })
-  
-  if(unprotected_paths.includes(req.path)) {
-    return next();
-  }
-  
-  if(!req.cookies['Ptoken']) return res.status(401).send("no cookies");
-  let token = jwt.verify(req.cookies['Ptoken'], process.env.TOKEN_SECRET, (err: JsonWebTokenError,data: JwtPayload) =>{
-    return data
-  })
-  if(!token) return res.status(403).send("tokeninvalid");
-  if(token.expires < Date.now() ) return res.sendStatus(498);
-  if(req.get('user-agent') != token.agent ) return res.status(401).send("User-agent mismatch!") 
-  
-  // Filtering here {in the middleware} instead of repeating this code 3x 
-  if( [
-    "/sounds/vote",
-    "/sounds/vote/",
-    "/sounds/devote",
-    "/sounds/devote/",
-    "/sounds/",
-    "/sounds"
-    ].includes(req.path)){
-    if(!req.query.week || !req.query.year) return res.status(400).send("week/year neeeds to be specified")
-    
-    let this_week = await votingSession.findOne({where:{
-      // @ts-ignore
-      week: parseInt(req.query.week as string),
-      year: parseInt(req.query.year as string),
-    }})
-
-    if(!this_week) return res.status(204).send("No voting session for this week")
-    res.locals.votingSession = this_week;
-  }
- // retarded filtering for administrator only routes
-  if(
-  [
-    "/weekly",
-    "/weekly/",
-    "/weekly/edit",
-    "/weekly/edit/",
-    "/weekly/new",
-    "/weekly/new/",
-    "/weekly/delete",
-    "/weekly/delete/",
-    "/sounds/add",
-    "/sounds/add/",
-    "/sounds/all",
-    "/sounds/all/",
-    "/sounds/delete",
-    "/sounds/delete/"
-  ].includes(req.path) &&
-  !token.administrator  
-  ) return res.status(401).send("You are not the administrator")
-
-  res.locals.token = token
-
-  next()
-})
-  
 
 function random(len: number): string {
   let options = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~!@-#$'
@@ -137,6 +27,15 @@ function random(len: number): string {
   return token
 }
 
+
+/*
+    Creating app
+*/
+const app: Express = express()
+app.use(express.json());
+app.use(bodyParser.json());
+app.use(cors({ credentials: true, origin: true }))
+app.use(cookieParser())
 // dotENV
 const port = process.env.PORT;
 
@@ -151,12 +50,14 @@ const port = process.env.PORT;
         return console.error(err)
     });
     
+    const password = random(64);
+    console.log("!!! ADMIN PASSWORD: ",password) 
     await dbInit();
     await User.create({
       administrator: true,
-      password: (await bcrypt.hash(random(64), await bcrypt.genSalt(10))),
+      password: (await bcrypt.hash(password, await bcrypt.genSalt(10))),
       username: "admin",
-      om: 1000,
+      om: 99999999,
     })
   }
   else if(process.env.DEV){
@@ -165,489 +66,20 @@ const port = process.env.PORT;
   if (!fs.existsSync("./data/sounds")){
      fs.mkdirSync("./data/sounds", {recursive: true});
   }
-
-  try {
-  await connection.authenticate()
-  } catch (err) {
-
-  return console.error('Unable to connect to the database:', err)
-  }
-
 })()
+const middleware = require("./middleware/protected")
+app.use(middleware);
+
+const soundController = require('./routes/sounds.route');
+app.use('/sounds/', soundController);
+
+const weeklyController = require("./routes/weekly.route");
+app.use("/weekly", weeklyController);
+
+const userController = require("./routes/user.route")
+app.use("/", userController);
 
 
-app.post('/login',
-  // header checking
-  checkSchema({
-    username: {
-      in: ['body'],
-      isString: true,
-      notEmpty: true,
-    },
-    password: {
-      in: ['body'],
-      isString: true,
-      notEmpty: true,
-    },
-    hcaptchaKey: {
-      isString: true,
-      in: ['body'],
-      notEmpty: true
-    },   
-  }),
-  async (req: Request, res: Response) => {
-    
-    // error handeling for headers/formdata
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-    
-    if(!process.env.DEV){
-      // // hcaptcha key validation
-      let response = await axios({
-        method: "GET",
-        url: "https://hcaptcha.com/siteverify",
-        params: {
-              response: req.body.hcaptchaKey,
-              secret: process.env.HCAPTCHA_SECRET as string
-        }
-      })
-      if (!response.data.success) return res.sendStatus(401);
-      }
-
-    // cache useragent/ip and check if the requests sent in the past 10 minutes is less then 10
-    let user = await User.findOne({ where: { username: req.body.username } })
-    if (!user) return res.sendStatus(401); // in case no user with username exits
-    // if hashed pass dont match
-    if (!await bcrypt.compare(req.body.password, user.password)) return res.status(401).send();
-
-    let token = jwt.sign(
-      {
-         id: user.id, 
-         expires: Date.now() + 1209600000,
-         agent: req.get('user-agent'),
-         login: new Date().toISOString(),
-         session: "sessionid",
-         administrator: user.administrator,
-      }, process.env.TOKEN_SECRET) 
-    
-      // in case already has session
-    res.cookie('Ptoken', token);
-    res.sendStatus(200);
-  });
-
-app.post('/register',
-  checkSchema({
-    username: {
-      isString: true,
-      notEmpty: true,
-      isLength:{ options: { min: 3, max: 64 } },
-      // TODO, check for any special charachters that should not be in the db
-    },
-    password: {
-      isString: true,
-      notEmpty: true,
-      isLength:{ options: { min: 3, max: 64 } }
-    },
-    om: { isString: true, notEmpty: true },
-      // TODO, check for any special charachters that should not be in the db
-    hcaptchaKey: {
-      isString: true,
-      notEmpty: true
-    },
-  }),
-  async (req: Request, res: Response) => {
-
-    // error handeling for headers/formdata
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-    if(!process.env.DEV){
-      // // hcaptcha key validation
-      let response = await axios({
-        method: "GET",
-        url: "https://hcaptcha.com/siteverify",
-        params: {
-              response: req.body.hcaptchaKey,
-              secret: process.env.HCAPTCHA_SECRET as string
-        }
-      })
-      if (!response.data.success) return res.sendStatus(401);
-    }
-
-    let user = await User.findOne({ where: { username: req.body.username } });
-    // if user already exists return
-    if (user) return res.sendStatus(403);
-
-    let user_om = await Om.findOne({ where: { id: req.body.om } });
-    // if the om id given by user is not in db return as 401 
-    if (!user_om) return res.sendStatus(401);
-
-    user = await User.findOne({ where: { om: req.body.om } });
-    // if there is an user already with the om
-    if (user) return res.sendStatus(403);
-
-    // creating user in DB
-    user = await User.create({
-      username: req.body.username,
-      password: await bcrypt.hash(req.body.password, await bcrypt.genSalt(10)),
-      om: req.body.om,
-      administrator: false
-    })
-    let token = jwt.sign(
-      {
-         id: user.id, 
-         expires: Date.now() + 1209600000,
-         agent: req.get('user-agent'),
-         login: new Date().toISOString(),
-         session: "sessionid"
-      }, process.env.TOKEN_SECRET) 
-    
-    res.cookie("Ptoken", token,
-    {
-      httpOnly: false,
-      expires: new Date(Date.now() + 1209600000) 
-    })
-    res.sendStatus(200)
-
-  }
-)
-
-app.post('/sounds/add',
-  upload.single("sound"),
-  checkSchema({
-   name: {
-    isString: true,
-    notEmpty: true,
-   },
-  }),
-  async (req: Request, res: Response) => {
-
-    // error handeling for headers/formdata
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-    // if user is not administrator
-    if (  !(await User.findOne({where: {id: res.locals.token.id }}))?.administrator ) return res.sendStatus(401);
-
-    // @ts-ignore
-    if(req.file?.mimetype != "audio/mpeg"){
-      res.statusCode = 400
-      return res.send("File not audio")
-    }
-    // @ts-ignore
-    let filename = req.file?.filename;
-    Sound.create({
-      path: filename,
-      name: req.body.name,
-    })
-    res.sendStatus(200)
-} )
-app.get('/sounds',
-
-  async (req: Request, res: Response) => {
-    // @ts-ignore
-    let sounds = []
-    
-    // @ts-ignore
-    for(let sound of res.locals.votingSession?.sounds ){  
-      let dbrecord = await Sound.findOne({
-      attributes: ["id","name"],
-        where: {id: sound}
-       })   
-       if (dbrecord) {
-        // @ts-ignore
-        dbrecord.dataValues.votes = (await Vote.findAndCountAll({where:{sound: sound}})).count
-        sounds.push(dbrecord)
-       }
-    }     
-    if(sounds.length == 0) return res.sendStatus(404)
-
-    // maybe add filtering for only this weeks vote
-    const user_votes = await Vote.findAll(
-      {
-        where: {user: res.locals.token.id },
-        attributes: ["sound"]
-      }).then((data)=>{
-        let raw: string[] = []
-        for(let sound of data){
-          raw.push(sound.dataValues.sound)
-        }
-        return raw
-      })
-
-    res.send({
-      // @ts-ignore
-      sounds: sounds,
-      user_votes: user_votes,
-      week: dayjs(Date.now()).week()
-    })
-} )
-
-app.get('/sounds/all',
-  async (req: Request, res: Response) => {
-    
-    // @ts-ignore
-    let sounds= await Sound.findAll({ attributes: ["id","name"] })
-    if(sounds.length == 0) return res.sendStatus(404);
-
-    res.send(sounds)
-} )
-
-app.post('/sounds/delete',
-  async (req: Request, res: Response) => {
-    if(!req.query.id) return res.status(400).send("id is missing from query")
-
-    let sound = await Sound.findOne({where:{id: req.query.id as string }})
-    if(!sound) return res.status(404).send("No sound under  that id")
-    
-    // destroying all votes
-    await Vote.destroy({where:{sound: sound.id}})
-
-    await sound.destroy()
-
-    res.send()
-} )
-
-
-
-app.post('/sounds/vote',
-  checkSchema({
-    week: {
-      in: ['query'],
-      exists: true,
-      isNumeric: true,
-    },
-    year: {
-      in: ['query'],
-      exists: true,
-      isNumeric: true,
-    },
-    id: {
-      in: ['query'],
-      isString: true,
-      notEmpty: true,
-      isUUID: true, 
-    },
-     
-  }),
-async (req: Request, res: Response) => {    
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-    
-    // in case user has already voted reject
-    const vote = await Vote.findOne({where: {user: res.locals.token.id, sound: req.query.id as string, year: req.query.year as string, week: req.query.week as string }});
-    if(vote) return res.status(201).send("You have already voted for this")
-    let sound = await Sound.findOne({ where:{id: req.query.id as string}})
-    if(!sound) return res.status(404).send("No sound is found under that id");
-
-    await Vote.create({
-      user: res.locals.token.id,
-      sound: sound.id,
-      year: parseInt(req.query.year as string),
-      week: parseInt(req.query.week as string),
-     })
-
-     res.sendStatus(200)
-} )
-
-app.post('/sounds/devote',
-   checkSchema({
-    week: {
-      in: ['query'],
-      exists: true,
-      isNumeric: true,
-    },
-    year: {
-      in: ['query'],
-      exists: true,
-      isNumeric: true,
-    },
-    id: {
-      in: ['query'],
-      isString: true,
-      notEmpty: true,
-      isUUID: true, 
-    },
-     
-  }), async (req: Request, res: Response) => {    
-     const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-    
-    // in case user has already voted reject
-    const vote = await Vote.findOne({where: {user: res.locals.token.id, sound: req.query.id as string, year: req.query.year as string, week: req.query.week as string }});
-    if(!vote) return res.status(404).send("You have not voted for this!")
-    
-    // checking if sound exists which is pretty retarded but who cares
-    let sound = await Sound.findOne({ where:{id: req.query.id as string}})
-    if(!sound) return res.status(404).send("No sound is found under that id");
-    
-    await Vote.destroy({
-      where: {
-        user: res.locals.token.id,
-        sound: sound?.id,
-        week: parseInt( req.query.week as string),
-        year: parseInt( req.query.year as string),
-       }})
-
-    res.sendStatus(200)
-} )
-
-app.get('/sounds/:id',
-  async (req: Request, res: Response) => {    
-    if(!req.params.id) return res.sendStatus(400);
-
-    let sound = await Sound.findOne({where:{ id: req.params.id }});
-    if(!sound) return res.sendStatus(404);
-
-    res.sendFile(`/data/sounds/${sound.path}`, {root: __dirname })
-} )
-
-app.post('/weekly/new',
-  checkSchema({
-    sounds: {
-      exists: true,
-      isArray:true,
-    },
-    "sounds.*":{
-      isString:true,
-      isUUID: true,
-    },
-    week: {
-      in: "query",
-      exists: true,
-      isNumeric: true,
-    },
-    year:{
-      in: "query",
-      exists: true,
-      isNumeric: true,
-    }
-  }),
-  async (req: Request, res: Response) => {    
-  
-    // error handeling for headers/formdata
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-
-    // checking if sounds exist
-    for (let id of req.body.sounds){
-      if( !await Sound.findOne({where:{id: id}}) ) return res.status(400).send()
-    }
-
-    // checking if a Vsession exists 
-    if( await votingSession.findOne({where:{week: req.query["week"] as string }})) return res.status(409).send("There is already a voting declared for that week, maybe edit it istead!")
-
-    await votingSession.create({
-      sounds: req.body.sounds,
-      week: parseInt(req.query["week"] as string),
-      year: parseInt(req.query["year"] as string),
-    });
-
-    for(let sound of req.body.sounds ){
-      await Vote.destroy({where: {sound: sound}})
-      
-      sound = await Sound.findOne({where: {id: sound as string }})
-    };
-
-    res.send("Created the voting session")
-} )
-
-app.post('/weekly/edit',
-  checkSchema({
-    sounds: {
-      exists: true,
-      isArray:true
-    },
-    "sounds.*":{
-      isString:true,
-      isUUID: true
-    },
-    id: {
-      in: "query",
-      exists: true,
-      isUUID: true
-    }
-  }),
-  async (req: Request, res: Response) => {    
-  
-    // error handeling for headers/formdata
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-
-    // checking if a Vsession exists i
-    if(!await votingSession.findOne({where:{id: req.query.id as string }})) return res.status(404).send("There isn't a voting session under this id")
-
-    // checking if sounds exist
-    for (let id of req.body.sounds){
-      if( !await Sound.findOne({where:{id: id}}) ) return res.status(400).send(" a sound given in a list does not exist")
-    }
-    await votingSession.update({
-        sounds: req.body.sounds
-    },{where:{id:req.query.id as string}})
-    res.send("Voting session edited")
-} )
-
-app.post('/weekly/delete',
-  checkSchema({
-    id: {
-      in: "query",
-      exists: true,
-      isUUID: true
-    }
-  }),
-  async (req: Request, res: Response) => {    
-  
-    // error handeling for headers/formdata
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-
-    // checking if a Vsession exists 
-    if(!await votingSession.findOne( {where:{id: req.query.id as string}} )) return res.status(404).send("No voting session can be found under that id ")
-
-    // @ts-ignore
-    await votingSession.destroy({where:{id: req.query.id}})
-    res.send("Voting session edited")
-} )
-app.get('/weekly',
-  async (req: Request, res: Response) => {    
-    
-    let sessions = await votingSession.findAll({
-      attributes: ["id","sounds","week","year"]
-    })
-
-    if(!sessions || sessions.length == 0) return res.status(404).send("Ther are no voting sessions!")
-    
-    for(let sess of sessions ){
-      let sounds = []
-
-      for(let sound of sess.sounds){
-          const dbsound = await Sound.findOne({
-            where:{id: sound as string},
-            attributes: ["id","name","createdAt"]
-          });
-
-          // @ts-ignore
-          dbsound?.votes = await (await Vote.findAndCountAll({where:{sound: sound as string, week:sess.week, year: sess.year }})).count
-
-          // @ts-ignore
-          sounds.push(dbsound)
-      }
-      // @ts-ignore
-      sess.sounds = sounds;
-    }
-    
-    res.send(sessions.reverse());
-
-} )
-
-
-
-
-/*
-i just realised now that im writing this in ts ts and i used 
-let for variables that can just be  a constant instead
-
-*cries in rust*
-
-*/
 
 app.listen(port, () => {
   console.log(`Listening on ${port}`)
