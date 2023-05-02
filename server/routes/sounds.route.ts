@@ -7,6 +7,7 @@ import Vote from '../models/votes';
 import dayjs from 'dayjs';
 import crypto  from "crypto";
 import weekofyear from "dayjs/plugin/weekOfYear";
+import path from 'path';
 dayjs.extend(weekofyear)
 
 function random(len: number): string {
@@ -20,7 +21,7 @@ function random(len: number): string {
 const storage = multer.diskStorage({
   // @ts-ignore
   destination: function (req, file, cb) {
-    cb(null, './data/sounds')
+    cb(null, '././data/sounds')
   },
   // @ts-ignore
   filename: function (req, file, cb) {
@@ -217,7 +218,8 @@ router.get('/:id',
     let sound = await Sound.findOne({where:{ id: req.params.id }});
     if(!sound) return res.sendStatus(404);
 
-    res.sendFile(`/data/sounds/${sound.path}`, {root: __dirname })
+    res.sendFile(path.join(__dirname, '../data/sounds', sound.path));
+    
 } )
 
 

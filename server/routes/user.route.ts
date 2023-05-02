@@ -50,8 +50,10 @@ router.post('/login',
     let user = await User.findOne({ where: { username: req.body.username } })
     if (!user) return res.sendStatus(401); // in case no user with username exits
     // if hashed pass dont match
-    if (!await bcrypt.compare(req.body.password, user.password)) return res.status(401).send();
 
+    if (!await bcrypt.compare(req.body.password, user.password)) return res.status(401).send("hash dont match");
+
+    
     let token = jwt.sign(
       {
          id: user.id, 
