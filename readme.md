@@ -9,7 +9,16 @@
 </h1>
 
 # Disclaimer
-This project is still in Alpha and needs testing.
+This project is still in Alpha and needs testing. Dataloss, breaches and spam might cause the app to fail.
+
+# Plans for the future
+ - Backend rewrite in rust.
+ - Frontend redesign
+ - Moving to postgres
+ - More functions
+ - Offline browser app (Add to homepage)
+ - Caching
+ - Winner announcements 
 
 # What's this?
 A really basic voting system for deciding which sound becomes the bell at my school.
@@ -56,6 +65,7 @@ docker run -it -p 8080:8080 --name csengofrontend berryes/csengoclient
 
 
 # Contributing & feature request
+I'm looking for people that could maybe join besides me and devour their free time to keep the project going. (Contact me) 
 You can always make an [issue](https://github.com/berryes/csengo/issues) if you found a vulnerability / bug.
 Or you could just fork the repo and fix it yourself then pull a request. <br>
 For anymore contact me at [@berry:berryez.xyz](https://matrix.to/#/@berry:berryez.xyz) on the matrix or just join the project room for a discussion [#csengo:berryez.xyz](https://matrix.to/#/#csengo:berryez.xyz)
