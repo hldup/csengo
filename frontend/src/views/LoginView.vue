@@ -11,7 +11,7 @@
         <input type="password" placeholder="Jelszó" v-model="form.password">
 
 
-        <vue-hcaptcha @verify="catptchaFilled" sitekey="a844f21a-f2be-48d3-8adc-4ebb0c7caa11" style="margin-top: 2em"></vue-hcaptcha>
+        <vue-hcaptcha  @verify="catptchaFilled" sitekey="a844f21a-f2be-48d3-8adc-4ebb0c7caa11" style="margin-top: 2em"></vue-hcaptcha>
 
         <button @click="login" style="color: black">Belépés</button>
         
@@ -44,7 +44,6 @@ export default {
         }
     },
     mounted(){
-        console.log(process.env.VUE_APP_DEV, process.env.VUE_APP_SERVER_API)
         if(typeof process.env.VUE_APP_DEV != "undefined"   ){
             this.form.hcaptchaKey = "asd"
             console.log("DEVMODE ENABLED")

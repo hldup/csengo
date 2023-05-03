@@ -160,3 +160,9 @@
 .votestats p{
     text-align: center;
 }
+.disclaimer {
+    margin: 1em;
+    background-color: rgba(255, 0, 0, 0.507);
+    border-radius: .5em;
+    padding: .1em;
+}

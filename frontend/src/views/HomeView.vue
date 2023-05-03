@@ -8,9 +8,14 @@
   </div>
 
   <div class="container reappear" v-if="dataReady">
+    <h4 class="disclaimer"> 
+      <a href="https://github.com/berryes/csengo/issues" target="blank">
+      Az applikáció még csak alpha verzióban van! Bármilyen hibát találsz kérlek jelezd egy github issue formájában!
+      </a>
+      </h4>
     <h1 class="week"> {{weekN}}. hét </h1>
        <h4 v-if=" currentWeek == weekN">
-        (Ez a het)
+        (Ez a hét)
       </h4>
       
        <h4 v-if=" currentWeek != weekN">
@@ -28,7 +33,6 @@
   </div> 
   
 </div>
-
 
 </div>
 </template>
