@@ -66,9 +66,6 @@ export default {
 
             // error handeling
             try {
-                // await axios.post(`${process.env.VUE_APP_SERVER_API}/register`,this.form).then((response)=>{
-                //    console.log(response.headers)
-                // })
                 await axios({
                     url: process.env.VUE_APP_SERVER_API+"/login",
                     method: "post",
@@ -78,10 +75,7 @@ export default {
             } catch (error) {
                 this.form.hcaptchaKey = ""
                 if(error.code == "ERR_BAD_REQUEST"){
-                    this.showError = true
-                    setTimeout(() => {
-                      this.showError = false;
-                    }, 2000);
+                    this.$root.promptError("Hiba történt bejelentkezéskor, lehet elírtad a a felhasználóneved vagy a jelszavadat!")
                 }
 
                 return 

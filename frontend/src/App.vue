@@ -25,6 +25,7 @@
     </div>
   </div> -->
 
+  <div class="prompt" v-if="showPrompt">{{promptText}} </div>
   <router-view />
 
   <footer v-if=" !['/login','/register'].includes($route.path) ">
@@ -73,6 +74,32 @@ footer {
   color: white;
   position: static;
 }
+/* TODO: add media query based font size  */
+.prompt{
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  background-color: red;
+  border-radius: .2em;
+  transform: translate(-50%,0);
+  z-index: 3;
+  color: white;
+  text-align: center;
+  padding: .5em;
+  font-size: 1.2em;
+  animation: appear 0.1s  linear normal forwards;
+}
+
+@keyframes appear {
+
+    0% {
+      top: -15%;
+    }
+    100% {
+      top: 5%
+    }
+}
+ 
 </style>
 
 <style src="@/assets/css/app.css"></style>
@@ -83,6 +110,17 @@ export default {
   data(){
     return{
             version: process.env.VUE_APP_VERSION,
+            showPrompt: false,
+            promptText: ""
+    }
+  },
+  methods:{
+    promptError: function(text){
+      this.showPrompt = true,
+      this.promptText = text;
+      setTimeout(() => {
+        this.showPrompt = false
+      }, 5000);
     }
   }
 

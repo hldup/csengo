@@ -10,16 +10,16 @@ Application imports
 */
 import express, { Express } from 'express';
 import fs from 'fs';
-import sqlite3 from 'sqlite3'
 import crypto  from "crypto";
 import bodyParser from "body-parser";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import bcrypt from 'bcrypt';
+import connection from "./database";
 require('dotenv').config()
 
 
-function random(len: number): string {
+export const  random = (len: number): string => {
   let options = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~!@-#$'
   const token = Array.from(crypto.getRandomValues(new Uint32Array(len)))
     .map((x) => options[x as number % options.length])
@@ -41,45 +41,46 @@ const port = process.env.PORT;
 
 // checking if db exits -> create one 
 (async () => {
+  try {
+    await connection.authenticate();
+    console.log('Connection has been established successfully.');
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+  }
+    await dbInit();
 
-  if (!fs.existsSync('./database.sqlite')) {
-
-     new sqlite3.Database("./database.sqlite", 
-    sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, 
-    (err) => { 
-        return console.error(err)
-    });
-    
+    // if no administrator account is available
+    if(! await User.findOne({where:{ administrator: true}})){
     const password = random(64);
     console.log("!!! ADMIN PASSWORD: ",password) 
-    await dbInit();
+   
     await User.create({
       administrator: true,
       password: (await bcrypt.hash(password, await bcrypt.genSalt(10))),
       username: "admin",
       om: 99999999,
     })
-  }
-  else if(process.env.DEV){
-    await dbInit()
-  }
+    }
+
   if (!fs.existsSync("./data/sounds")){
      fs.mkdirSync("./data/sounds", {recursive: true});
   }
 })()
-const middleware = require("./middleware/protected")
-app.use(middleware);
 
-const soundController = require('./routes/sounds.route');
-app.use('/sounds/', soundController);
-
-const weeklyController = require("./routes/weekly.route");
-app.use("/weekly", weeklyController);
-
-const userController = require("./routes/user.route")
-app.use("/", userController);
+// middleware for protected (admin) routes
+app.use(require("./middleware/protected"));
 
 
+app.use('/sounds/', require("./routes/sounds.route"));
+
+app.use("/weekly", require("./routes/weekly.route"));
+
+app.use("/", require("./routes/sign.route"));
+
+app.use("/token", require("./routes/token.route"));
+
+
+app.use("/users", require("./routes/user.route"));
 
 app.listen(port, () => {
   console.log(`Listening on ${port}`)

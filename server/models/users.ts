@@ -25,7 +25,7 @@ class User extends Model<UserAttributes, UserInput> implements UserAttributes {
   };
   User.init({
     id: {
-        type: DataTypes.UUIDV4,
+        type: DataTypes.UUID,
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4
       },

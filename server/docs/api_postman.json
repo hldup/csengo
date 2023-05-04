@@ -15,7 +15,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"sounds\": [\"8bdb3bc5-52c2-4b54-abad-4ec8a711e9ad\"]\n}",
+							"raw": "{\n    \"sounds\": [\"39ea03e2-6ca3-4c01-a873-496a2ae54723\"]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -23,7 +23,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{host}}/weekly/new?week=16&year=2023",
+							"raw": "{{host}}/weekly/new?week=18&year=2023",
 							"host": [
 								"{{host}}"
 							],
@@ -34,7 +34,7 @@
 							"query": [
 								{
 									"key": "week",
-									"value": "16"
+									"value": "18"
 								},
 								{
 									"key": "year",
@@ -52,7 +52,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"sounds\": [\n        \"ec16065f-294b-4a27-8b24-6d39634fb6e8\",\"c10cec4c-f523-446c-a4e9-c078bafba84b\",\"b8a39778-0fcf-426d-b0b3-666714df116a\",\"b4554f74-dadd-4b11-84ef-a83df6ce50ee\"\n\n        ]\n}",
+							"raw": "{\n    \"sounds\": [\n        \"a190cca9-7d7a-4d36-9c22-e9d19fd6e912\",\"a190cca9-7d7a-4d36-9c22-e9d19fd6e912\"\n\n        ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -60,7 +60,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{host}}/weekly/edit?id=061e3f7d-1cd3-4026-91c0-ddb4518ff52b",
+							"raw": "{{host}}/weekly/edit?id=23244773-715a-4c27-b2bf-34a6ba077476",
 							"host": [
 								"{{host}}"
 							],
@@ -71,7 +71,7 @@
 							"query": [
 								{
 									"key": "id",
-									"value": "061e3f7d-1cd3-4026-91c0-ddb4518ff52b"
+									"value": "23244773-715a-4c27-b2bf-34a6ba077476"
 								}
 							]
 						}
@@ -80,9 +80,46 @@
 				},
 				{
 					"name": "Get voting sessions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "username",
+								"value": "admin",
+								"type": "default",
+								"disabled": true
+							},
+							{
+								"key": "password",
+								"value": "-sfHvK8ZN5#78tYOkK#YpWuVTpQj$!r$0Z9Hx3@7fv~5tHXaru5gKVlJuxFNJ9Yo",
+								"type": "default",
+								"disabled": true
+							},
+							{
+								"key": "username",
+								"value": "testuser2",
+								"type": "default",
+								"disabled": true
+							},
+							{
+								"key": "password",
+								"value": "securepassword123",
+								"type": "default",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"asd\",\n    \"hcaptchaKey\": \"asd\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "{{host}}/weekly",
 							"host": [
@@ -90,6 +127,124 @@
 							],
 							"path": [
 								"weekly"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get voting sessions",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "username",
+										"value": "admin",
+										"type": "default",
+										"disabled": true
+									},
+									{
+										"key": "password",
+										"value": "-sfHvK8ZN5#78tYOkK#YpWuVTpQj$!r$0Z9Hx3@7fv~5tHXaru5gKVlJuxFNJ9Yo",
+										"type": "default",
+										"disabled": true
+									},
+									{
+										"key": "username",
+										"value": "testuser2",
+										"type": "default",
+										"disabled": true
+									},
+									{
+										"key": "password",
+										"value": "securepassword123",
+										"type": "default",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"asd\",\n    \"hcaptchaKey\": \"asd\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/weekly",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"weekly"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "199"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"c7-XYX+OE7mY5oUePRwd74PUq3v+ZQ\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 28 Apr 2023 10:18:43 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": \"23244773-715a-4c27-b2bf-34a6ba077476\",\n        \"sounds\": [\n            {\n                \"id\": \"f9003ec9-8ecf-4e83-982f-44673e4649b6\",\n                \"name\": \"Teszt 1.0\",\n                \"votes\": 123123,\n                \"createdAt\": \"2023-04-28T08:02:03.913Z\"\n            }\n        ],\n        \"week\": 18,\n        \"year\": 2023\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Delete weekly",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/weekly/delete?id=86451248-12eb-4110-bea2-be1e7df464a4",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"weekly",
+								"delete"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "86451248-12eb-4110-bea2-be1e7df464a4"
+								}
 							]
 						}
 					},
@@ -132,7 +287,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"asd\",\n    \"hcaptchaKey\": \"asd\"\n}",
+							"raw": "{\n    \"username\": \"test\",\n    \"password\": \"test\",\n    \"hcaptchaKey\": \"asd\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -161,7 +316,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"123\",\n    \"password\":\"asd\",\n    \"om\": \"23\",\n    \"hcaptchaKey\": \"P1_eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.hKdwYXNza2V5xQaW4HHZuBS2lBp77V2Slp2vCdXWO5NvBUBIGJtd-pHxLaCNdEh1bdJ-gUPbhbMXavkJWhlZ5BCvNWJdS74JKeIl-4zAchAOvFUKgoQvcufZGthDCMtxjeuq7NptJ497jnr0nGbfYXTNNwhyepxbv9Wujp8K7ALUEq0ZZc7Ywo6FzQhn9rKCVYfdnqu5AQTnx7zHzxirAE-_n9CtnoZgggbJDxIcOGocySynmTaD59YrC3VxTw4eZuj-d2UU-G410ztVyh_fxhR4c3R64BgT6x2pxHxoIFTO1b8mkVJwhM-YyinaDOAOBNjBYTNd0qyV4MqTNbE6SbtQG1g1my6KgFZIJQuw9XTP7XzbNR6CYbW3je16EIRnKJehTN50YE_t4e2LLFeiZG9_VRRMnkQXdvI7ESRA9uH6qzDJqYRVXdnDm7ktU018YnoR5D7qpnqapNGyyelqMiXjCOc1K7jZGQ4vHehiDp9rz-NOyvnTwrGtv2XZZnnmOxOOtZCB7CHySaxaKGX9lgKGqHVoxzoJN5kHv3QWLZDHKQj0C0--l64LZZgYe82TxvEMvTDTfUlkgqG_sOdTxR5JxS0b-kafLQ2nkuQmzaUnHZ2GWGPKHSaMdFM7NlF043qbPkH_KKb_-xhEPam5hnH-5n6E3G8r1InrVH4vmvm__XJeoB5mk4bqkvOZRyAfJxp1TMZL7ZNbV6avvhmepbpRXCUhK43F_D53ToXoCVz5ZfFkyW3g87vp8kG3bYSMCJ_9Bv4ciByWcC-HqeZOBC3JHRrIQUdARebYhlR7-Aeqcq6v0IVXAHBUywPAUW7O0UqFyffmczrXXxSdn8L4YPMCs3Q0OHHcUiHnFAlXXVjogKVqszw8McPETPdTSWvvQu3rmBwNRXZC_kFEFcrE9RUCYAZHp3bcPvnsQJYZxAEL75KA0nE3OR1ctRPw1P9I_lZpbq7swcXBSifmerc9MLPcIvGVbGIV4Sd4vWwcnNAz961lP2zMStISVZK4f_yvhvJCmjaeuwPDa_-zTA-ieVI7KPce1b5N_8b7-y5h_qiWo54wc18KceqSKREWqp3TwZ4RDLHHuywT_JuMEZh4_jvPbHZZq6DGDIF6Dd-EmCyMKdbApWwPuix-uyy-a081IUd7Y9qv6ZVuQMXvkQ6AKvFJzcZKhGVXhlJgcConJIckC3Z8bIDibA02Hu-gJ6Tm8MdTsV76oSDMpvuzQJlaEPPhmKB0dpOcSOx9rdNfYj3b03F9nhwl6HHvrNShQYe_g4DcsKYf52a-kWLK_ofxt7pt-QCDbzlUONb4Do0iE3ZahnyfR4bH-khXzXUkW1PIqqn_pRvcawrEna3PK1vFMPIKAHX01XibfuaGa-WUdT58HPrjPXBloZt8RE8WEaRP1Rd4_ycRrWF3F8yRHdaaLjTG0yYW6-sQ7N9eguKjdhsJw7M_aBVuL6g3_XX_HNe_IjTJgbhUHiSmufRwj2F5GzVpcjKZY3w8qUq0G0P8UQrMJh5AVuEC0G1x7PzvGzLIjRIlqD4hbrDco2nlNF29tWFYWDy66P5IpPFTYzEqcJvz9futScjtqToBB6QJoNk89CZa7lFuSnzrSIUGTOWt0dxcHp36tHViSed3Wb8lGl-IBtQi29PZM27TgAdOwTO3SjZJH6-qrKk7RfR8lAk8rTMO5b3gFrTeHSHX9L3yA-8F_9j3VqmA5E-2QyCDmYsa9F0w-UxXg-yxVgzfFYHarhf1xcHlpIr16JU7ockxTxWbXrANAeXqPAPvXcXx4QMsZkXm8OJlyc1h5FO4lSB1W6IH2nRThIhAPI1ElW_SEuMOJMFBVntxeot-byuzfEVPlNM4SrKJNpwG7X9Bak3syd_ZG2gX6GympAuC0m03pXPjNgSHgAhRp6lDBmvHNbpFnIXAXInnQNmFw1_amLtXsEdxfKLnaVLUMRqNc6Cvb2XHdRo44WBcGjYQ9peqNn0JmG4lD2pnNaAAoV3jFcRYIIsw1_OTVPZDiE5OnrxX4UcYxZz-RS-ELJh8vfQOW4OOo9KNy2XkQDQLjTV1DB4fhZvUWfpXyaJHvIe3IJQK0UibBwM8FhtFhHTGmZPl6hTcwFgSOrn9J9MRi8ob4RKlLRXzTnRrpVGpvBu2y2TM26bgzNbYrEtcLRRA-Q8_038Ri_GrpbisuRll4tTYRhUpe9M-06ZMahAgV9E04mkhX0KBoRf5lH7gGnFq2h7Ziz-Y40Jjzn2TvwDp2n972p99B8E5o2V4cM5kJHA1qHNoYXJkX2lkzhQ8hB-icGQA.AIEEwuJ5KTl1wlNTvO0gGIQcMEJUAr8ciNfoe6n7Fs8\"\n}",
+							"raw": "{\n    \"username\": \"test\",\n    \"password\":\"test\",\n    \"om\": \"321\",\n    \"hcaptchaKey\": \"P1_eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.hKdwYXNza2V5xQaW4HHZuBS2lBp77V2Slp2vCdXWO5NvBUBIGJtd-pHxLaCNdEh1bdJ-gUPbhbMXavkJWhlZ5BCvNWJdS74JKeIl-4zAchAOvFUKgoQvcufZGthDCMtxjeuq7NptJ497jnr0nGbfYXTNNwhyepxbv9Wujp8K7ALUEq0ZZc7Ywo6FzQhn9rKCVYfdnqu5AQTnx7zHzxirAE-_n9CtnoZgggbJDxIcOGocySynmTaD59YrC3VxTw4eZuj-d2UU-G410ztVyh_fxhR4c3R64BgT6x2pxHxoIFTO1b8mkVJwhM-YyinaDOAOBNjBYTNd0qyV4MqTNbE6SbtQG1g1my6KgFZIJQuw9XTP7XzbNR6CYbW3je16EIRnKJehTN50YE_t4e2LLFeiZG9_VRRMnkQXdvI7ESRA9uH6qzDJqYRVXdnDm7ktU018YnoR5D7qpnqapNGyyelqMiXjCOc1K7jZGQ4vHehiDp9rz-NOyvnTwrGtv2XZZnnmOxOOtZCB7CHySaxaKGX9lgKGqHVoxzoJN5kHv3QWLZDHKQj0C0--l64LZZgYe82TxvEMvTDTfUlkgqG_sOdTxR5JxS0b-kafLQ2nkuQmzaUnHZ2GWGPKHSaMdFM7NlF043qbPkH_KKb_-xhEPam5hnH-5n6E3G8r1InrVH4vmvm__XJeoB5mk4bqkvOZRyAfJxp1TMZL7ZNbV6avvhmepbpRXCUhK43F_D53ToXoCVz5ZfFkyW3g87vp8kG3bYSMCJ_9Bv4ciByWcC-HqeZOBC3JHRrIQUdARebYhlR7-Aeqcq6v0IVXAHBUywPAUW7O0UqFyffmczrXXxSdn8L4YPMCs3Q0OHHcUiHnFAlXXVjogKVqszw8McPETPdTSWvvQu3rmBwNRXZC_kFEFcrE9RUCYAZHp3bcPvnsQJYZxAEL75KA0nE3OR1ctRPw1P9I_lZpbq7swcXBSifmerc9MLPcIvGVbGIV4Sd4vWwcnNAz961lP2zMStISVZK4f_yvhvJCmjaeuwPDa_-zTA-ieVI7KPce1b5N_8b7-y5h_qiWo54wc18KceqSKREWqp3TwZ4RDLHHuywT_JuMEZh4_jvPbHZZq6DGDIF6Dd-EmCyMKdbApWwPuix-uyy-a081IUd7Y9qv6ZVuQMXvkQ6AKvFJzcZKhGVXhlJgcConJIckC3Z8bIDibA02Hu-gJ6Tm8MdTsV76oSDMpvuzQJlaEPPhmKB0dpOcSOx9rdNfYj3b03F9nhwl6HHvrNShQYe_g4DcsKYf52a-kWLK_ofxt7pt-QCDbzlUONb4Do0iE3ZahnyfR4bH-khXzXUkW1PIqqn_pRvcawrEna3PK1vFMPIKAHX01XibfuaGa-WUdT58HPrjPXBloZt8RE8WEaRP1Rd4_ycRrWF3F8yRHdaaLjTG0yYW6-sQ7N9eguKjdhsJw7M_aBVuL6g3_XX_HNe_IjTJgbhUHiSmufRwj2F5GzVpcjKZY3w8qUq0G0P8UQrMJh5AVuEC0G1x7PzvGzLIjRIlqD4hbrDco2nlNF29tWFYWDy66P5IpPFTYzEqcJvz9futScjtqToBB6QJoNk89CZa7lFuSnzrSIUGTOWt0dxcHp36tHViSed3Wb8lGl-IBtQi29PZM27TgAdOwTO3SjZJH6-qrKk7RfR8lAk8rTMO5b3gFrTeHSHX9L3yA-8F_9j3VqmA5E-2QyCDmYsa9F0w-UxXg-yxVgzfFYHarhf1xcHlpIr16JU7ockxTxWbXrANAeXqPAPvXcXx4QMsZkXm8OJlyc1h5FO4lSB1W6IH2nRThIhAPI1ElW_SEuMOJMFBVntxeot-byuzfEVPlNM4SrKJNpwG7X9Bak3syd_ZG2gX6GympAuC0m03pXPjNgSHgAhRp6lDBmvHNbpFnIXAXInnQNmFw1_amLtXsEdxfKLnaVLUMRqNc6Cvb2XHdRo44WBcGjYQ9peqNn0JmG4lD2pnNaAAoV3jFcRYIIsw1_OTVPZDiE5OnrxX4UcYxZz-RS-ELJh8vfQOW4OOo9KNy2XkQDQLjTV1DB4fhZvUWfpXyaJHvIe3IJQK0UibBwM8FhtFhHTGmZPl6hTcwFgSOrn9J9MRi8ob4RKlLRXzTnRrpVGpvBu2y2TM26bgzNbYrEtcLRRA-Q8_038Ri_GrpbisuRll4tTYRhUpe9M-06ZMahAgV9E04mkhX0KBoRf5lH7gGnFq2h7Ziz-Y40Jjzn2TvwDp2n972p99B8E5o2V4cM5kJHA1qHNoYXJkX2lkzhQ8hB-icGQA.AIEEwuJ5KTl1wlNTvO0gGIQcMEJUAr8ciNfoe6n7Fs8\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -191,9 +346,6 @@
 						"disableCookies": false
 					},
 					"request": {
-						"auth": {
-							"type": "noauth"
-						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -202,11 +354,11 @@
 								{
 									"key": "sound",
 									"type": "file",
-									"src": "/home/berryes/Music/dramatic_boom_effect.mp3"
+									"src": "/home/berryes/Downloads/can-i-put-my-balls-djlunatique.com.mp3"
 								},
 								{
 									"key": "name",
-									"value": "light skin rizz",
+									"value": "balls in em jaws",
 									"type": "default"
 								}
 							]
@@ -233,16 +385,96 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/sounds",
+							"raw": "{{host}}/sounds?week=19&year=2023",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"sounds"
+							],
+							"query": [
+								{
+									"key": "week",
+									"value": "19"
+								},
+								{
+									"key": "year",
+									"value": "2023"
+								}
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Get sounds",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/sounds?week=19&year=2023",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"sounds"
+									],
+									"query": [
+										{
+											"key": "week",
+											"value": "19"
+										},
+										{
+											"key": "year",
+											"value": "2023"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1121"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"461-ySHWXr+H62mzaQij1KXlCrVw5yA\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 04 May 2023 15:38:41 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"sounds\": [\n        {\n            \"id\": \"629d36bc-5a09-49ff-b64d-0ef66063a5ac\",\n            \"name\": \"Szünet 1.0\",\n            \"votes\": 1\n        },\n        {\n            \"id\": \"f0e4418c-dfa9-458a-be40-1fa512743cea\",\n            \"name\": \"Szünet 2.0\",\n            \"votes\": 0\n        },\n        {\n            \"id\": \"2cc17e2d-cffd-4e4c-a7d5-2007ffd85fa0\",\n            \"name\": \"Szünet 3.0\",\n            \"votes\": 0\n        },\n        {\n            \"id\": \"356cc2db-6890-41fe-afb2-9a68222e1c35\",\n            \"name\": \"Szünet 4.0\",\n            \"votes\": 0\n        },\n        {\n            \"id\": \"df30dba8-55ca-4f2e-9199-7401b986e014\",\n            \"name\": \"Szünet 7.0\",\n            \"votes\": 0\n        },\n        {\n            \"id\": \"ac6f407d-e997-45b7-89e2-51eb2c3b2c5c\",\n            \"name\": \"Szünet 6.0\",\n            \"votes\": 0\n        },\n        {\n            \"id\": \"21505e17-7a9c-4538-9853-3de0911ecb08\",\n            \"name\": \"Szünet 5.0\",\n            \"votes\": 0\n        },\n        {\n            \"id\": \"3c922f80-c81e-49cf-a65b-cf7e5a1e462d\",\n            \"name\": \"Szünet 8.0\",\n            \"votes\": 4\n        },\n        {\n            \"id\": \"ae54329d-ea85-4a6e-b8df-6744c28c691a\",\n            \"name\": \"Szünet 9.0\",\n            \"votes\": 1\n        },\n        {\n            \"id\": \"99b4756f-590d-4235-bd0e-46f224fa8fb4\",\n            \"name\": \"Szünet 10.0\",\n            \"votes\": 0\n        },\n        {\n            \"id\": \"3c59fd13-5e63-4470-9d59-da519341e23f\",\n            \"name\": \"Szünet 12.0\",\n            \"votes\": 0\n        },\n        {\n            \"id\": \"5f1aad3f-951d-43f8-a5ff-32962d59c17a\",\n            \"name\": \"Szünet 11.0\",\n            \"votes\": 2\n        },\n        {\n            \"id\": \"a00cdb2f-92fd-42f9-bdfb-5f2e5448b7f8\",\n            \"name\": \"Szünet 13.0\",\n            \"votes\": 1\n        },\n        {\n            \"id\": \"6074d26e-c406-4854-9f05-545cfd048060\",\n            \"name\": \"Szünet 14.0\",\n            \"votes\": 5\n        }\n    ],\n    \"user_votes\": [],\n    \"week\": 18\n}"
+						}
+					]
 				},
 				{
 					"name": "Serve sound",
@@ -250,13 +482,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/sounds/a6c0ec51-f203-4dd3-ba80-8147c2696a59",
+							"raw": "{{host}}/sounds/629d36bc-5a09-49ff-b64d-0ef66063a5ac",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"sounds",
-								"a6c0ec51-f203-4dd3-ba80-8147c2696a59"
+								"629d36bc-5a09-49ff-b64d-0ef66063a5ac"
 							]
 						}
 					},
@@ -278,7 +510,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/sounds/vote?id=8bdb3bc5-52c2-4b54-abad-4ec8a711e9ad",
+							"raw": "{{host}}/sounds/vote?id=4bb9fa71-3148-4e1b-91be-90e93a85cffc&week=19&year=2023",
 							"host": [
 								"{{host}}"
 							],
@@ -289,7 +521,15 @@
 							"query": [
 								{
 									"key": "id",
-									"value": "8bdb3bc5-52c2-4b54-abad-4ec8a711e9ad"
+									"value": "4bb9fa71-3148-4e1b-91be-90e93a85cffc"
+								},
+								{
+									"key": "week",
+									"value": "19"
+								},
+								{
+									"key": "year",
+									"value": "2023"
 								}
 							]
 						}
@@ -302,7 +542,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/sounds/devote?id=a6c0ec51-f203-4dd3-ba80-8147c2696a59",
+							"raw": "{{host}}/sounds/devote?id=a190cca9-7d7a-4d36-9c22-e9d19fd6e912&week=18&year=2023",
 							"host": [
 								"{{host}}"
 							],
@@ -313,7 +553,15 @@
 							"query": [
 								{
 									"key": "id",
-									"value": "a6c0ec51-f203-4dd3-ba80-8147c2696a59"
+									"value": "a190cca9-7d7a-4d36-9c22-e9d19fd6e912"
+								},
+								{
+									"key": "week",
+									"value": "18"
+								},
+								{
+									"key": "year",
+									"value": "2023"
 								}
 							]
 						}
@@ -323,10 +571,388 @@
 				{
 					"name": "Get all sounds",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "Ry2@@SM@rR1@JAHXC9T6PrshTw3gSIvtA3UBqZGc3~mOkBLKPfZDqRSCgy#wsbzi",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{host}}/sounds/all",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sounds",
+								"all"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get all sounds",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/sounds/all",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"sounds",
+										"all"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "944"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3b0-n4ZXbnilAWqUMwel5Jjs72+B34I\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 04 May 2023 15:42:07 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": \"629d36bc-5a09-49ff-b64d-0ef66063a5ac\",\n        \"name\": \"Szünet 1.0\"\n    },\n    {\n        \"id\": \"f0e4418c-dfa9-458a-be40-1fa512743cea\",\n        \"name\": \"Szünet 2.0\"\n    },\n    {\n        \"id\": \"2cc17e2d-cffd-4e4c-a7d5-2007ffd85fa0\",\n        \"name\": \"Szünet 3.0\"\n    },\n    {\n        \"id\": \"356cc2db-6890-41fe-afb2-9a68222e1c35\",\n        \"name\": \"Szünet 4.0\"\n    },\n    {\n        \"id\": \"21505e17-7a9c-4538-9853-3de0911ecb08\",\n        \"name\": \"Szünet 5.0\"\n    },\n    {\n        \"id\": \"ac6f407d-e997-45b7-89e2-51eb2c3b2c5c\",\n        \"name\": \"Szünet 6.0\"\n    },\n    {\n        \"id\": \"df30dba8-55ca-4f2e-9199-7401b986e014\",\n        \"name\": \"Szünet 7.0\"\n    },\n    {\n        \"id\": \"3c922f80-c81e-49cf-a65b-cf7e5a1e462d\",\n        \"name\": \"Szünet 8.0\"\n    },\n    {\n        \"id\": \"ae54329d-ea85-4a6e-b8df-6744c28c691a\",\n        \"name\": \"Szünet 9.0\"\n    },\n    {\n        \"id\": \"99b4756f-590d-4235-bd0e-46f224fa8fb4\",\n        \"name\": \"Szünet 10.0\"\n    },\n    {\n        \"id\": \"5f1aad3f-951d-43f8-a5ff-32962d59c17a\",\n        \"name\": \"Szünet 11.0\"\n    },\n    {\n        \"id\": \"3c59fd13-5e63-4470-9d59-da519341e23f\",\n        \"name\": \"Szünet 12.0\"\n    },\n    {\n        \"id\": \"a00cdb2f-92fd-42f9-bdfb-5f2e5448b7f8\",\n        \"name\": \"Szünet 13.0\"\n    },\n    {\n        \"id\": \"6074d26e-c406-4854-9f05-545cfd048060\",\n        \"name\": \"Szünet 14.0\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Delete sound",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/sounds/delete?id=39ea03e2-6ca3-4c01-a873-496a2ae54723",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sounds",
+								"delete"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "39ea03e2-6ca3-4c01-a873-496a2ae54723"
+								}
+							]
+						}
 					},
 					"response": []
+				},
+				{
+					"name": "Rename sound",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"asdasdasdas\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/sounds/rename?id=15264a02-a040-4403-93bd-7573fc725d13",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sounds",
+								"rename"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "15264a02-a040-4403-93bd-7573fc725d13"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Token management",
+			"item": [
+				{
+					"name": "Create token",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/token/create",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"token",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all tokens",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/token/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"token",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/token/delete?id=eeb0267d-6f7f-4017-94b2-5d23720c4306",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"token",
+								"delete"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "eeb0267d-6f7f-4017-94b2-5d23720c4306"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User managament",
+			"item": [
+				{
+					"name": "Get users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/users/all",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users",
+								"all"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get users",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/users/all",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"users",
+										"all"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "115"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"73-IszvFnUbExcKsgXNRXHp378I1rw\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 04 May 2023 20:24:09 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": \"0ced448d-90c4-4047-8e44-45500303bb5f\",\n        \"username\": \"test\",\n        \"om\": \"321\",\n        \"createdAt\": \"2023-05-04T18:01:51.271Z\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Delete user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/users/delete?id=0ced448d-90c4-4047-8e44-45500303bb5f",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users",
+								"delete"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "0ced448d-90c4-4047-8e44-45500303bb5f"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Delete user",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/users/delete?id=0ced448d-90c4-4047-8e44-45500303bb5f",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"users",
+										"delete"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "0ced448d-90c4-4047-8e44-45500303bb5f"
+										}
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "30"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1e-ODw6wJoNP7827HcLvnol6N2jXwQ\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 04 May 2023 20:24:22 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "Can't delete an administrator!"
+						}
+					]
 				}
 			]
 		}

@@ -20,10 +20,10 @@ class Vote extends Model<VoteAttributes, VoteOutput> implements VoteAttributes {
   };
   Vote.init({
     user: {
-        type: DataTypes.UUIDV4,
+        type: DataTypes.UUID,
     },
     sound: {
-        type: DataTypes.UUIDV4
+        type: DataTypes.UUID
     },
     week: {
       type: DataTypes.BIGINT,

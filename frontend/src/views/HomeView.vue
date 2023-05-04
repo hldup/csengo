@@ -101,7 +101,7 @@ export default {
             })
         }
       }catch(error){
-        console.log(error)
+        this.$root.promptError("Valami hiba történt szavazáskor!")
       }
     },
     playSound: async function( uuid ){
@@ -152,17 +152,16 @@ export default {
 
         // VueCookies.remove("Ptoken")
         // this.$router.push({path: "/login"})
-        console.log(error)
-        this.error = error;
-        this.showError = true
+        this.$root.promptError(`Valami hiba történt a hangok lekérésénél: ${error}`)
         return
       }
     }
   },
   async mounted(){
-    // updating every 4 seconds for "realtime" display
+    // updating every 10 seconds for "realtime" display
     await this.getSounds()
     setInterval(async ()=>{
+
       await this.getSounds()
     },10000);
 

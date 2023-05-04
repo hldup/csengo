@@ -21,12 +21,12 @@ class votingSession extends Model<votingSessionAttributes, votingSessionInput> i
   
   votingSession.init({
     id: {
-        type: DataTypes.UUIDV4,
+        type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
       sounds: {
-        type: DataTypes.JSON,
+        type: DataTypes.JSONB,
         allowNull: false
       },
       week: {

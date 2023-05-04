@@ -1,13 +1,14 @@
 import express, { Request,  Response } from 'express';
 import { checkSchema, validationResult } from 'express-validator';
 import multer from 'multer';
-import User from '../models/users';
 import Sound from '../models/sound';
 import Vote from '../models/votes';
 import dayjs from 'dayjs';
 import crypto  from "crypto";
 import weekofyear from "dayjs/plugin/weekOfYear";
 import path from 'path';
+import votingSession from '../models/weekly';
+import { Op } from 'sequelize';
 dayjs.extend(weekofyear)
 
 function random(len: number): string {
@@ -46,8 +47,6 @@ router.post('/add',
     // error handeling for headers/formdata
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-    // if user is not administrator
-    if (  !(await User.findOne({where: {id: res.locals.token.id }}))?.administrator ) return res.sendStatus(401);
 
     // @ts-ignore
     if(req.file?.mimetype != "audio/mpeg"){
@@ -118,14 +117,25 @@ router.post('/delete',
   async (req: Request, res: Response) => {
     if(!req.query.id) return res.status(400).send("id is missing from query")
 
+    // if sound is in a voting session reject   
+    if(await votingSession.findOne({
+        // @ts-ignore
+          where:{
+            sounds: { 
+             [Op.contains]: [req.query.id as string]
+              }
+             }
+         }))
+        return res.status(403).send("This sound is in a voting session!")
+
     let sound = await Sound.findOne({where:{id: req.query.id as string }})
     if(!sound) return res.status(404).send("No sound under  that id")
     
-    // destroying all votes
+    // destroying all votes & sound
     await Vote.destroy({where:{sound: sound.id}})
     await sound.destroy()
 
-    res.send()
+    res.send("Deleted")
 } )
 
 
@@ -221,6 +231,27 @@ router.get('/:id',
     res.sendFile(path.join(__dirname, '../data/sounds', sound.path));
     
 } )
+
+
+router.post('/rename',
+  checkSchema({
+    name: {
+      isString: true,
+      exists: true,
+    }
+  }),
+  async (req: Request, res: Response) => {    
+    if(!req.query.id) return res.sendStatus(400);
+
+
+    if( !await Sound.findOne({where:{ id: req.query.id as string }}))
+     return res.sendStatus(404);
+
+    await Sound.update({name: req.body.name},
+      { where:{ id: req.query.id as string} } )
+    
+    res.send("Renamed")
+  } )
 
 
 

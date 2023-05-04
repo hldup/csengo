@@ -5,7 +5,6 @@
         <h2>Pollák</h2>
         <h6> <a href="https://github.com/berryes/csengo" target="blank">Csengetés szavazó v{{version}} </a></h6>
         <p>Csak pollákos diákok regisztrálhatnak!</p>
-        <p v-if="showError" class="error" >{{error}}</p>
         <label for="username">Felhasználó név</label>
         <input tpe="text" placeholder="Felhasználó név" v-model="form.username">
 
@@ -39,7 +38,6 @@ export default {
             shake: false,
             disappear: false,
             fadeOut: false,
-            showError: false,
             error: "",
             version: process.env.VUE_APP_VERSION,
             form: {
@@ -87,17 +85,13 @@ export default {
                 
                 switch(error.code){
                     case "ERR_BAD_REQUEST":
-                        this.error = "Hiba! Lehetséges hogy ezzel a felhasználónévvel vagy OM azonosítóval már valaki regisztrált vagy elírtad!" 
-                        this.showError = true
+                        this.$root.errorPrompt("Hiba! Lehetséges hogy ezzel a felhasználónévvel vagy OM azonosítóval már valaki regisztrált vagy elírtad!") 
                     break;
-
                     case "ERR_NETWORK":
-                        this.error = "Hiba! Nem lehet a szervert elérni! " 
-                        this.showError = true 
+                        this.$root.errorPrompt("Hiba! Nem lehet a szervert elérni!") 
                     break;
 
                 }
-                setTimeout(() => { this.showError = false    }, 10000);
                 return 
             }
 
@@ -115,29 +109,6 @@ export default {
 .form {
     height: 46em;
     overflow:auto;
-}
-.error{
-    background-color: rgba(255, 0, 0, 0.177);
-    border-radius: .2em;
-    padding: .4em;
-     animation: appear 10s  linear normal forwards;
-}
-@keyframes appear {
-
-    0% { 
-       opacity: 0; 
-     }
-    5% {
-        opacity: 1;
-     }
-     80%{
-        opacity: 1;
-     }
-
-    100% {
-        opacity: 0;
-        visibility: 0;
-    }
 }
 
 </style>

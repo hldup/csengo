@@ -240,7 +240,7 @@ export default {
         this.getSounds()
       })
       }catch (error) { 
-          this.errorPrompt(error) 
+         this.$root.promptError(`Valami hiba történt a hang törlésekor: ${error}`)  
     }
   },
   selectSound: function( uuid ){

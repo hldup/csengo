@@ -19,7 +19,7 @@ class Sound extends Model<SoundAttributes, SoundInput> implements SoundAttribute
 
   Sound.init({
     id: {
-        type: DataTypes.UUIDV4,
+        type: DataTypes.UUID,
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
       },

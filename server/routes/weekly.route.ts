@@ -49,10 +49,9 @@ router.post('/new',
 
     for(let sound of req.body.sounds ){
       await Vote.destroy({where: {sound: sound}})
-      
       sound = await Sound.findOne({where: {id: sound as string }})
     };
-
+    
     res.send("Created the voting session")
 } )
 
