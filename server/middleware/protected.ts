@@ -3,6 +3,8 @@ import express, { Request,  Response } from 'express';
 import votingSession from '../models/weekly';
 import { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
 import Token from '../models/token';
+import dayjs from 'dayjs';
+import { Op } from 'sequelize';
 // no idea why i have to import it like this to work
 const jwt = require("jsonwebtoken");
 const router = express.Router();
@@ -45,11 +47,10 @@ router.use(async (req, res, next) => {
     "/sounds/devote",
     "/sounds"
     ].includes(req.path)){
-    if(!req.query.week || !req.query.year) return res.status(400).send("Week/year needs to be specified")
     
     let this_week = await votingSession.findOne({where:{
-      week: parseInt(req.query.week as string),
-      year: parseInt(req.query.year as string),
+      start:{ [Op.lte]: new Date() },
+      end: { [Op.gte]: new Date() },
     }})
 
     if(!this_week) return res.status(204).send("No voting session for this week")

@@ -16,6 +16,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import bcrypt from 'bcrypt';
 import connection from "./database";
+import dayjs from "dayjs";
 require('dotenv').config()
 
 
@@ -81,6 +82,9 @@ app.use("/token", require("./routes/token.route"));
 
 
 app.use("/users", require("./routes/user.route"));
+
+console.log("this monday:", + dayjs().toISOString() )
+console.log("this thursday :" + dayjs().toISOString() )
 
 app.listen(port, () => {
   console.log(`Listening on ${port}`)

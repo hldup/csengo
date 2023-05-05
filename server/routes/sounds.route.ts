@@ -65,9 +65,13 @@ router.post('/add',
 router.get('/',
 
   async (req: Request, res: Response) => {
+
+  
     // @ts-ignore
     let sounds = []
-    
+   
+    console.log(dayjs(Date.now()).day)
+
     // @ts-ignore
     for(let sound of res.locals.votingSession?.sounds ){  
       let dbrecord = await Sound.findOne({
@@ -80,6 +84,8 @@ router.get('/',
         sounds.push(dbrecord)
        }
     }     
+
+    // no votingsession for the week
     if(sounds.length == 0) return res.sendStatus(404)
 
     // maybe add filtering for only this weeks vote
@@ -94,7 +100,7 @@ router.get('/',
         }
         return raw
       })
-
+  
     res.send({
       // @ts-ignore
       sounds: sounds,
@@ -164,7 +170,13 @@ async (req: Request, res: Response) => {
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
     
     // in case user has already voted reject
-    const vote = await Vote.findOne({where: {user: res.locals.token.id, sound: req.query.id as string, year: req.query.year as string, week: req.query.week as string }});
+    const vote = await Vote.findOne({
+      where: {
+        user: res.locals.token.id,
+        sound: req.query.id as string,
+        session: res.locals.votingSession.id
+      }});
+      
     if(vote) return res.status(201).send("You have already voted for this")
     let sound = await Sound.findOne({ where:{id: req.query.id as string}})
     if(!sound) return res.status(404).send("No sound is found under that id");
@@ -172,8 +184,7 @@ async (req: Request, res: Response) => {
     await Vote.create({
       user: res.locals.token.id,
       sound: sound.id,
-      year: parseInt(req.query.year as string),
-      week: parseInt(req.query.week as string),
+      session: res.locals.votingSession
      })
 
      res.sendStatus(200)
@@ -197,13 +208,18 @@ router.post('/devote',
       notEmpty: true,
       isUUID: true, 
     },
-     
   }), async (req: Request, res: Response) => {    
      const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
     
     // in case user has already voted reject
-    const vote = await Vote.findOne({where: {user: res.locals.token.id, sound: req.query.id as string, year: req.query.year as string, week: req.query.week as string }});
+    const vote = await Vote.findOne({ 
+      where: {
+        user: res.locals.token.id,
+        sound: req.query.id as string, 
+        session: res.locals.voteSession.id
+      }});
+
     if(!vote) return res.status(404).send("You have not voted for this!")
     
     // checking if sound exists which is pretty retarded but who cares
@@ -214,10 +230,8 @@ router.post('/devote',
       where: {
         user: res.locals.token.id,
         sound: sound?.id,
-        week: parseInt( req.query.week as string),
-        year: parseInt( req.query.year as string),
-       }})
-
+        session: res.locals.votingSession.id 
+      }})
     res.sendStatus(200)
 } )
 

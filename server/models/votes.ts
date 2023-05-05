@@ -5,9 +5,7 @@ import connection from '../database'
 interface VoteAttributes {
   user: string; 
   sound: string, 
-  week: number, 
-  year: number, 
-
+  session: string,
 }
 export interface VoteInput extends Required<VoteAttributes> { user: string }
 export interface VoteOutput extends Required<VoteAttributes> {}
@@ -15,8 +13,7 @@ export interface VoteOutput extends Required<VoteAttributes> {}
 class Vote extends Model<VoteAttributes, VoteOutput> implements VoteAttributes {
     public  user!: string
     public sound!: string
-    public week!: number
-    public year!: number
+    public session!: string
   };
   Vote.init({
     user: {
@@ -25,11 +22,8 @@ class Vote extends Model<VoteAttributes, VoteOutput> implements VoteAttributes {
     sound: {
         type: DataTypes.UUID
     },
-    week: {
-      type: DataTypes.BIGINT,
-    },
-    year: {
-      type: DataTypes.BIGINT
+    session: {
+      type: DataTypes.UUID
     }
   },
   {
