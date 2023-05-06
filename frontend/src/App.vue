@@ -79,15 +79,16 @@ footer {
   position: absolute;
   top: 5%;
   left: 50%;
-  background-color: red;
+  background-color: rgba(102, 4, 4, 0.699);
   border-radius: .2em;
   transform: translate(-50%,0);
   z-index: 3;
-  color: white;
+  color: rgb(238, 217, 217);
+  font-weight: 400;
   text-align: center;
   padding: .5em;
   font-size: 1.2em;
-  animation: appear 0.1s  linear normal forwards;
+  animation: appear 8s  ease-in-out forwards;
 }
 
 @keyframes appear {
@@ -95,8 +96,14 @@ footer {
     0% {
       top: -15%;
     }
-    100% {
+    5%{
+      top: 5%;
+    }
+    70%{
       top: 5%
+    }
+    100% {
+      top: -15%
     }
 }
  

@@ -1,24 +1,26 @@
 <template>
    
-    <div :class="{ shake: shake , disappear: disappear}" class="form">
-        <h2>Pollák</h2>
-        <h6> <a href="https://github.com/berryes/csengo" target="blank">Csengetés szavazó v{{version}} </a></h6>
-        <p v-if="showError" class="error" >Hiba! lehetséges hogy elirtad a jelszavad vagy a felhasználó nevedet! </p>
-        <label for="username">Felhasználó név</label>
-        <input tpe="text" placeholder="Felhasználó név" v-model="form.username">
+    <div :class="{ shake: shake , disappear: disappear, highlightWrongField: highlight}" class="form">
 
-        <label for="password">Jelszó</label>
-        <input type="password" placeholder="Jelszó" v-model="form.password">
+            <h2>Pollák</h2>
+            <h6> <a href="https://github.com/berryes/csengo" target="blank">Csengetés szavazó v{{version}} </a></h6>
+            <p v-if="showError" class="error" >Hiba! lehetséges hogy elirtad a jelszavad vagy a felhasználó nevedet! </p>
+            <label for="username">Felhasználó név</label>
+            <input tpe="text" placeholder="Felhasználó név" 
+            v-model="form.username" minlength="3" maxlength="64">
 
+            <label for="password">Jelszó</label>
+            <input type="password" placeholder="Jelszó" 
+            v-model="form.password" minlength="3" maxlength="64"
+            >
 
-        <vue-hcaptcha  @verify="catptchaFilled" sitekey="a844f21a-f2be-48d3-8adc-4ebb0c7caa11" style="margin-top: 2em"></vue-hcaptcha>
+            <vue-hcaptcha  @verify="catptchaFilled" sitekey="a844f21a-f2be-48d3-8adc-4ebb0c7caa11" style="margin-top: 2em"></vue-hcaptcha>
 
-        <button @click="login" style="color: black">Belépés</button>
-        
-        <p>Nincs még profilod? 
-          <router-link to="/regisztracio">Regisztrálj itt</router-link>
-        </p>
-
+            <button @click="login" style="color: black">Belépés</button>
+            
+            <p>Nincs még profilod? 
+            <router-link to="/regisztracio">Regisztrálj itt</router-link>
+            </p>
     </div>
 
 </template>
@@ -32,9 +34,11 @@ export default {
 
             // css triggers
             shake: false,
+            highlight: false,
             disappear: false,
             fadeOut: false,
             showError: false,
+
             version: process.env.VUE_APP_VERSION,
             form: {
                 username: "",
@@ -53,16 +57,20 @@ export default {
         catptchaFilled: function(token){
             this.form.hcaptchaKey = token;
         },
+        shakeForm: function() {
+            this.shake = true
+            setTimeout(()=>{ this.shake = false },400)
+        },
+        highlightFields: function(){
+            this.highlight = true;
+            setTimeout(()=>{ this.highlight = false },1000)
+        },
         login: async function(){
             if(
                 this.form.username.length == 0 ||
                 this.form.password.length == 0 ||
                 this.form.hcaptchaKey.length == 0
-            ) {
-                this.shake = true
-                setTimeout(()=>{ this.shake = false },400)
-                return
-            }
+            ) { this.shakeForm(); return }
 
             // error handeling
             try {
@@ -73,8 +81,8 @@ export default {
                     withCredentials: true
                 })                
             } catch (error) {
-                this.form.hcaptchaKey = ""
                 if(error.code == "ERR_BAD_REQUEST"){
+                    this.highlightFields()
                     this.$root.promptError("Hiba történt bejelentkezéskor, lehet elírtad a a felhasználóneved vagy a jelszavadat!")
                 }
 
