@@ -69,9 +69,6 @@ router.get('/',
   
     // @ts-ignore
     let sounds = []
-   
-    console.log(dayjs(Date.now()).day)
-
     // @ts-ignore
     for(let sound of res.locals.votingSession?.sounds ){  
       let dbrecord = await Sound.findOne({
@@ -89,8 +86,7 @@ router.get('/',
     if(sounds.length == 0) return res.sendStatus(404)
 
     // maybe add filtering for only this weeks vote
-    const user_votes = await Vote.findAll(
-      {
+    const user_votes = await Vote.findAll({
         where: {user: res.locals.token.id },
         attributes: ["sound"]
       }).then((data)=>{
@@ -127,9 +123,7 @@ router.post('/delete',
     if(await votingSession.findOne({
         // @ts-ignore
           where:{
-            sounds: { 
-             [Op.contains]: [req.query.id as string]
-              }
+            sounds: { [Op.contains]: [req.query.id as string] }
              }
          }))
         return res.status(403).send("This sound is in a voting session!")
@@ -147,17 +141,7 @@ router.post('/delete',
 
 router.post('/vote',
   checkSchema({
-    week: {
-      in: ['query'],
-      exists: true,
-      isNumeric: true,
-    },
-    year: {
-      in: ['query'],
-      exists: true,
-      isNumeric: true,
-    },
-    id: {
+   id: {
       in: ['query'],
       isString: true,
       notEmpty: true,
@@ -169,7 +153,10 @@ async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
     
-    // in case user has already voted reject
+    if(!res.locals.votingSession.sounds.includes(req.query.id))
+     return res.status(401).send("You cannot vote for this!")
+    
+     // in case user has already voted reject
     const vote = await Vote.findOne({
       where: {
         user: res.locals.token.id,
@@ -184,25 +171,18 @@ async (req: Request, res: Response) => {
     await Vote.create({
       user: res.locals.token.id,
       sound: sound.id,
-      session: res.locals.votingSession
+      session: res.locals.votingSession.id
      })
 
+    await Sound.update({votes: sound.votes +1 },{where:{ id: sound.id}})
      res.sendStatus(200)
 } )
 
+
+// TODO: implement that you can only vote if the sound is a in the CURRENT voting session
 router.post('/devote',
    checkSchema({
-    week: {
-      in: ['query'],
-      exists: true,
-      isNumeric: true,
-    },
-    year: {
-      in: ['query'],
-      exists: true,
-      isNumeric: true,
-    },
-    id: {
+     id: {
       in: ['query'],
       isString: true,
       notEmpty: true,
@@ -211,13 +191,15 @@ router.post('/devote',
   }), async (req: Request, res: Response) => {    
      const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-    
+
+    if(!res.locals.votingSession.sounds.includes(req.query.id))
+     return res.status(401).send("You cannot vote for this!")
     // in case user has already voted reject
     const vote = await Vote.findOne({ 
       where: {
         user: res.locals.token.id,
         sound: req.query.id as string, 
-        session: res.locals.voteSession.id
+        session: res.locals.votingSession.id
       }});
 
     if(!vote) return res.status(404).send("You have not voted for this!")
@@ -232,6 +214,8 @@ router.post('/devote',
         sound: sound?.id,
         session: res.locals.votingSession.id 
       }})
+
+    await Sound.update({votes: sound.votes -1 },{where:{ id: sound.id}})
     res.sendStatus(200)
 } )
 

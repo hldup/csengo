@@ -1,9 +1,10 @@
 import express, { Request,  Response } from 'express';
 import { checkSchema, validationResult } from 'express-validator';
 import Sound from '../models/sound';
-import votingSession from '../models/weekly';
+import votingSession, {  currentWeek } from '../models/weekly';
 import Vote from '../models/votes';
 import { Op } from 'sequelize';
+import dayjs from 'dayjs';
 const router = express.Router();
 
 
@@ -21,16 +22,19 @@ router.post('/new',
       exists: true,
       isISO8601: true
     },
-    end:{
-      exists: true,
+    end:{ exists: true,
       isISO8601: true
     }
   }),
   async (req: Request, res: Response) => {    
-  
+    if( (new Date(req.body.start) < new Date(req.body.end)))
+    return res.status(400).send({ error: "INVALID_DATE", message: "Start date cannot be after end date!" })
+   
     // error handeling for headers/formdata
     const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+    if (!errors.isEmpty()) return res.status(400).json({ 
+      error:"INVALID_FORM", message:"Field given are invalid/misformed", errors: errors.array()
+     });
 
     // checking if sounds exist
     for (let id of req.body.sounds){
@@ -135,6 +139,7 @@ router.get('/',
     for(let sess of sessions ){
       let sounds = []
       for(let sound of sess.sounds){
+
           const dbsound = await Sound.findOne({
             where:{id: sound as string},
             attributes: ["id","name","createdAt"]
@@ -151,8 +156,20 @@ router.get('/',
       }
       // @ts-ignore
       sess.sounds = sounds;
+      // @ts-ignore
+      sess.expired = sess.isExpired()
     }
     res.send(sessions.reverse());
 } )
+
+router.get('/winners',
+  async (req: Request, res: Response) => {   
+    if(res.locals.weekly.isActive()) return res.status(403).send("Voting session has not ended yet!") 
+    res.send({
+      sounds: await res.locals.weekly.getWinners(1),
+      week: dayjs().week(),
+    })
+} )
+
 
 module.exports = router;

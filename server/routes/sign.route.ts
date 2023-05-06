@@ -73,6 +73,7 @@ router.post('/register',
       isString: true,
       notEmpty: true,
       isLength:{ options: { min: 3, max: 64 } },
+      isAlphanumeric: true
       // TODO, check for any special charachters that should not be in the db
     },
     password: {

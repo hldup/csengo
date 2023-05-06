@@ -80,11 +80,8 @@ app.use("/", require("./routes/sign.route"));
 
 app.use("/token", require("./routes/token.route"));
 
-
 app.use("/users", require("./routes/user.route"));
 
-console.log("this monday:", + dayjs().toISOString() )
-console.log("this thursday :" + dayjs().toISOString() )
 
 app.listen(port, () => {
   console.log(`Listening on ${port}`)
