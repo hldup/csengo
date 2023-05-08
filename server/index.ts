@@ -17,6 +17,7 @@ import cookieParser from "cookie-parser";
 import bcrypt from 'bcrypt';
 import connection from "./database";
 import dayjs from "dayjs";
+import { exit } from "process";
 require('dotenv').config()
 
 
@@ -47,6 +48,7 @@ const port = process.env.PORT;
     console.log('Connection has been established successfully.');
   } catch (error) {
     console.error('Unable to connect to the database:', error);
+    exit();
   }
     await dbInit();
 

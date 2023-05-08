@@ -21,7 +21,8 @@ const routes = [
     path: '/admin',
     name: 'Admin Panel - Pollak csengo',
     component: () => import('../views/AdminView.vue')
-  }
+  },
+   
 ]
 
 const router = createRouter({
