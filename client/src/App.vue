@@ -1,5 +1,5 @@
 <template>
-<div class="background" v-if="this.$router.path = '/admin' "> 
+<div class="background" v-if="this.$router.path != '/admin' "> 
 <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" viewBox="0 0 120 120">
 <path fill="#9b5de5"   class="out-top" d="M37-5C25.1-14.7,5.7-19.1-9.2-10-28.5,1.8-32.7,31.1-19.8,49c15.5,21.5,52.6,22,67.2,2.3C59.4,35,53.7,8.5,37-5Z"/>
 <path fill="#00000" class="in-top" d="M20.6,4.1C11.6,1.5-1.9,2.5-8,11.2-16.3,23.1-8.2,45.6,7.4,50S42.1,38.9,41,24.5C40.2,14.1,29.4,6.6,20.6,4.1Z"/>
@@ -10,14 +10,58 @@
 </svg>
 </div>
 
+
+    <div class="text-center profile-options"
+        v-if="
+            !$route.path.includes('login') &&
+            !$route.path.includes('register')
+        "
+    >
+    <v-menu open-on-hover >
+      <template v-slot:activator="{ props }">
+        <img src="person.svg" alt="profil" v-bind="props" height="48">
+      </template>
+      <v-list>        
+        <v-list-item>
+          <v-list-item-title @click="logout"> 
+            <v-btn
+            variant="text"
+            @click="menu = false"
+          >
+            Kijelentkezés
+          </v-btn>
+            </v-list-item-title>
+        </v-list-item>
+
+      </v-list>
+    </v-menu>
+  </div>
   <router-view />
 </template>
 
-<script lang="ts" setup>
+<script>
+
+import VueCookies from 'vue-cookies';
+export default{
+    methods:{
+        logout: function(){
+                //@ts-ignore
+               VueCookies.remove("Ptoken")
+               this.$router.push({path: "/login"})
+               console.log("Logged out")
+        }
+    },
+    mounted(){
+        console.log(this.$router.currentRoute.value.fullPath)
+    }
+}
 </script>
 
 
 <style scoped>
+body{
+    background-color: black;
+}
 /* blobs */
 .background {
     /* blur here */

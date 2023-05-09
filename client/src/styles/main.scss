@@ -19,6 +19,9 @@
     box-shadow: 0 0 40px rgba(8,7,16,0.6);
     padding: 50px 35px;  
 }
+.cs-form button{
+    color: black;
+}
 
 .cs-form .v-input input{
     display: block;
@@ -38,7 +41,7 @@
 }
 .cs-form .v-field {
     height: 3em;
-    margin: .5em;
+    margin: 1em;
     background: none;
     stroke: none;
     border: none;
@@ -60,6 +63,19 @@
 .v-alert {
     position: absolute;
     left: 50%;
+ 
     transform: translate(-50%,0);
     
+}
+
+
+
+
+.profile-options  img{
+    filter: invert(1);
+}
+.profile-options {
+    position: absolute;
+    top: 1.5em;
+    right: 1.5em;
 }

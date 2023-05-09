@@ -27,7 +27,7 @@ router.post('/new',
     }
   }),
   async (req: Request, res: Response) => {    
-    if( (new Date(req.body.start) < new Date(req.body.end)))
+    if( (new Date(req.body.start) > new Date(req.body.end)))
     return res.status(400).send({ error: "INVALID_DATE", message: "Start date cannot be after end date!" })
    
     // error handeling for headers/formdata
@@ -167,7 +167,6 @@ router.get('/winners',
     if(res.locals.weekly.isActive()) return res.status(403).send("Voting session has not ended yet!") 
     res.send({
       sounds: await res.locals.weekly.getWinners(1),
-      week: dayjs().week(),
     })
 } )
 

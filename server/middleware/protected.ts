@@ -3,7 +3,6 @@ import express, { Request,  Response } from 'express';
 import votingSession, { currentWeek } from '../models/weekly';
 import { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
 import Token from '../models/token';
-import { Op } from 'sequelize';
 // no idea why i have to import it like this to work
 const jwt = require("jsonwebtoken");
 const router = express.Router();
@@ -14,7 +13,11 @@ router.use(async (req, res, next) => {
     
   // log request when done
   res.on("finish", ()=> {
-    console.log(`${res.statusCode} | Request to ${req.path} from ${req.hostname} (${req.get('user-agent')}) | ${new Date()}`)
+    console.log(`${res.statusCode} | (${
+       jwt.verify(req.cookies['Ptoken'], process.env.TOKEN_SECRET, (err: JsonWebTokenError,data: JwtPayload) =>{
+      return data 
+    })?.username || 'someone'
+    }) Request to ${req.path} from ${req.hostname} (${req.get('user-agent')}) | ${new Date()}`)
   })
 
   // if unproceted path is hit just continue.
@@ -22,19 +25,32 @@ router.use(async (req, res, next) => {
  
   // filtering out api request via a API key/token
   if(req.headers.authorization){
-    if(!await Token.findOne({where: {key: req.headers.authorization.split(" ")[1] }})) return res.status(400).send("Invalid API key")
-    return next()
+    if(!await Token.findOne({where: {key: req.headers.authorization.split(" ")[1] }}))
+     return res.status(400).send("Invalid API key")
   }
 
-  // validating token integrity
-  if(!req.cookies['Ptoken'] ) return res.status(401).send("You are not authenticated!")
-  let token = jwt.verify(req.cookies['Ptoken'], process.env.TOKEN_SECRET, (err: JsonWebTokenError,data: JwtPayload) =>{
-    return data
-  })
-  if(!token) return res.status(403).send("Token invalid");
-  if(token.expires < Date.now() ) return res.sendStatus(498);
-  if(req.get('user-agent') != token.agent ) return res.status(401).send("User-agent mismatch!");
-
+  let token = null;
+  if(!req.headers.authorization){
+    
+    // of no cookie, just return 
+    if(!req.cookies['Ptoken'] )
+     return res.status(401).send("You are not authenticated!")
+    
+    token = jwt.verify(req.cookies['Ptoken'], process.env.TOKEN_SECRET, (err: JsonWebTokenError,data: JwtPayload) =>{
+      return data
+    })
+    
+    if(!token) // token might be forged or not be a jwt token at all 
+    return res.status(403).send({error: "COOKIE_INVALID", message: "Your cookie is either forged/misformed! Log out! "});
+    
+    // if jwt is expired return
+    if(token.expires < Date.now() ) 
+    return res.status(498).send({error: "COOKIE_EXPIRED", message: "Your cookie has expired, Log out!"});
+    
+    // if there is an user agent mismatch
+    if(req.get('user-agent') != token.agent )
+     return res.status(401).send({error: "UA_MISMATCH", message: "Your user-agent does not match the one you signed in with! log out!"});
+  }
   // Filtering here {in the middleware} instead of repeating this code 3x 
   if( [
     "/sounds/vote",
@@ -53,7 +69,7 @@ router.use(async (req, res, next) => {
         })
 
       if(!this_week) return res.status(404).send("No voting session for this week or any prior")
-      if(!this_week.isActive()) return res.status(404).send("No voting session")
+       // if(!this_week.isActive()) return res.status(404).send("No voting session")
 
       if(this_week.isExpired() && !req.path.includes("/weekly/winners")) return res.status(410).send("Voting has ended")
       res.locals.weekly = this_week;
@@ -73,9 +89,11 @@ router.use(async (req, res, next) => {
     "/sounds/rename",
     "/token"
   ]
+  if(!req.headers.authorization){
   if( protected_routes.includes(req.path) && !token.administrator )
-   return res.status(401).send("You have no permission for this")
-   res.locals.token = token
+    return res.status(401).send("You have no permission for this")
+    res.locals.token = token
+  }
   next()
 })
   

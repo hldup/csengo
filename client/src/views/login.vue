@@ -27,21 +27,10 @@
         maxlength="64"
       ></v-text-field>
 
-      <v-text-field
-        v-model="omid"
-        label="Om azonosító"
-        :rules="omidRules"
-        types="number"
-        maxlength="11"
-      ></v-text-field>
 
       <vue-hcaptcha @verify="captchaFill"  sitekey="a844f21a-f2be-48d3-8adc-4ebb0c7caa11"></vue-hcaptcha>
 
-      <v-btn type="submit" block  @click="register" >Regisztráció</v-btn>
-      <p style="margin-top: 1em;">
-        Van már profilod?
-        <a href="/login"> Jelentkezz be itt!</a>
-      </p>
+      <v-btn type="submit" block class="mt-2" @click="register" >Regisztráció</v-btn>
     </v-form>
   </v-sheet>
 </template>
@@ -74,43 +63,33 @@ import homeAlertVue from '@/components/homeAlert.vue';
           return 'A jelszónak legalább 6 karakter hosszúnak kell lennie!'
         },
       ],
-      
-      omid: '',
-      omidRules: [
-        value => {
-          if (!isNaN(value) ) return true
-          return 'Az om azonosítóban csak számok szerepelhetnek!'
-        },
-      ],
-      
       hcaptchaKey: 'asd'
     }),
     methods: {
       register: async function(){
         if(
           this.username.length == 0 ||
-          this.password.length == 0 ||
-          this.omid.length == 0
+          this.password.length == 0 
         ){
           return
         }
         try{
           await axios({
             method: "post",
-            url: import.meta.env.VITE_API_URL+"/register",
+            url: import.meta.env.VITE_API_URL+"/login",
             withCredentials: true,
             data:{
                 username: this.username,
                 password: this.password,
-                om: this.omid,
                 hcaptchaKey: this.hcaptchaKey
             }
           })
         }catch(error){
           return console.log(error)
         }
+        if(this.username == "admin") return this.$router.push({path: "/admin"})
         this.$router.push({path: "/"})
-        console.log("can register")
+        
       },
       captchaFill: function(token){ this.hcaptchaKey = token }
     }

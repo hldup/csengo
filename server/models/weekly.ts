@@ -2,6 +2,7 @@
 import { DataTypes, Model, Op, Optional } from 'sequelize'
 import connection from '../database'
 import Sound from './sound';
+import Vote from './votes';
 
 interface votingSessionAttributes {
   id: number;
@@ -31,13 +32,31 @@ class votingSession extends Model<votingSessionAttributes, votingSessionInput>  
     };
 
     async getWinners( amount: number): Promise<object> {
-      return await Sound.findAll({
-        limit: amount,
-        order:[
-          ['votes', 'desc']
-        ],
-        attributes: ["id","votes","name"]
-      });
+
+      let votes =[]
+      for(let sound of this.sounds){
+        votes.push(
+          { id: sound,
+            votes: (await Vote.findAndCountAll({where: { 
+              session: this.id,
+              sound: sound }})).count
+          })
+      }
+
+      let sound = votes.reduce(function(max, obj) {
+            return obj.votes > max.votes? obj : max;
+        })
+
+        let row = await Sound.findOne({
+          where:{ id: sound.id},
+          attributes: ['name','votes', 'id']
+        })
+
+        // @ts-ignore
+        row?.votes = sound.votes;
+        
+        return [row] || []; 
+
     };
     isActive(): boolean {
       const now = new Date();

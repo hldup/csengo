@@ -8,10 +8,7 @@ const routes = [
       {
         path: '',
         name: 'Home',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
+        component: () => import(/* webpackChunkName: "home" */ '@/views/home.vue'),
       },
         {
         path: '/register',
@@ -23,6 +20,11 @@ const routes = [
         name: 'Admin',
         component: () => import(/* webpackChunkName: "home" */ '@/views/admin.vue'),
       },
+      {
+        path: '/login',
+        name: 'Login',
+        component: () => import(/* webpackChunkName: "home" */ '@/views/login.vue'),
+      }
     ],
   },
 ]
@@ -30,6 +32,22 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+})
+import VueCookies from 'vue-cookies';
+let unprotected_paths = ["/register", "/login"]
+router.beforeEach( (to, from, next) => {
+    // @ts-ignore
+  if ( !unprotected_paths.includes(to.path) && !VueCookies.get("Ptoken")) {
+    return next({ path: "/register" })
+  }
+
+  // if user is visiting an unprotected path while logged in return to home
+    // @ts-ignore
+  if(unprotected_paths.includes(to.path) && VueCookies.get("Ptoken")){
+    return next({ path: "/" })
+  }
+
+  next()
 })
 
 export default router

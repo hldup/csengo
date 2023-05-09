@@ -56,6 +56,7 @@ router.post('/login',
     // creating token for user
     let token = jwt.sign({
          id: user.id, 
+         username: user.username,
          expires: Date.now() + 1209600000,
          agent: req.get('user-agent'),
          administrator: user.administrator
@@ -116,7 +117,7 @@ router.post('/register',
       return res.status(403).send("Seems like someone has already registered with this information")
 
     // if the om id given by user is not in db return as 401 
-    if( !await Om.findOne({ where: { id: req.body.om } }))
+    if(!process.env.DEV && !await Om.findOne({ where: { id: req.body.om } }))
       return res.status(401).send("OM invalid")
 
     // creating user in DB
@@ -131,6 +132,7 @@ router.post('/register',
     // creating session token via Json web token
     let token = jwt.sign({
          id: user.id, 
+         user: user.username,
          expires: Date.now() + 1209600000,
          agent: req.get('user-agent'), 
          administrator: user.administrator
