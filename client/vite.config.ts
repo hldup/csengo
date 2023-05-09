@@ -5,7 +5,7 @@ import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 // Utilities
 import { defineConfig } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
-
+import packageJson from './package.json';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -20,7 +20,10 @@ export default defineConfig({
       },
     }),
   ],
-  define: { 'process.env': {} },
+  define: { 
+    'process.env': {},
+    'import.meta.env.PACKAGE_VERSION': JSON.stringify(packageJson.version)
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

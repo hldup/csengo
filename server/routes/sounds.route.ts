@@ -108,8 +108,8 @@ router.get('/',
 router.get('/all',
   async (req: Request, res: Response) => {
     
-    // @ts-ignore
-    let sounds= await Sound.findAll({ attributes: ["id","name"] })
+    // @ts-ignore"
+    let sounds= await Sound.findAll({ attributes: ["id","name","createdAt","votes"] })
     if(sounds.length == 0) return res.sendStatus(404);
 
     res.send(sounds)
