@@ -1,8 +1,5 @@
 <template>
-
-    <home-alert-vue   
-    class="alertus"
-    />
+    <background-vue />
     <v-sheet class="mx-auto cs-form">
     <v-form fast-fail @submit.prevent
     >
@@ -12,6 +9,7 @@
         Csengetés szavazó v{{version}}
         </a>
       </h4>
+      <p v-if="showError" style="margin-top: 1em; color:red;">{{error}}</p>
       <v-text-field
         v-model="username"
         label="Felhasználónév"
@@ -22,7 +20,6 @@
       <v-text-field
         v-model="password"
         label="Jelszó"
-        :rules="passwordRules"
         type="password"
         maxlength="64"
       ></v-text-field>
@@ -30,7 +27,11 @@
 
       <vue-hcaptcha @verify="captchaFill"  sitekey="a844f21a-f2be-48d3-8adc-4ebb0c7caa11"></vue-hcaptcha>
 
-      <v-btn type="submit" block class="mt-2" @click="register" >Regisztráció</v-btn>
+      <v-btn type="submit" block class="mt-2" @click="register" >Bejelentkezés</v-btn>
+       <p style="margin-top: 1em;">
+        Nincs még profilod?
+        <a href="/register"> Registrálj itt!</a>
+      </p>
     </v-form>
   </v-sheet>
 </template>
@@ -39,9 +40,14 @@
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 import axios from 'axios';
 import homeAlertVue from '@/components/homeAlert.vue';
+import backgroundVue from '@/components/background.vue';
   export default {
-    components: { VueHcaptcha, homeAlertVue },
+    components: { VueHcaptcha, homeAlertVue, backgroundVue },
     data: () => ({
+      // stuupid error handeling again
+        showError: false,
+        error: '',
+
       version: import.meta.env.PACKAGE_VERSION,
       username: '',
       usernameRules: [
@@ -57,12 +63,6 @@ import homeAlertVue from '@/components/homeAlert.vue';
       ],
 
       password: '',
-      passwordRules: [
-        value => {
-          if (value?.length > 5 ) return true
-          return 'A jelszónak legalább 6 karakter hosszúnak kell lennie!'
-        },
-      ],
       hcaptchaKey: 'asd'
     }),
     methods: {
@@ -71,6 +71,8 @@ import homeAlertVue from '@/components/homeAlert.vue';
           this.username.length == 0 ||
           this.password.length == 0 
         ){
+          this.error = "Kérlek tölts ki minden mezőt és a captcha-t is!"
+          this.showError = true;
           return
         }
         try{
@@ -85,6 +87,15 @@ import homeAlertVue from '@/components/homeAlert.vue';
             }
           })
         }catch(error){
+          switch (error.response.status){
+            case 401:
+              this.error = "Hibás adatok! Lehetséges hogy erlírtad a felhasználóneved vagy a jelszavad!"
+            break
+            default:
+              this.error ="Valami hiba történt a belépéskor!"
+            break;
+          }
+          this.showError = true;
           return console.log(error)
         }
         if(this.username == "admin") return this.$router.push({path: "/admin"})

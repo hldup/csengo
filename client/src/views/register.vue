@@ -1,9 +1,8 @@
 <template>
+    <background-vue />
 
-    <home-alert-vue   
-    class="alertus"
-    />
-    <v-sheet class="mx-auto cs-form">
+    <v-sheet class="mx-auto cs-form"
+    >
     <v-form fast-fail @submit.prevent
     >
       <h1>Pollák</h1>
@@ -12,6 +11,8 @@
         Csengetés szavazó v{{version}}
         </a>
       </h4>
+
+      <p v-if="showError" style="margin-top: 1em; color:red;">{{error}}</p>
       <v-text-field
         v-model="username"
         label="Felhasználónév"
@@ -25,7 +26,19 @@
         :rules="passwordRules"
         type="password"
         maxlength="64"
+        hint="Legalább 6 karakter hosszú!"
+
       ></v-text-field>
+      
+<!--  TODO implement later cus layz
+      <v-text-field
+        v-model="passwordtwo"
+        label="Jelszó mégegyszer"
+        type="password"
+        maxlength="64"
+        :error-messages="passwordError"
+      ></v-text-field> -->
+
 
       <v-text-field
         v-model="omid"
@@ -33,9 +46,11 @@
         :rules="omidRules"
         types="number"
         maxlength="11"
+        hint="A diákigazolványon található 7-el kezdődő szám"
       ></v-text-field>
 
-      <vue-hcaptcha @verify="captchaFill"  sitekey="a844f21a-f2be-48d3-8adc-4ebb0c7caa11"></vue-hcaptcha>
+
+      <vue-hcaptcha @verify="captchaFill"  sitekey="a844f21a-f2be-48d3-8adc-4ebb0c7caa11" />
 
       <v-btn type="submit" block  @click="register" >Regisztráció</v-btn>
       <p style="margin-top: 1em;">
@@ -50,10 +65,19 @@
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 import axios from 'axios';
 import homeAlertVue from '@/components/homeAlert.vue';
+import backgroundVue from '@/components/background.vue';
   export default {
-    components: { VueHcaptcha, homeAlertVue },
+    components: { VueHcaptcha, homeAlertVue, backgroundVue },
     data: () => ({
       version: import.meta.env.PACKAGE_VERSION,
+
+        // css animation triggers
+          shake: true,
+
+        // stoopid error handeling
+        showError: false,
+        error: '',
+
       username: '',
       usernameRules: [
         value => {
@@ -68,12 +92,16 @@ import homeAlertVue from '@/components/homeAlert.vue';
       ],
 
       password: '',
+      passwordtwo: '',
+      passwordError: [],
+
       passwordRules: [
         value => {
           if (value?.length > 5 ) return true
           return 'A jelszónak legalább 6 karakter hosszúnak kell lennie!'
         },
       ],
+
       
       omid: '',
       omidRules: [
@@ -87,11 +115,15 @@ import homeAlertVue from '@/components/homeAlert.vue';
     }),
     methods: {
       register: async function(){
+        // reseting error field
+        this.showError = false;
         if(
           this.username.length == 0 ||
           this.password.length == 0 ||
           this.omid.length == 0
         ){
+          this.error ="Kérklek töltsd ki minden mezőt és a captcha-t!";
+          this.showError = true;
           return
         }
         try{
@@ -107,6 +139,15 @@ import homeAlertVue from '@/components/homeAlert.vue';
             }
           })
         }catch(error){
+          switch (error.response.status){
+            case 403: 
+              this.error = "Ezekkel az adatokkal már regisztráltak!"
+            break;
+            default:
+              this.error = "Valami hiba történt a regisztrálásnál!" 
+              break 
+          }
+          this.showError = true;
           return console.log(error)
         }
         this.$router.push({path: "/"})

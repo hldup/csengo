@@ -1,7 +1,6 @@
 <template>
+<background-vue />
 <div>
-  
-
   <div class="s-container reappear" v-if="noVote">
     <h1>Jelenleg nincs szavazás :(  </h1>
     
@@ -37,10 +36,11 @@
 
 <script>
 import axios from 'axios'
-
+import backgroundVue from '@/components/background.vue'
 // import VueCookies from 'vue-cookies';
 export default {
   name: 'HomeView',
+  components: {backgroundVue},
   data(){
     return{
       reapear: true,
@@ -110,7 +110,8 @@ export default {
             method: "get",
             withCredentials: true,
         }).then((response)=>{
-          if(response.status == 204 || response.status == 410 ){
+          console.log(response.data)
+        if(response.status == 204 || response.status == 410 ){
             this.noVote = true;
             return
           }
@@ -124,7 +125,7 @@ export default {
   async mounted(){
     // updating every 10 seconds for "realtime" display
     try{
-        await this.getSounds()   
+        await this.getSounds()
     }catch(error){
         // VueCookies.remove("Ptoken")
         // this.$router.push({path: "/login"})
@@ -134,7 +135,6 @@ export default {
             break
 
             case 410:
-                this.noVote = true;
             await axios({
                 url: import.meta.env.VITE_API_URL+"/weekly/winners",
                 method: "get",
@@ -145,6 +145,7 @@ export default {
             break;
         }
     }
+    
 
 }
 }

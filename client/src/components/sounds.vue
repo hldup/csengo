@@ -1,8 +1,6 @@
 <template>
     <h1>Hangok</h1>
-    <v-table
-    height="40em"
-    >
+    <v-table height="40em" >
     <thead>
       <tr>
         <th class="text-left">
@@ -13,6 +11,9 @@
         </th>
         <th class="text-left">
           Összes szavazat
+        </th>
+        <th class="text-left">
+          Opciók
         </th>
       </tr>
     </thead>
@@ -25,6 +26,9 @@
         <td>{{ sound.name }}</td>
         <td>{{ new Intl.DateTimeFormat('hu-Hu').format(new Date(sound.createdAt)) }}</td>
         <td>{{ sound.votes }}</td>
+        <td> 
+          <v-btn @click="edit">Módosítás</v-btn>
+        </td>
       </tr>
     </tbody>
   </v-table>

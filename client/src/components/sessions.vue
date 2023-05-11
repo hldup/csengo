@@ -99,7 +99,7 @@
               persistent-hint
             ></v-select>
 
-            <v-btn type="submit" block class="mt-2" @click="create">Létrehozás</v-btn>
+            <v-btn type="submit" block class="mt-2" @click="create " />  
           </v-form>
         </v-sheet>
       </v-card>
@@ -114,7 +114,7 @@ export default {
 
    data: () => ({
         sessions: [],
-        createSession: true,
+        createSession: false,
     
         sounds: [],
 
@@ -131,8 +131,12 @@ export default {
     }),
 
     async mounted(){
+        setInterval(async () => {
+        await this.getSessions();
+        }, 5000);
         await this.getSessions();
         await this.getSounds();
+
     },
     methods: {
 
@@ -181,6 +185,7 @@ export default {
               sounds: this.selectedSounds,
             }
         }).then((response)=>{
+            this.getSessions()
           console.log(response.data)
         }) 
       },
@@ -194,7 +199,10 @@ export default {
               id: session.id
             }
         }).then(async (response)=>{
-          await this.getSessions()
+          if(response.status == 200){
+            // deleting from local list
+            this.sessions.splice( this.sessions.indexOf(session), 1 )
+          }
         }) 
       }
     }
