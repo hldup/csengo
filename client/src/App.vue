@@ -1,57 +1,50 @@
 <template>
+	<home-alert-vue class="alertus" />
 
-    <home-alert-vue   
-    class="alertus"
-    />
+	<!--  basic profile prompt to log out -->
+	<div
+		class="text-center profile-options"
+		v-if="!$route.path.includes('login') && !$route.path.includes('register')"
+	>
+		<v-menu open-on-hover open-on-click>
+			<template v-slot:activator="{ props }">
+				<img src="person.svg" alt="profil" v-bind="props" height="48" />
+			</template>
+			<v-list>
+				<v-list-item>
+					<v-list-item-title @click="logout">
+						<v-btn variant="text" @click="menu = false"> Kijelentkezés </v-btn>
+					</v-list-item-title>
+				</v-list-item>
+			</v-list>
+		</v-menu>
+	</div>
 
-    <!--  basic profile prompt to log out -->
-    <div class="text-center profile-options"
-        v-if="
-            !$route.path.includes('login') &&
-            !$route.path.includes('register')
-        "
-    >
-    <v-menu open-on-hover  >
-      <template v-slot:activator="{ props }">
-        <img src="person.svg" alt="profil" v-bind="props" height="48">
-      </template>
-      <v-list>        
-        <v-list-item>
-          <v-list-item-title @click="logout"> 
-            <v-btn
-            variant="text"
-            @click="menu = false"
-          >
-            Kijelentkezés
-          </v-btn>
-            </v-list-item-title>
-        </v-list-item>
-
-      </v-list>
-    </v-menu>
-  </div>
-
-  <!-- router -->
-  <router-view />
+	<!-- router -->
+	<router-view />
 </template>
 
 <script>
-
-import VueCookies from 'vue-cookies';
-export default{
-    methods:{
-        logout: function(){
-                //@ts-ignore
-               VueCookies.remove("Ptoken")
-               this.$router.push({path: "/login"})
-               console.log("Logged out")
-        }
-    },
-}
+import VueCookies from "vue-cookies";
+export default {
+	computed() {
+		return {
+			cache: false,
+		};
+	},
+	methods: {
+		logout: function () {
+			//@ts-ignore
+			VueCookies.remove("Ptoken");
+			this.$router.push({ path: "/login" });
+			console.log("Logged out");
+		},
+	},
+};
 </script>
 
-<style >
-body{
-  background-color: black;
+<style>
+body {
+	background-color: black;
 }
 </style>
