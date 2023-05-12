@@ -1,10 +1,6 @@
-import express, { Request,  Response } from 'express';
+import express, { Request, Response } from "express";
 const router = express.Router();
 
-
-router.use(async (req: Request, res:Response,)=> {
-
-})
-
+router.use(async (req: Request, res: Response) => {});
 
 module.exports = router;

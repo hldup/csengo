@@ -1,0 +1,78 @@
+@use "vuetify" with (
+	$utilities: false,
+	$color-pack: false
+);
+
+.cs-form .v-form {
+	overflow: auto;
+	font-family: "Poppins", sans-serif;
+	width: 23em;
+	background-color: rgba(255, 255, 255, 0.192);
+	position: absolute;
+	transform: translate(-50%, -50%);
+	top: 50%;
+	left: 50%;
+	border-radius: 1em;
+	color: white;
+	backdrop-filter: blur(0.3em);
+	border: 2px solid rgba(255, 255, 255, 0.1);
+	box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+	padding: 50px 35px;
+}
+.cs-form button {
+	color: black;
+}
+
+.cs-form .v-input input {
+	display: block;
+	width: 100%;
+	background-color: rgba(255, 255, 255, 0.07);
+	border-radius: 0.01em;
+	padding: 0 10px;
+	margin-top: 8px;
+	font-size: 14px;
+	font-weight: 300;
+	color: white;
+	height: 1em;
+	height: 50px;
+	width: 100%;
+
+	border: none;
+}
+.cs-form .v-field {
+	height: 3em;
+	margin: 1em;
+	background: none;
+	stroke: none;
+	border: none;
+}
+.v-field__field {
+	background: none;
+}
+
+.v-field--variant-filled .v-field__overlay {
+	background: none;
+	display: none;
+}
+.v-btn {
+	height: 4em;
+}
+.cs-form a {
+	color: white;
+}
+.v-alert {
+	position: absolute;
+	left: 50%;
+
+	transform: translate(-50%, 0);
+}
+
+.profile-options img {
+	filter: invert(1);
+}
+.profile-options {
+	position: absolute;
+	top: 1.5em;
+	right: 1.5em;
+	z-index: 1;
+}

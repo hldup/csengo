@@ -24,13 +24,8 @@
 						},
 						"url": {
 							"raw": "{{host}}/weekly/new?week=18&year=2023",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"weekly",
-								"new"
-							],
+							"host": ["{{host}}"],
+							"path": ["weekly", "new"],
 							"query": [
 								{
 									"key": "week",
@@ -61,13 +56,8 @@
 						},
 						"url": {
 							"raw": "{{host}}/weekly/edit?id=23244773-715a-4c27-b2bf-34a6ba077476",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"weekly",
-								"edit"
-							],
+							"host": ["{{host}}"],
+							"path": ["weekly", "edit"],
 							"query": [
 								{
 									"key": "id",
@@ -122,12 +112,8 @@
 						},
 						"url": {
 							"raw": "{{host}}/weekly",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"weekly"
-							]
+							"host": ["{{host}}"],
+							"path": ["weekly"]
 						}
 					},
 					"response": [
@@ -172,12 +158,8 @@
 								},
 								"url": {
 									"raw": "{{host}}/weekly",
-									"host": [
-										"{{host}}"
-									],
-									"path": [
-										"weekly"
-									]
+									"host": ["{{host}}"],
+									"path": ["weekly"]
 								}
 							},
 							"status": "OK",
@@ -233,13 +215,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{host}}/weekly/delete?id=86451248-12eb-4110-bea2-be1e7df464a4",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"weekly",
-								"delete"
-							],
+							"host": ["{{host}}"],
+							"path": ["weekly", "delete"],
 							"query": [
 								{
 									"key": "id",
@@ -296,12 +273,8 @@
 						},
 						"url": {
 							"raw": "{{host}}/login",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"login"
-							]
+							"host": ["{{host}}"],
+							"path": ["login"]
 						}
 					},
 					"response": []
@@ -325,12 +298,8 @@
 						},
 						"url": {
 							"raw": "{{host}}/register",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"register"
-							]
+							"host": ["{{host}}"],
+							"path": ["register"]
 						}
 					},
 					"response": []
@@ -365,13 +334,8 @@
 						},
 						"url": {
 							"raw": "{{host}}/sounds/add",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"sounds",
-								"add"
-							]
+							"host": ["{{host}}"],
+							"path": ["sounds", "add"]
 						}
 					},
 					"response": []
@@ -386,12 +350,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{host}}/sounds?week=19&year=2023",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"sounds"
-							],
+							"host": ["{{host}}"],
+							"path": ["sounds"],
 							"query": [
 								{
 									"key": "week",
@@ -412,12 +372,8 @@
 								"header": [],
 								"url": {
 									"raw": "{{host}}/sounds?week=19&year=2023",
-									"host": [
-										"{{host}}"
-									],
-									"path": [
-										"sounds"
-									],
+									"host": ["{{host}}"],
+									"path": ["sounds"],
 									"query": [
 										{
 											"key": "week",
@@ -483,13 +439,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{host}}/sounds/629d36bc-5a09-49ff-b64d-0ef66063a5ac",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"sounds",
-								"629d36bc-5a09-49ff-b64d-0ef66063a5ac"
-							]
+							"host": ["{{host}}"],
+							"path": ["sounds", "629d36bc-5a09-49ff-b64d-0ef66063a5ac"]
 						}
 					},
 					"response": []
@@ -511,13 +462,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{host}}/sounds/vote?id=4bb9fa71-3148-4e1b-91be-90e93a85cffc&week=19&year=2023",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"sounds",
-								"vote"
-							],
+							"host": ["{{host}}"],
+							"path": ["sounds", "vote"],
 							"query": [
 								{
 									"key": "id",
@@ -543,13 +489,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{host}}/sounds/devote?id=a190cca9-7d7a-4d36-9c22-e9d19fd6e912&week=18&year=2023",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"sounds",
-								"devote"
-							],
+							"host": ["{{host}}"],
+							"path": ["sounds", "devote"],
 							"query": [
 								{
 									"key": "id",
@@ -585,13 +526,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{host}}/sounds/all",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"sounds",
-								"all"
-							]
+							"host": ["{{host}}"],
+							"path": ["sounds", "all"]
 						}
 					},
 					"response": [
@@ -602,13 +538,8 @@
 								"header": [],
 								"url": {
 									"raw": "{{host}}/sounds/all",
-									"host": [
-										"{{host}}"
-									],
-									"path": [
-										"sounds",
-										"all"
-									]
+									"host": ["{{host}}"],
+									"path": ["sounds", "all"]
 								}
 							},
 							"status": "OK",
@@ -664,13 +595,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{host}}/sounds/delete?id=39ea03e2-6ca3-4c01-a873-496a2ae54723",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"sounds",
-								"delete"
-							],
+							"host": ["{{host}}"],
+							"path": ["sounds", "delete"],
 							"query": [
 								{
 									"key": "id",
@@ -697,13 +623,8 @@
 						},
 						"url": {
 							"raw": "{{host}}/sounds/rename?id=15264a02-a040-4403-93bd-7573fc725d13",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"sounds",
-								"rename"
-							],
+							"host": ["{{host}}"],
+							"path": ["sounds", "rename"],
 							"query": [
 								{
 									"key": "id",
@@ -726,13 +647,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{host}}/token/create",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"token",
-								"create"
-							]
+							"host": ["{{host}}"],
+							"path": ["token", "create"]
 						}
 					},
 					"response": []
@@ -744,13 +660,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{host}}/token/",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"token",
-								""
-							]
+							"host": ["{{host}}"],
+							"path": ["token", ""]
 						}
 					},
 					"response": []
@@ -762,13 +673,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{host}}/token/delete?id=eeb0267d-6f7f-4017-94b2-5d23720c4306",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"token",
-								"delete"
-							],
+							"host": ["{{host}}"],
+							"path": ["token", "delete"],
 							"query": [
 								{
 									"key": "id",
@@ -791,13 +697,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{host}}/users/all",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"users",
-								"all"
-							]
+							"host": ["{{host}}"],
+							"path": ["users", "all"]
 						}
 					},
 					"response": [
@@ -808,13 +709,8 @@
 								"header": [],
 								"url": {
 									"raw": "{{host}}/users/all",
-									"host": [
-										"{{host}}"
-									],
-									"path": [
-										"users",
-										"all"
-									]
+									"host": ["{{host}}"],
+									"path": ["users", "all"]
 								}
 							},
 							"status": "OK",
@@ -870,13 +766,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{host}}/users/delete?id=0ced448d-90c4-4047-8e44-45500303bb5f",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"users",
-								"delete"
-							],
+							"host": ["{{host}}"],
+							"path": ["users", "delete"],
 							"query": [
 								{
 									"key": "id",
@@ -893,13 +784,8 @@
 								"header": [],
 								"url": {
 									"raw": "{{host}}/users/delete?id=0ced448d-90c4-4047-8e44-45500303bb5f",
-									"host": [
-										"{{host}}"
-									],
-									"path": [
-										"users",
-										"delete"
-									],
+									"host": ["{{host}}"],
+									"path": ["users", "delete"],
 									"query": [
 										{
 											"key": "id",
@@ -962,18 +848,14 @@
 			"listen": "prerequest",
 			"script": {
 				"type": "text/javascript",
-				"exec": [
-					""
-				]
+				"exec": [""]
 			}
 		},
 		{
 			"listen": "test",
 			"script": {
 				"type": "text/javascript",
-				"exec": [
-					""
-				]
+				"exec": [""]
 			}
 		}
 	],

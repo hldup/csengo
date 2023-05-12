@@ -1,175 +1,203 @@
-import express, { Request,  Response } from 'express';
-import { checkSchema, validationResult } from 'express-validator';
-import Sound from '../models/sound';
-import votingSession, {  currentWeek } from '../models/weekly';
-import Vote from '../models/votes';
-import { Op } from 'sequelize';
-import dayjs from 'dayjs';
+import express, { Request, Response } from "express";
+import { checkSchema, validationResult } from "express-validator";
+import Sound from "../models/sound";
+import votingSession, { currentWeek } from "../models/weekly";
+import Vote from "../models/votes";
+import { Op } from "sequelize";
+import dayjs from "dayjs";
 const router = express.Router();
 
+router.post(
+	"/new",
+	checkSchema({
+		sounds: {
+			exists: true,
+			isArray: true,
+		},
+		"sounds.*": {
+			isString: true,
+			isUUID: true,
+		},
+		start: {
+			exists: true,
+			isISO8601: true,
+		},
+		end: { exists: true, isISO8601: true },
+	}),
+	async (req: Request, res: Response) => {
+		if (new Date(req.body.start) > new Date(req.body.end))
+			return res
+				.status(400)
+				.send({
+					error: "INVALID_DATE",
+					message: "Start date cannot be after end date!",
+				});
 
-router.post('/new',
-  checkSchema({
-    sounds: {
-      exists: true,
-      isArray:true,
-    },
-    "sounds.*":{
-      isString:true,
-      isUUID: true,
-    },
-    start: {
-      exists: true,
-      isISO8601: true
-    },
-    end:{ exists: true,
-      isISO8601: true
-    }
-  }),
-  async (req: Request, res: Response) => {    
-    if( (new Date(req.body.start) < new Date(req.body.end)))
-    return res.status(400).send({ error: "INVALID_DATE", message: "Start date cannot be after end date!" })
-   
-    // error handeling for headers/formdata
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ 
-      error:"INVALID_FORM", message:"Field given are invalid/misformed", errors: errors.array()
-     });
+		// error handeling for headers/formdata
+		const errors = validationResult(req);
+		if (!errors.isEmpty())
+			return res.status(400).json({
+				error: "INVALID_FORM",
+				message: "Field given are invalid/misformed",
+				errors: errors.array(),
+			});
 
-    // checking if sounds exist
-    for (let id of req.body.sounds){
-      if( !await Sound.findOne({where:{id: id}}) ) return res.status(400).send()
-    }
-    
-    if( await votingSession.findOne({ 
-      where:{
-        start:{ [Op.lte]: req.body.start  },
-        end: { [Op.gte]: req.body.end },
-      }})) return res.status(409).send("There is already a voting declared for that week, maybe edit it istead!")
+		// checking if sounds exist
+		for (let id of req.body.sounds) {
+			if (!(await Sound.findOne({ where: { id: id } })))
+				return res.status(400).send();
+		}
 
-    await votingSession.create({
-      sounds: req.body.sounds,
-      start: req.body.start, 
-      end: req.body.end, 
-    });
+		if (
+			await votingSession.findOne({
+				where: {
+					start: { [Op.lte]: req.body.start },
+					end: { [Op.gte]: req.body.end },
+				},
+			})
+		)
+			return res
+				.status(409)
+				.send(
+					"There is already a voting declared for that week, maybe edit it istead!"
+				);
 
-    for(let sound of req.body.sounds ){
-      await Vote.destroy({where: {sound: sound}})
-      sound = await Sound.findOne({where: {id: sound as string }})
-    };
+		await votingSession.create({
+			sounds: req.body.sounds,
+			start: req.body.start,
+			end: req.body.end,
+		});
 
-    res.send("Created the voting session")
-})
+		for (let sound of req.body.sounds) {
+			await Vote.destroy({ where: { sound: sound } });
+			sound = await Sound.findOne({ where: { id: sound as string } });
+		}
 
-router.post('/edit',
-  checkSchema({
-    sounds: {
-      exists: true,
-      isArray:true
-    },
-    "sounds.*":{
-      isString:true,
-      isUUID: true
-    },
-    start:{
-      exists: true,
-      isISO8601: true
-    },
-    end:{
-      exists: true,
-      isISO8601: true
-    },
-    id: {
-      in: "query",
-      exists: true,
-      isUUID: true
-    }
-  }),
-  async (req: Request, res: Response) => {    
-  
-    // error handeling for headers/formdata
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+		res.send("Created the voting session");
+	}
+);
 
-    // checking if a Vsession exists i
-    if(!await votingSession.findOne({where:{id: req.query.id as string }})) return res.status(404).send("There isn't a voting session under this id")
+router.post(
+	"/edit",
+	checkSchema({
+		sounds: {
+			exists: true,
+			isArray: true,
+		},
+		"sounds.*": {
+			isString: true,
+			isUUID: true,
+		},
+		start: {
+			exists: true,
+			isISO8601: true,
+		},
+		end: {
+			exists: true,
+			isISO8601: true,
+		},
+		id: {
+			in: "query",
+			exists: true,
+			isUUID: true,
+		},
+	}),
+	async (req: Request, res: Response) => {
+		// error handeling for headers/formdata
+		const errors = validationResult(req);
+		if (!errors.isEmpty())
+			return res.status(400).json({ errors: errors.array() });
 
-    // checking if sounds exist
-    for (let id of req.body.sounds){
-      if( !await Sound.findOne({where:{id: id}}) ) return res.status(400).send(" a sound given in a list does not exist")
-    }
+		// checking if a Vsession exists i
+		if (
+			!(await votingSession.findOne({ where: { id: req.query.id as string } }))
+		)
+			return res.status(404).send("There isn't a voting session under this id");
 
-    await votingSession.update({
-        sounds: req.body.sounds,
-        start: req.body.start as string,
-        end: req.body.end as string,
-      },{ where:{id: req.query.id as string}})
+		// checking if sounds exist
+		for (let id of req.body.sounds) {
+			if (!(await Sound.findOne({ where: { id: id } })))
+				return res.status(400).send(" a sound given in a list does not exist");
+		}
 
-    res.send("Voting session edited")
-})
+		await votingSession.update(
+			{
+				sounds: req.body.sounds,
+				start: req.body.start as string,
+				end: req.body.end as string,
+			},
+			{ where: { id: req.query.id as string } }
+		);
 
-router.post('/delete',
-  checkSchema({
-    id: {
-      in: "query",
-      exists: true,
-      isUUID: true
-    }
-  }),
-  async (req: Request, res: Response) => {    
-  
-    // error handeling for headers/formdata
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+		res.send("Voting session edited");
+	}
+);
 
-    // checking if a Vsession exists 
-    if(!await votingSession.findOne({where:{id: req.query.id as string}} )) return res.status(404).send("No voting session can be found under that id ")
+router.post(
+	"/delete",
+	checkSchema({
+		id: {
+			in: "query",
+			exists: true,
+			isUUID: true,
+		},
+	}),
+	async (req: Request, res: Response) => {
+		// error handeling for headers/formdata
+		const errors = validationResult(req);
+		if (!errors.isEmpty())
+			return res.status(400).json({ errors: errors.array() });
 
-    await votingSession.destroy({where:{id: req.query.id as string}})
-    res.send("Voting session deleted")
-})
+		// checking if a Vsession exists
+		if (
+			!(await votingSession.findOne({ where: { id: req.query.id as string } }))
+		)
+			return res
+				.status(404)
+				.send("No voting session can be found under that id ");
 
-router.get('/',
-  async (req: Request, res: Response) => {    
-    
-    let sessions = await votingSession.findAll({
-      attributes: ["id","sounds","start","end"]
-    })
-    if(!sessions || sessions.length == 0) return res.status(404).send("Ther are no voting sessions!")
-    for(let sess of sessions ){
-      let sounds = []
-      for(let sound of sess.sounds){
+		await votingSession.destroy({ where: { id: req.query.id as string } });
+		res.send("Voting session deleted");
+	}
+);
 
-          const dbsound = await Sound.findOne({
-            where:{id: sound as string},
-            attributes: ["id","name","createdAt"]
-          });
-          // @ts-ignore
-          dbsound?.votes = await (
-            await Vote.findAndCountAll({
-              where:{
-                sound: sound as string,
-                session: sess.id
-            }})).count
-          // @ts-ignore
-          sounds.push(dbsound)
-      }
-      // @ts-ignore
-      sess.sounds = sounds;
-      // @ts-ignore
-      sess.expired = sess.isExpired()
-    }
-    res.send(sessions.reverse());
-} )
+router.get("/", async (req: Request, res: Response) => {
+	let sessions = await votingSession.findAll({
+		attributes: ["id", "sounds", "start", "end"],
+	});
+	if (!sessions || sessions.length == 0)
+		return res.status(404).send("There are no voting sessions!");
+	for (let sess of sessions) {
+		let sounds = [];
+		for (let sound of sess.sounds) {
+			const dbsound = await Sound.findOne({
+				where: { id: sound as string },
+				attributes: ["id", "name", "createdAt"],
+			});
+			// @ts-ignore
+			dbsound?.votes = await (
+				await Vote.findAndCountAll({
+					where: {
+						sound: sound as string,
+						session: sess.id,
+					},
+				})
+			).count;
+			// @ts-ignore
+			sounds.push(dbsound);
+		}
+		// @ts-ignore
+		sess.sounds = sounds;
+		// @ts-ignore
+		sess.expired = sess.isExpired();
+	}
+	res.send(sessions.reverse());
+});
 
-router.get('/winners',
-  async (req: Request, res: Response) => {   
-    if(res.locals.weekly.isActive()) return res.status(403).send("Voting session has not ended yet!") 
-    res.send({
-      sounds: await res.locals.weekly.getWinners(1),
-      week: dayjs().week(),
-    })
-} )
-
+router.get("/winners", async (req: Request, res: Response) => {
+	res.send({
+		sounds: await res.locals.weekly.getWinners(1),
+	});
+});
 
 module.exports = router;

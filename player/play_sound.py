@@ -9,6 +9,8 @@ import uuid
 import schedule
 import requests
 import json
+from dotenv import dotenv_values
+import requests
 
 # --- Global ---------------------------------
 
@@ -20,14 +22,19 @@ csengo_times = [
     '11:40', '12:25',
     '12:35', '13:20',
     '13:25', '14:10',
-    '14:15', '15:00'
+    '14:15', '15:00',
+    "00:58"
 ]
 
-url = 'https://csengo.pollak.hu/files'
+config = dotenv_values(".env")
 
-myobj = {'secret': 'SECRET API KEY HERE'}
 
-song_stack = []
+url = config.get("API_URL")+"/weekly/winners"
+
+myobj = {"Authorization": config.get("API_TOKEN") }
+
+
+song = None
 
 # --- Functions ------------------------------
 
@@ -38,19 +45,19 @@ def get_songs():
     # Make song_stack empty
     song_stack = []
 
-    # Get files from server
-    r = requests.post(url, json = myobj)
+    # Get uuid of winner from server
+    r = requests.get(url, headers = myobj)
 
     if r.text == "":
         print("Can't get data from server")
         return
 
-
     files = json.loads(r.text)
-    for file in files:
-        print(file['uuid'])
-        # TODO: Add song to song stack
-    
+    sound = requests.get(
+        config.get("API_URL")+"/sounds/"+ files["sounds"][0]["id"],
+       headers = myobj 
+    )
+    song = sound.content
 
 def play_song(filename):
     mixer.music.load(filename)
@@ -61,9 +68,7 @@ def play_song(filename):
 
 def csengo():
     print("CSENGESSSSSSS")
-    if len(song_stack) > 0:
-        song = song_stack.pop(1)
-        play_song(song)
+    play_song(song)
 
 
 # --- Init -----------------------------------
@@ -74,6 +79,8 @@ mixer.init()
 
 # Get filenames from server
 get_songs()
+
+play_song(song)
 
 # Schedule times
 schedule.every().day.at('00:01').do(get_songs) # Every night get the new music files (and delete the old ones)
