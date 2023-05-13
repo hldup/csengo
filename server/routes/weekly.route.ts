@@ -165,8 +165,10 @@ router.get("/", async (req: Request, res: Response) => {
 	let sessions = await votingSession.findAll({
 		attributes: ["id", "sounds", "start", "end"],
 	});
+
 	if (!sessions || sessions.length == 0)
 		return res.status(404).send("There are no voting sessions!");
+
 	for (let sess of sessions) {
 		let sounds = [];
 		for (let sound of sess.sounds) {
@@ -188,9 +190,8 @@ router.get("/", async (req: Request, res: Response) => {
 		}
 		// @ts-ignore
 		sess.sounds = sounds;
-		// @ts-ignore
-		sess.expired = sess.isExpired();
 	}
+
 	res.send(sessions.reverse());
 });
 

@@ -4,7 +4,8 @@
 	<!--  basic profile prompt to log out -->
 	<div
 		class="text-center profile-options"
-		v-if="!$route.path.includes('login') && !$route.path.includes('register')"
+		v-if="!['/login','/admin','/register'].includes($route.path)
+		 "
 	>
 		<v-menu open-on-hover open-on-click>
 			<template v-slot:activator="{ props }">

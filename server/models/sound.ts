@@ -1,5 +1,6 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model, Op, Optional } from "sequelize";
 import connection from "../database";
+import votingSession from "./weekly";
 
 interface SoundAttributes {
 	id: string;
@@ -19,6 +20,20 @@ class Sound
 	public name!: string;
 	public votes!: number;
 	public path!: string;
+	public deletable!: boolean;
+
+
+	async isDeletable(){
+		const candelete: votingSession = await votingSession.findOne({
+			// @ts-ignore
+			where: {
+				sounds: { [Op.contains]: [this.id] },
+			},
+		});
+
+		if(!candelete) return  true;
+		return false;
+	}
 }
 
 Sound.init(

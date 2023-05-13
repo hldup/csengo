@@ -112,7 +112,7 @@ router.get("/all", async (req: Request, res: Response) => {
 		attributes: ["id", "name", "createdAt", "votes"],
 	});
 	if (sounds.length == 0) return res.sendStatus(404);
-
+	
 	res.send(sounds);
 });
 
@@ -177,7 +177,7 @@ router.post(
 			session: res.locals.votingSession.id,
 		});
 
-		await Sound.update({ votes: sound.votes + 1 }, { where: { id: sound.id } });
+		await Sound.update({ votes: (sound.votes + 1) }, { where: { id: sound.id } });
 		res.sendStatus(200);
 	}
 );
@@ -223,7 +223,7 @@ router.post(
 			},
 		});
 
-		await Sound.update({ votes: sound.votes - 1 }, { where: { id: sound.id } });
+		await Sound.update({ votes: (sound.votes - 1) }, { where: { id: sound.id } });
 		res.sendStatus(200);
 	}
 );
@@ -257,6 +257,38 @@ router.post(
 		);
 
 		res.send("Renamed");
+	}
+);
+
+// check if sound can be deleted
+router.get(
+	"/deletecheck",
+	checkSchema({
+		id: {
+			in: ['query'],
+			isString: true,
+			exists: true,
+			isUUID: true,
+		},
+	}),
+	async (req: Request, res: Response) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty())
+			return res.status(400).json({ errors: errors.array() });
+
+		console.log(req.query)
+	// if sound is in a voting session reject
+	if (
+		await votingSession.findOne({
+			// @ts-ignore
+			where: {
+				sounds: { [Op.contains]: [req.query.id as string] },
+			},
+		})
+		)
+		return res.send(false);
+
+		res.send(true);
 	}
 );
 

@@ -1,6 +1,6 @@
 <template>
 	<h1>Hangok</h1>
-	<v-table height="40em">
+	<v-table height="40em" fixed-header>
 		<thead>
 			<tr>
 				<th class="text-left">Neve</th>
@@ -28,6 +28,12 @@
 						>Módosítás</v-btn
 					>
 				</td>
+				<td>
+					<v-btn color="error" 
+					:disabled="cantdelete.includes(sound.id)"
+					@click="del(sound.id)"
+					> Törlés</v-btn>
+				</td>
 			</tr>
 		</tbody>
 	</v-table>
@@ -54,37 +60,38 @@
 		</v-card>
 	</v-dialog>
 
-	<div class="text-center">
-		<v-dialog v-model="createPrompt" width="auto">
-			<template v-slot:activator="{ hangprop }">
-				<v-btn
-					color="primary"
-					v-bind="hangprop"
-					@click="
-						file = null;
-						name: '';
-					"
-				>
-					Létrehozás
-				</v-btn>
-			</template>
 
-			<v-card style="padding: 2em">
-				<h1>Létrehozás</h1>
-				<v-sheet width="300" class="mx-auto">
-					<v-form @submit.prevent>
-						<v-text-field v-model="name" label="Név" type="text"></v-text-field>
+  <div class="text-center">
+    <v-dialog
+      v-model="addSound"
+      width="auto"
+    >
+      <template v-slot:activator="{ props }">
+        <v-btn
+          color="primary"
+          v-bind="props"
+		  @click="
+		  sound = null;
+		  name = ''
+		  "
+        >
+          Létrehozás
+        </v-btn>
+      </template>
 
-						<v-file-input label="Hang fájl" accept=".mp3" v-model="sound" />
+      <v-card style="padding: 2em;">
+		<h1>Hang létrehozása</h1>
+		<v-sheet width="300" class="mx-auto">
+			<v-form @submit.prevent >
+				<v-text-field  v-model="name" label="Név" type="text"></v-text-field>
+				<v-file-input label="Hang fájl" accept=".mp3" v-model="sound" />
+				<v-btn type="submit" block class="mt-2" @click="create"> Létrehozás</v-btn>
+			</v-form>
+		</v-sheet>
+      </v-card>
+    </v-dialog>
+  </div>
 
-						<v-btn type="submit" block class="mt-2" @click="create">
-							Létrehozás</v-btn
-						>
-					</v-form>
-				</v-sheet>
-			</v-card>
-		</v-dialog>
-	</div>
 </template>
 
 <script>
@@ -95,15 +102,20 @@ export default {
 		return {
 			sounds: [],
 			// edit
+			dialog: false,
 			editDialog: false,
 			editSound: null,
+			addSound: false,
 			// create
 			createPrompt: false,
-			sound: null,
+
+			sound: '',
 			name: "",
+			cantdelete: [],
 		};
 	},
 	async mounted() {
+		await this.getsessions()
 		try {
 			// getting sounds
 			await axios({
@@ -137,11 +149,59 @@ export default {
 			await axios({
 				method: "post",
 				url: import.meta.env.VITE_API_URL + "/sounds/add",
-				params: { id: this.editSound.id },
 				data: form,
 				withCredentials: true,
 			}).then(response => {
-				console.log("asd");
+				this.addSound = false;
+			});
+			await this.get()
+		},
+		get: async function(){
+			try {
+				// getting sounds
+				await axios({
+					method: "get",
+					url: import.meta.env.VITE_API_URL + "/sounds/all",
+					withCredentials: true,
+				}).then(response => {
+					this.sounds = response.data;
+				});
+			} catch (error) {
+				console.log(error);
+			}
+		},
+		del: async function(id){
+			try {
+				// getting sounds
+				await axios({
+					method: "post",
+					url: import.meta.env.VITE_API_URL + "/sounds/delete",
+					params: {
+						id: id
+					},
+					withCredentials: true,
+				}).then( async response => {
+					await this.get();
+				});
+			} catch (error) {
+				console.log(error);
+			}
+		},
+		getsessions: async function () {
+			// getting sounds
+			await axios({
+				method: "get",
+				url: import.meta.env.VITE_API_URL + "/weekly",
+				withCredentials: true,
+			}).then((response)=>{
+				
+				for(let session of response.data){
+					for(let sound of session.sounds){
+					if(!this.cantdelete.includes(sound.id)){
+						this.cantdelete.push(sound.id)
+					}
+				}
+				}
 			});
 		},
 	},
