@@ -133,3 +133,5 @@ server/data/sounds
 *.local
 tanulok.csv
 output.txt
+local_dockercompose.yaml
+player/sound.mp3

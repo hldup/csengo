@@ -46,22 +46,59 @@ git clone https://github.com/berryes/csengo
 cd csengo/server && docker build -t berryes/csengoserver . 
 ```
 
-3. Run server
+3. Build docker image for the frontend
 ```
-docker run -it -p 3000:3000 --name csengoserver berryes/csengoserver
-```
-
-4. Build docker image for the frontend
-```
-cd .. && cd frontend && docker build -t berryes/csengoclient . --build-arg VUE_APP_SERVER_API=https://domain.example
+cd .. && cd client && docker build -t berryes/csengoclient .
 ```
 
-3. Run frontend
-```
-docker run -it -p 8080:8080 --name csengofrontend berryes/csengoclient
-```
+4. Run via docker compose
+```yaml
+version: "3.9"
+# DONT FORGET TO BUILD THE IMAGES FIRST! AND MAKE SURE THEIR ALIASES ARE SET (berryes/csengoserver)
+services:
+  server:
+    image: berryes/csengoserver
+    
+    volumes:
+      - /root/pollak/sounds/:/data/sounds
+    environment:
+      PORT: 3000
+      HCAPTCHA_SECRET: "secret"
+      TOKEN_SECRET: "encryption key, random string"
+      DB_NAME: csengo
+      DB_USER: csengo
+      DB_PASS: csengopass
+      DB_HOST: csengopostgres
+    links:
+      - database
+    depends_on:
+      - database
 
+    networks:
+      - csengo
+      
+  client:
+    image: berryes/csengoclient
+    networks:
+      - csengo
 
+  database:
+    image: 'postgres:latest'
+    hostname: csengopostgres
+    ports:
+      - "5432"
+    environment:
+      POSTGRES_USER: csengo 
+      POSTGRES_PASSWORD: csengopass
+      POSTGRES_DB: csengo
+    
+    networks:
+      - csengo
+
+networks:
+  csengo:
+    driver: bridge
+```
 
 
 # Contributing & feature request
