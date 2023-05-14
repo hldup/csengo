@@ -45,8 +45,8 @@
 					v-bind="createPrompt"
 					@click="
 						selectedSounds = [];
-						start: '';
-						end: '';
+						start= '';
+						end= '';
 						createSession = true
 					"
 				>

@@ -108,7 +108,7 @@ export default {
 			},
 		],
 
-		hcaptchaKey: "asd",
+		hcaptchaKey: "",
 	}),
 	methods: {
 		register: async function () {
