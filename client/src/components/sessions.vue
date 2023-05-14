@@ -122,6 +122,7 @@ export default {
 	
 	methods: {
 		getSessions: async function () {
+			try{
 			await axios({
 				method: "get",
 				url: import.meta.env.VITE_API_URL + "/weekly",
@@ -129,16 +130,23 @@ export default {
 			}).then(response => {
 				this.sessions = response.data;
 			});
+			}catch(error){
+				console.log(error)
+			}
 		},
 		getSounds: async function () {
-			await axios({
-				method: "get",
-				url: import.meta.env.VITE_API_URL + "/sounds/all",
-				withCredentials: true,
-			}).then(response => {
-				console.log("hangok", response.data);
-				this.sounds = response.data;
-			});
+			try{
+				await axios({
+					method: "get",
+					url: import.meta.env.VITE_API_URL + "/sounds/all",
+					withCredentials: true,
+				}).then(response => {
+					console.log("hangok", response.data);
+					this.sounds = response.data;
+				});
+			}catch(error){
+				console.log("Failed to get sounds")
+			}
 		},
 
 		edit: function (session) {

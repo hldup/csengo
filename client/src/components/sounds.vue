@@ -27,12 +27,12 @@
 						"
 						>Módosítás</v-btn
 					>
-				</td>
-				<td>
+					
 					<v-btn color="error" 
 					:disabled="cantdelete.includes(sound.id)"
 					@click="del(sound.id)"
 					> Törlés</v-btn>
+	
 				</td>
 			</tr>
 		</tbody>
@@ -167,7 +167,7 @@ export default {
 					this.sounds = response.data;
 				});
 			} catch (error) {
-				console.log(error);
+				console.log("failed to get sounds:", error.response || error);
 			}
 		},
 		del: async function(id){
@@ -188,13 +188,15 @@ export default {
 			}
 		},
 		getsessions: async function () {
+			try{
+
 			// getting sounds
 			await axios({
 				method: "get",
 				url: import.meta.env.VITE_API_URL + "/weekly",
 				withCredentials: true,
 			}).then((response)=>{
-				
+				if(!response.data.sounds) return;
 				for(let session of response.data){
 					for(let sound of session.sounds){
 					if(!this.cantdelete.includes(sound.id)){
@@ -203,6 +205,9 @@ export default {
 				}
 				}
 			});
+			}catch(error){
+				console.log(error)
+			}
 		},
 	},
 };

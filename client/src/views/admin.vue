@@ -25,6 +25,7 @@
 <script>
 import soundsVue from "@/components/sounds.vue";
 import sessionsVue from "@/components/sessions.vue";
+import VueCookies from "vue-cookies";
 export default {
 	components: { soundsVue, sessionsVue },
 	data() {
