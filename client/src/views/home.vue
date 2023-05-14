@@ -10,7 +10,7 @@
 					<img
 						:id="sound.id"
 						@click="playSound(sound.id)"
-						src="play-fill.svg"
+						src="/icons/play-fill.svg"
 						alt="Lejátszás"
 						height="64"
 					/>
@@ -20,7 +20,7 @@
 							{{ sound.votes }}
 							<img
 								height="24"
-								src="hand-thumbs-up.svg"
+								src="/icons/hand-thumbs-up.svg"
 								alt="Tetszik"
 								class="vote"
 							/>
@@ -37,7 +37,7 @@
 				<img
 					:id="sound.id"
 					@click="playSound(sound.id)"
-					src="play-fill.svg"
+					src="/icons/play-fill.svg"
 					alt="Lejátszás"
 					height="64"
 				/>
@@ -46,7 +46,7 @@
 					<img
 						v-if="uservotes.includes(sound.id)"
 						height="32"
-						src="hand-thumbs-up-fill.svg"
+						src="/icons/hand-thumbs-up-fill.svg"
 						alt="Tetszik"
 						class="vote"
 						@click="vote(sound)"
@@ -54,7 +54,7 @@
 					<img
 						v-if="!uservotes.includes(sound.id)"
 						height="32"
-						src="hand-thumbs-up.svg"
+						src="/icons/hand-thumbs-up.svg"
 						alt="Tetszik"
 						class="vote"
 						@click="vote(sound)"
@@ -137,10 +137,10 @@ export default {
 			this.audio.volume = 0.2;
 			this.audio.play();
 			this.icon = uuid;
-			document.getElementById(uuid).src = "pause-fill.svg";
+			document.getElementById(uuid).src = "/icons/pause-fill.svg";
 
 			this.audio.addEventListener("ended", function () {
-				document.getElementById(uuid).src = "play-fill.svg";
+				document.getElementById(uuid).src = "/icons/play-fill.svg";
 			});
 		},
 		// ugly, dont look

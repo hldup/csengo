@@ -23,7 +23,7 @@ class votingSession extends Model<votingSessionAttributes, votingSessionInput> {
 	public sounds!: string;
 	public start!: string;
 	public end!: string;
-
+	public expired!: boolean;
 	public topfive!: object;
 
 	isExpired(): boolean {

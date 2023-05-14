@@ -1,8 +1,9 @@
 <template>
 	<h1>Szavazások</h1>
-	<v-table>
+	<v-table fixed-header >
 		<thead>
 			<tr>
+				<th class="text-left">Státusz</th>
 				<th class="text-left">Kezdés</th>
 				<th class="text-left">Végzés</th>
 				<th class="text-left">Eddigi szavazatok</th>
@@ -12,6 +13,8 @@
 
 		<tbody>
 			<tr v-for="session in sessions" :key="session.id">
+			<td>-</td>
+
 				<td>
 					{{ new Intl.DateTimeFormat("hu-Hu").format(new Date(session.start)) }}
 				</td>
@@ -36,21 +39,22 @@
 
 	<div class="text-center">
 		<v-dialog v-model="createSession" width="auto">
-			<template v-slot:activator="{ props }">
+			<template v-slot:activator="{ createPrompt }">
 				<v-btn
 					color="primary"
-					v-bind="props"
+					v-bind="createPrompt"
 					@click="
 						selectedSounds = [];
-						start: '';
-						end: '';
+						start= '';
+						end= '';
+						createSession = true
 					"
 				>
 					Létrehozás
 				</v-btn>
 			</template>
 
-			<v-card style="padding: 2em">
+			<v-card style="padding: 2em" v-if="createPrompt">
 				<h1>Létrehozás</h1>
 				<v-sheet width="300" class="mx-auto">
 					<v-form @submit.prevent>
@@ -79,7 +83,8 @@
 							persistent-hint
 						></v-select>
 
-						<v-btn type="submit" block class="mt-2" @click="create" />
+						<v-btn type="submit" block class="mt-2" @click="create" >Létrehozás</v-btn>
+						<v-btn type="submit" color="error" block class="mt-2" @click="createSession = false" >Mégse</v-btn>
 					</v-form>
 				</v-sheet>
 			</v-card>
@@ -94,6 +99,7 @@ export default {
 		sessions: [],
 		createSession: false,
 		sounds: [],
+		createPrompt: true,
 
 		start: "",
 		end: "",
@@ -107,13 +113,16 @@ export default {
 	}),
 
 	async mounted() {
+		await this.getSessions();
 		await this.getSounds();
 		setInterval(async () => {
 			await this.getSessions();
 		}, 5000);
 	},
+	
 	methods: {
 		getSessions: async function () {
+			try{
 			await axios({
 				method: "get",
 				url: import.meta.env.VITE_API_URL + "/weekly",
@@ -121,16 +130,23 @@ export default {
 			}).then(response => {
 				this.sessions = response.data;
 			});
+			}catch(error){
+				console.log(error)
+			}
 		},
 		getSounds: async function () {
-			await axios({
-				method: "get",
-				url: import.meta.env.VITE_API_URL + "/sounds/all",
-				withCredentials: true,
-			}).then(response => {
-				console.log("hangok", response.data);
-				this.sounds = response.data;
-			});
+			try{
+				await axios({
+					method: "get",
+					url: import.meta.env.VITE_API_URL + "/sounds/all",
+					withCredentials: true,
+				}).then(response => {
+					console.log("hangok", response.data);
+					this.sounds = response.data;
+				});
+			}catch(error){
+				console.log("Failed to get sounds")
+			}
 		},
 
 		edit: function (session) {
@@ -159,6 +175,7 @@ export default {
 			}).then(response => {
 				this.getSessions();
 				console.log(response.data);
+				this.createSession = false;
 			});
 		},
 

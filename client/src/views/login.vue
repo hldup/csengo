@@ -66,7 +66,7 @@ export default {
 		],
 
 		password: "",
-		hcaptchaKey: "asd",
+		hcaptchaKey: "",
 	}),
 	methods: {
 		register: async function () {

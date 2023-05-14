@@ -92,7 +92,7 @@ router.use(async (req, res, next) => {
 		// checking if there is a voting session happening as of now
 		// if the api hit is asking for the weekly winners just get the last week's session
 		let this_week = await currentWeek();
-
+ 
 		if (!this_week?.isActive() && !req.path.includes("/weekly/winners"))
 			return res
 				.status(410)
@@ -126,6 +126,7 @@ router.use(async (req, res, next) => {
 		"/sounds/delete",
 		"/sounds/all",
 		"/sounds/rename",
+		"/sounds/deletecheck",
 		"/token",
 	];
 	if (!req.headers.authorization) {

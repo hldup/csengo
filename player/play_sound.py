@@ -11,7 +11,6 @@ import requests
 import json
 from dotenv import dotenv_values
 import requests
-
 # --- Global ---------------------------------
 
 csengo_times = [
@@ -23,7 +22,6 @@ csengo_times = [
     '12:35', '13:20',
     '13:25', '14:10',
     '14:15', '15:00',
-    "00:58"
 ]
 
 config = dotenv_values(".env")
@@ -34,7 +32,7 @@ url = config.get("API_URL")+"/weekly/winners"
 myobj = {"Authorization": config.get("API_TOKEN") }
 
 
-song = None
+song = "sound.mp3"
 
 # --- Functions ------------------------------
 
@@ -42,22 +40,22 @@ def get_csengo_times():
     print("Getting csengo times")
 
 def get_songs():
-    # Make song_stack empty
-    song_stack = []
+    song = None
 
-    # Get uuid of winner from server
+    # Get  winner from server
     r = requests.get(url, headers = myobj)
-
     if r.text == "":
         print("Can't get data from server")
         return
 
+    # getting sound file from server    
     files = json.loads(r.text)
-    sound = requests.get(
-        config.get("API_URL")+"/sounds/"+ files["sounds"][0]["id"],
-       headers = myobj 
-    )
-    song = sound.content
+    soundurl = config.get("API_URL")+"/sounds/"+ files["sounds"][0]["id"]
+
+    # writing response to mp3 file
+    response = requests.get( soundurl,headers = myobj  )
+    open("sound.mp3", "wb").write(response.content)
+
 
 def play_song(filename):
     mixer.music.load(filename)
@@ -67,13 +65,13 @@ def play_song(filename):
 
 
 def csengo():
-    print("CSENGESSSSSSS")
     play_song(song)
 
 
 # --- Init -----------------------------------
 
 mixer.init()
+mixer.music.set_volume(.10) # preventing earrape
 
 # --- Main ----------------------------------
 
