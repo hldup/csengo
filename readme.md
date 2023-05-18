@@ -12,13 +12,10 @@
 This project is still in Alpha and needs testing. Dataloss, breaches and spam might cause the app to fail.
 
 # Plans for the future
- - Backend rewrite in rust.
- - Frontend redesign
- - Moving to postgres
+ - Backend rewrite in rust?
+ - move to session base outh. (using signed jwt now. ik dumb)
  - More functions
  - Offline browser app (Add to homepage)
- - Caching
- - Winner announcements 
 
 # What's this?
 A really basic voting system for deciding which sound becomes the bell at my school.
@@ -33,9 +30,9 @@ Backend: Typescript
 
 Frontend: JS
 - Framework: [Vue](https://vuejs.org/)
-- CSS: Custom & examples from codepen (MIT)
+- CSS: [Vuetify](https://vuetifyjs.com/)
 
-# Running
+# Building for production
 1. Clone the repo
 ```
 git clone https://github.com/berryes/csengo
@@ -100,6 +97,49 @@ networks:
     driver: bridge
 ```
 
+# Developement
+
+#### Client (frontend)
+1. install packages
+```
+yarn install
+```
+
+2. create .env file
+```env
+VITE_API_URL=http://url-of-host:3000/
+```
+
+3. run the client
+```
+yarn dev
+```
+
+#### Server (backend)
+1. install packages
+```
+npm install
+```
+
+2. create .env file
+```env
+PORT=3000
+HCAPTCHA_SECRET=get this from the hcaptcha page
+TOKEN_SECRET=verylongstriongthatmakesjwttokens
+
+DB_NAME=csengots
+DB_USER=root
+DB_PASS=root
+DB_HOST=csengodb
+
+# delete if not in developement
+DEV=1
+```
+
+4. run the server
+```
+npm run serve
+```
 
 # Contributing & feature request
 I'm looking for people that could maybe join besides me and devour their free time to keep the project going. (Contact me) 
