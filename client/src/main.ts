@@ -17,4 +17,13 @@ const app = createApp(App);
 
 registerPlugins(app);
 
+app.mixin({
+  methods: {
+     handleApiError: function (error: object) {
+        // @ts-ignore
+        console.log(error.response)
+    },
+  },
+})
+
 app.mount("#app");

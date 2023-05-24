@@ -70,6 +70,7 @@
 import axios from "axios";
 import backgroundVue from "@/components/background.vue";
 import countdownVue from "@/components/countdown.vue";
+import VueCookies from "vue-cookies";
 // import VueCookies from 'vue-cookies';
 export default {
 	name: "HomeView",
@@ -180,6 +181,10 @@ export default {
 						}
 						break;
 
+					case 401:
+						VueCookies.remove("Ptoken")
+						this.$router.push("/login")
+					break;
 					default:
 						break;
 				}

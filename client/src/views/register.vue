@@ -136,6 +136,11 @@ export default {
 					},
 				});
 			} catch (error) {
+				if(!error.response) {
+					this.error =" Nem lehet elérni a szervert!"
+					this.showError = true;
+					return
+				}
 				switch (error.response.status) {
 					case 403:
 						this.error = "Ezekkel az adatokkal már regisztráltak!";
@@ -148,9 +153,9 @@ export default {
 				return console.log(error);
 			}
 			this.$router.push({ path: "/" });
-			console.log("can register");
 		},
 		captchaFill: function (token) {
+			console.log(token)
 			this.hcaptchaKey = token;
 		},
 	},

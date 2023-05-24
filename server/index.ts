@@ -68,14 +68,18 @@ const port = process.env.PORT;
 	}
 })();
 
+app.set('trust proxy', 1) // trust first proxy
+
+app.use(require("./middleware/session.middleware"));
 // middleware for protected (admin) routes
 app.use(require("./middleware/protected"));
+//session management
 
 app.use("/sounds/", require("./routes/sounds.route"));
 
 app.use("/weekly", require("./routes/weekly.route"));
 
-app.use("/", require("./routes/sign.route"));
+app.use("/", require("./routes/auth.route"));
 
 app.use("/token", require("./routes/token.route"));
 

@@ -1,5 +1,4 @@
 <template>
-	<home-alert-vue class="alertus" />
 
 	<!--  basic profile prompt to log out -->
 	<div
@@ -32,6 +31,14 @@ export default {
 		return {
 			cache: false,
 		};
+	},
+	data(){return{
+		notice: false,
+	}},
+	mounted(){
+		if(!VueCookies.get("notice")){
+			this.notice = true;
+		}
 	},
 	methods: {
 		logout: function () {

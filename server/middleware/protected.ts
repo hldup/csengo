@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import votingSession, { currentWeek } from "../models/weekly";
 import { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
 import Token from "../models/token";
@@ -8,6 +8,7 @@ const router = express.Router();
 
 let unprotected_paths = ["/register", "/login"];
 router.use(async (req, res, next) => {
+	
 	// log request when done
 	res.on("finish", () => {
 		console.log(
@@ -37,55 +38,32 @@ router.use(async (req, res, next) => {
 				where: { key: req.headers.authorization.split(" ")[1] },
 			}))
 		)
-			return res.status(400).send("Invalid API key");
+			return res.status(400).send({
+				error: "INVALID_KEY",
+				message:"Your API key is invalid!"
+			});
 	}
 
-	let token = null;
+	// filtering out cookie based requests	
 	if (!req.headers.authorization) {
+
 		// of no cookie, just return
-		if (!req.cookies["Ptoken"])
-			return res.status(401).send("You are not authenticated!");
+		if(!req.session)
+			return res.status(401).send({error: "NO_AUTH", message: "You are not authenticated!" });
 
-		token = jwt.verify(
-			req.cookies["Ptoken"],
-			process.env.TOKEN_SECRET,
-			(err: JsonWebTokenError, data: JwtPayload) => {
-				return data;
-			}
-		);
-
-		if (!token)
-			// token might be forged or not be a jwt token at all
-			return res
-				.status(403)
-				.send({
-					error: "COOKIE_INVALID",
-					message: "Your cookie is either forged/misformed! Log out! ",
-				});
-
-		// if jwt is expired return
-		if (token.expires < Date.now())
-			return res
-				.status(498)
-				.send({
-					error: "COOKIE_EXPIRED",
-					message: "Your cookie has expired, Log out!",
-				});
-
-		// if there is an user agent mismatch
-		if (req.get("user-agent") != token.agent)
+		// @ts-ignore
+		if (req.get("user-agent") != req.session["agent"])
 			return res
 				.status(401)
 				.send({
 					error: "UA_MISMATCH",
 					message:
-						"Your user-agent does not match the one you signed in with! log out!",
+						"Your user-agent does not match the one you signed in with!  log out!",
 				});
 	}
 
 	// Filtering here {in the middleware} instead of repeating this code 3x
-	if (
-		["/sounds/vote", "/sounds/devote", "/sounds", "/weekly/winners"].includes(
+	if (["/sounds/vote", "/sounds/devote", "/sounds", "/weekly/winners"].includes(
 			req.path
 		)
 	) {
@@ -100,7 +78,9 @@ router.use(async (req, res, next) => {
 					error: "SESSION_ENDED",
 					message: "The voting session has closed",
 				});
+	
 		else {
+			// TODO idk i forgor
 			this_week = await votingSession.findOne({
 				limit: 1,
 				order: [["createdAt", "DESC"]],
@@ -130,9 +110,12 @@ router.use(async (req, res, next) => {
 		"/token",
 	];
 	if (!req.headers.authorization) {
-		if (protected_routes.includes(req.path) && !token.administrator)
-			return res.status(401).send("You have no permission for this");
-		res.locals.token = token;
+		// @ts-ignore
+		if (protected_routes.includes(req.path) && !req.session.administrator)
+			return res.status(401).send({
+				error: "INSUFFICIENT_PERM",
+				message: "You do not have permission for this action!"
+			});
 	}
 	next();
 });

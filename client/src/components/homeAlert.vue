@@ -17,9 +17,9 @@
 export default {
 	data() {
 		return {
-			title: "Example title",
+			title: "Értesítés",
 			message:
-				"Your logins have been terminated due to the betatesting period, may i ask you to re-register with the according data bla blab bla bla somethin ghere",
+				"A bétatesztelő időszaknak vége, kérem mindenki regisztráljon be újra",
 		};
 	},
 };

@@ -1,6 +1,8 @@
 <template>
 	<background-vue />
+	
 	<v-sheet class="mx-auto cs-form">
+
 		<v-form fast-fail @submit.prevent>
 			<h1>Pollák</h1>
 			<h4>

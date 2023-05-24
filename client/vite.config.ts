@@ -30,7 +30,7 @@ export default defineConfig({
 		extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
 	},
 	server: {
-		host: true,
 		port: 8080,
+		host: true,
 	},
 });

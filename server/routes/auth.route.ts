@@ -1,16 +1,19 @@
 import express, { Request, Response } from "express";
 import { checkSchema, validationResult } from "express-validator";
 import axios from "axios";
-const router = express.Router();
 import bcrypt from "bcrypt";
 import User from "../models/users";
 import Om from "../models/om";
-// no idea why i have to import it like this to work
-const jwt = require("jsonwebtoken");
+const router = express.Router();
+router.post(
+	"/healthcheck",
+	async (req: Request, res: Response) => {
+		return res.send("Ok")
+});
+
 
 router.post(
 	"/login",
-	// header checking
 	checkSchema({
 		username: {
 			in: ["body"],
@@ -53,22 +56,16 @@ router.post(
 
 		// if hashed pass dont match
 		if (!(await bcrypt.compare(req.body.password, user.password)))
-			return res.status(401).send("hash dont match");
+			return res.status(401).send();
 
-		// creating token for user
-		let token = jwt.sign(
-			{
-				id: user.id,
-				username: user.username,
-				expires: Date.now() + 1209600000,
-				agent: req.get("user-agent"),
-				administrator: user.administrator,
-			},
-			process.env.TOKEN_SECRET
-		);
+		//@ts-ignore retarded js
+		req.session.userId = user.id,
+		//@ts-ignore retarded js
+		req.session.administrator = user.administrator,
+		//@ts-ignore
+		req.session.agent = req.get("user-agent"),
+		
 
-		// in case already has session
-		res.cookie("Ptoken", token);
 		res.sendStatus(200);
 	}
 );
@@ -81,20 +78,17 @@ router.post(
 			notEmpty: true,
 			isLength: { options: { min: 3, max: 64 } },
 			isAlphanumeric: true,
-			// TODO, check for any special charachters that should not be in the db
 		},
 		password: {
 			isString: true,
 			notEmpty: true,
 			isLength: { options: { min: 3, max: 64 } },
 		},
-		// TODO: filter max length since big int has a limit that could crash the server
 		om: {
 			isString: true,
 			notEmpty: true,
 			isNumeric: true,
 		},
-		// TODO, check for any special charachters that should not be in the db
 		hcaptchaKey: {
 			isString: true,
 			notEmpty: true,
@@ -106,7 +100,7 @@ router.post(
 		if (!errors.isEmpty())
 			return res.status(400).json({ errors: errors.array() });
 
-		if (!process.env.DEV) {
+		if (process.env.DEV as string != "1") {
 			// // hcaptcha key validation
 			let response = await axios({
 				method: "GET",
@@ -117,6 +111,7 @@ router.post(
 				},
 			});
 			if (!response.data.success) return res.sendStatus(401);
+
 		}
 
 		// if user already exists under username return
@@ -148,24 +143,17 @@ router.post(
 			administrator: false,
 		});
 
-		// creating session token via Json web token
-		let token = jwt.sign(
-			{
-				id: user.id,
-				user: user.username,
-				expires: Date.now() + 1209600000,
-				agent: req.get("user-agent"),
-				administrator: user.administrator,
-			},
-			process.env.TOKEN_SECRET
-		);
+		//@ts-ignore retarded js
+		req.session["userId"] = user.id,
+		//@ts-ignore retarded js
+		req.session["administrator"] = user.administrator,
+		//@ts-ignore  
+		req.session["agent"] = req.get("user-agent"),
+		
 
-		res.cookie("Ptoken", token, {
-			httpOnly: false,
-			expires: new Date(Date.now() + 1209600000),
-		});
 		res.sendStatus(200);
 	}
 );
+
 
 module.exports = router;
