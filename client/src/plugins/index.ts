@@ -10,7 +10,11 @@ import router from "../router";
 
 // Types
 import type { App } from "vue";
+import VueCookies from 'vue-cookies'
 
 export function registerPlugins(app: App) {
-	app.use(vuetify).use(router);
+	app
+	.use(vuetify)
+	.use(router)
+	.use(VueCookies);
 }

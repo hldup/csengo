@@ -1,5 +1,7 @@
 <template>
 
+
+
 	<!--  basic profile prompt to log out -->
 	<div
 		class="text-center profile-options"
@@ -19,6 +21,7 @@
 			</v-list>
 		</v-menu>
 	</div>
+	<home-alert-vue  class="notice" @click="killnotice"  v-if="notice"/>
 
 	<!-- router -->
 	<router-view />
@@ -26,19 +29,19 @@
 
 <script>
 import VueCookies from "vue-cookies";
+import homeAlertVue from './components/homeAlert.vue';
 export default {
+	components: { homeAlertVue },
 	computed() {
 		return {
 			cache: false,
 		};
 	},
 	data(){return{
-		notice: false,
+		notice:  true,
 	}},
-	mounted(){
-		if(!VueCookies.get("notice")){
-			this.notice = true;
-		}
+	mounted(){	
+		if(window.$cookies.get("notice")) this.notice = false;
 	},
 	methods: {
 		logout: function () {
@@ -47,6 +50,9 @@ export default {
 			this.$router.push({ path: "/login" });
 			console.log("Logged out");
 		},
+		killnotice(){
+			window.$cookies.set("notice",false)
+		}
 	},
 };
 </script>
@@ -54,5 +60,11 @@ export default {
 <style>
 body {
 	background-color: black;
+}
+.notice{
+	position: absolute;
+    left: 50%;
+    top: 6em;
+    z-index: 1;
 }
 </style>

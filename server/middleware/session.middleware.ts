@@ -30,12 +30,14 @@ let redisStore = new RedisStore({
 
 router.use(session({
   store: redisStore,
-  name: 'session',
+  name: 'Ptoken',
   secret: process.env.TOKEN_SECRET as string,
   resave: false,
   saveUninitialized: true,
   cookie: { 
+    httpOnly: false,
     secure: false,
+    path: "/",
     maxAge: 1_209_600_000, // 14 days
   }
 }))

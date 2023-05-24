@@ -37,22 +37,19 @@ const router = createRouter({
 	history: createWebHistory(process.env.BASE_URL),
 	routes,
 });
-import VueCookies from "vue-cookies";
 let unprotected_paths = ["/register", "/login"];
 router.beforeEach(async (to, from, next) => {
+
 	// @ts-ignore
-	if (!unprotected_paths.includes(to.path) && !VueCookies.get("Ptoken")) {
+	if (!unprotected_paths.includes(to.path) && !window.$cookies.get("Ptoken")) {
 		return next({ path: "/register" });
 	}
 	
-	
-
 	// if user is visiting an unprotected path while logged in return to home
 	// @ts-ignore
-	if (unprotected_paths.includes(to.path) && VueCookies.get("Ptoken")) {
+	if (unprotected_paths.includes(to.path) && window.$cookies.get("Ptoken")) {
 		return next({ path: "/" });
 	}
-
 
 	next();
 });

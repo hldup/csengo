@@ -35,7 +35,7 @@
 			>
 			<p style="margin-top: 1em">
 				Nincs még profilod?
-				<a href="/register"> Registrálj itt!</a>
+				<a href="/register"> Regisztrálj itt!</a>
 			</p>
 		</v-form>
 	</v-sheet>
@@ -70,6 +70,8 @@ export default {
 		password: "",
 		hcaptchaKey: "",
 	}),
+	mounted(){ if(import.meta.env.VITE_DEV) this.hcaptchaKey = "asd"
+	},
 	methods: {
 		register: async function () {
 			if (this.username.length == 0 || this.password.length == 0) {
@@ -109,6 +111,7 @@ export default {
 			if (this.username == "admin")
 				return this.$router.push({ path: "/admin" });
 			this.$router.push({ path: "/" });
+			
 		},
 		captchaFill: function (token) {
 			this.hcaptchaKey = token;

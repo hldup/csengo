@@ -152,7 +152,6 @@ export default {
 					url: import.meta.env.VITE_API_URL + "/sounds",
 					withCredentials: true,
 				}).then(response => {
-					console.log(response);
 					if (response.status == 204 || response.status == 410) {
 						this.noVote = true;
 						return;
@@ -182,7 +181,7 @@ export default {
 						break;
 
 					case 401:
-						VueCookies.remove("Ptoken")
+						window.$cookies.remove("Ptoken")
 						this.$router.push("/login")
 					break;
 					default:

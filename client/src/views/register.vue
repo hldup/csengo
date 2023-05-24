@@ -110,6 +110,7 @@ export default {
 
 		hcaptchaKey: "",
 	}),
+	mounted(){ if(import.meta.env.VITE_DEV) this.hcaptchaKey = "asd" },
 	methods: {
 		register: async function () {
 			// reseting error field
@@ -155,7 +156,6 @@ export default {
 			this.$router.push({ path: "/" });
 		},
 		captchaFill: function (token) {
-			console.log(token)
 			this.hcaptchaKey = token;
 		},
 	},

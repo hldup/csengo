@@ -4,12 +4,7 @@
 		:title="title"
 		:text="message"
 		type="info"
-		style="
-    position: absolute;
-    left: 50%;
-    top: 6em
-    z-index: 1;
-    "
+		
 	/>
 </template>
 

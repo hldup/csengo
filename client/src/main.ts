@@ -12,11 +12,11 @@ import { createApp } from "vue";
 
 // Plugins
 import { registerPlugins } from "@/plugins";
-
 const app = createApp(App);
 
 registerPlugins(app);
 
+// Tell Vue to use the plugin
 app.mixin({
   methods: {
      handleApiError: function (error: object) {

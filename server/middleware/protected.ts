@@ -52,7 +52,10 @@ router.use(async (req, res, next) => {
 			return res.status(401).send({error: "NO_AUTH", message: "You are not authenticated!" });
 
 		// @ts-ignore
-		if (req.get("user-agent") != req.session["agent"])
+		if (req.get("user-agent") != req.session["agent"]){
+			req.session.destroy(stuff =>{
+				console.log('destroyed',stuff)
+			});
 			return res
 				.status(401)
 				.send({
@@ -60,6 +63,7 @@ router.use(async (req, res, next) => {
 					message:
 						"Your user-agent does not match the one you signed in with!  log out!",
 				});
+		}
 	}
 
 	// Filtering here {in the middleware} instead of repeating this code 3x
