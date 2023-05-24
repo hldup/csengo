@@ -26,7 +26,7 @@ Frontend: JS
 - Framework: [Vue](https://vuejs.org/) with [Vite](https://vitejs.dev/)
 - CSS: Custom & examples from codepen (MIT)
 
-# Running
+# Building for production
 
 1. Clone the repo
 
