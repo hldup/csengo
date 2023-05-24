@@ -14,7 +14,7 @@ export default {
 		return {
 			title: "Értesítés",
 			message:
-				"A bétatesztelő időszaknak vége, kérem mindenki regisztráljon be újra",
+				"A alpha tesztelő időszaknak vége, kérem mindenki regisztráljon be újra",
 		};
 	},
 };
