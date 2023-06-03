@@ -128,7 +128,11 @@ router.post(
 			},
 			{ where: { id: req.query.id as string } }
 		);
-
+			new Date("2023").toLocaleDateString("hu-Hu",{
+				second: '2-digit',
+				hour: 'numeric',
+				minute: 'numeric'
+			})
 		res.send("Voting session edited");
 	}
 );

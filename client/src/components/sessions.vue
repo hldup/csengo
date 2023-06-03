@@ -16,10 +16,23 @@
 			<td>-</td>
 
 				<td>
-					{{ new Intl.DateTimeFormat("hu-Hu").format(new Date(session.start)) }}
+					{{
+						new Date(session.start).toLocaleDateString("hu-Hu",{
+								second: 'numeric',
+								hour: 'numeric',
+								minute: 'numeric'
+							})
+						 }}
+	
 				</td>
 				<td>
-					{{ new Intl.DateTimeFormat("hu-Hu").format(new Date(session.end)) }}
+					{{
+						new Date(session.end).toLocaleDateString("hu-Hu",{
+								second: 'numeric',
+								hour: 'numeric',
+								minute: 'numeric'
+							})
+						 }}
 				</td>
 				<td>
 					{{ session.sounds.reduce((accum, item) => accum + item.votes, 0) }}
@@ -163,13 +176,14 @@ export default {
 
 		create: async function () {
 			if (!this.start || !this.end || this.selectedSounds.length == 0) return;
+			console.log(this.start)
 			await axios({
 				method: "post",
 				url: import.meta.env.VITE_API_URL + "/weekly/new",
 				withCredentials: true,
 				data: {
-					start: new Date(this.start).toISOString(),
-					end: new Date(this.end).toISOString(),
+					start: ( new Date(this.start).toISOString() ),
+					end: ( new Date(this.end).toISOString() ),
 					sounds: this.selectedSounds,
 				},
 			}).then(response => {

@@ -65,15 +65,15 @@ class votingSession extends Model<votingSessionAttributes, votingSessionInput> {
 	isActive(): boolean {
 		/// idk why tf it returns a date that was two hours ago.......
 		// WARNING: might cause errors
-		let now = new Date(Date.now() + 7_200_000);
+		const now = new Date( Date.now() + 7_200_000 );
 		if (new Date(this.start) < now && new Date(this.end) > now) return true;
 		return false;
 	}
 }
 
 export async function currentWeek() {
-	// + 2 hours
-	const now = new Date(Date.now() + 7_200_000);
+	// idk why i have to add +2 hours. idek and idegaf 
+	const now = new Date( Date.now() + 7_200_000 );
 	let week = await votingSession.findOne({
 		where: {
 			start: { [Op.lte]: now },

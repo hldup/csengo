@@ -1,4 +1,3 @@
-import cookieSession from "cookie-session";
 import express, { Request, Response } from "express";
 import session from "express-session";
 const router = express.Router();
@@ -6,6 +5,7 @@ import RedisStore from "connect-redis"
 import {createClient} from "redis"
 import { exit } from "process";
 
+require("dotenv").config()
 
 // Initialize client.
 let redis_client = createClient({

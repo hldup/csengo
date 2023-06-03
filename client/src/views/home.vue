@@ -70,8 +70,6 @@
 import axios from "axios";
 import backgroundVue from "@/components/background.vue";
 import countdownVue from "@/components/countdown.vue";
-import VueCookies from "vue-cookies";
-// import VueCookies from 'vue-cookies';
 export default {
 	name: "HomeView",
 	components: { backgroundVue, countdownVue },
@@ -151,6 +149,9 @@ export default {
 					method: "GET",
 					url: import.meta.env.VITE_API_URL + "/sounds",
 					withCredentials: true,
+					headers: {
+						'Cache-Control': 'no-cache'
+					}
 				}).then(response => {
 					if (response.status == 204 || response.status == 410) {
 						this.noVote = true;

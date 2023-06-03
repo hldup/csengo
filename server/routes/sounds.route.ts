@@ -87,7 +87,8 @@ router.get(
 
 		// maybe add filtering for only this weeks vote
 		const user_votes = await Vote.findAll({
-			where: { user: res.locals.token.id },
+			// @ts-ignore
+			where: { user: req.session.userId },
 			attributes: ["sound"],
 		}).then(data => {
 			let raw: string[] = [];
@@ -161,7 +162,8 @@ router.post(
 		// in case user has already voted reject
 		const vote = await Vote.findOne({
 			where: {
-				user: res.locals.token.id,
+				// @ts-ignore
+				user: req.session.userId,
 				sound: req.query.id as string,
 				session: res.locals.votingSession.id,
 			},
@@ -172,7 +174,8 @@ router.post(
 		if (!sound) return res.status(404).send("No sound is found under that id");
 
 		await Vote.create({
-			user: res.locals.token.id,
+				// @ts-ignore
+			user: req.session.userId,
 			sound: sound.id,
 			session: res.locals.votingSession.id,
 		});
@@ -203,7 +206,8 @@ router.post(
 		// in case user has already voted reject
 		const vote = await Vote.findOne({
 			where: {
-				user: res.locals.token.id,
+				// @ts-ignore
+				user: req.session.userId,
 				sound: req.query.id as string,
 				session: res.locals.votingSession.id,
 			},
@@ -217,7 +221,8 @@ router.post(
 
 		await Vote.destroy({
 			where: {
-				user: res.locals.token.id,
+				// @ts-ignore
+				user: req.session.userId,
 				sound: sound?.id,
 				session: res.locals.votingSession.id,
 			},
