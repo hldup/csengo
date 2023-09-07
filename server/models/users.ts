@@ -17,7 +17,7 @@ export interface UserInput
 	username: string;
 }
 
-export interface UserOutput extends Required<UserAttributes> {}
+export interface UserOutput extends Required<UserAttributes> { }
 
 class User extends Model<UserAttributes, UserInput> implements UserAttributes {
 	public id!: string;

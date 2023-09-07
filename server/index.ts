@@ -15,7 +15,6 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import bcrypt from "bcrypt";
 import connection from "./database";
-import dayjs from "dayjs";
 import { exit } from "process";
 require("dotenv").config();
 
@@ -29,7 +28,7 @@ export const random = (len: number): string => {
 };
 
 /*
-    Creating app
+	Creating app
 */
 const app: Express = express();
 app.use(express.json());
@@ -54,7 +53,6 @@ const port = process.env.PORT;
 	if (!(await User.findOne({ where: { administrator: true } }))) {
 		const password = random(64);
 		console.log("!!! ADMIN PASSWORD: ", password);
-
 		await User.create({
 			administrator: true,
 			password: await bcrypt.hash(password, await bcrypt.genSalt(10)),
@@ -69,7 +67,6 @@ const port = process.env.PORT;
 })();
 
 app.set('trust proxy', 1) // trust first proxy
-
 app.use(require("./middleware/session.middleware"));
 // middleware for protected (admin) routes
 app.use(require("./middleware/protected"));

@@ -1,0 +1,55 @@
+version: "3.9"
+# DONT FORGET TO BUILD THE IMAGES FIRST! AND MAKE SURE THEIR ALIASES ARE SET (berryes/csengoserver)
+services:
+  server:
+    image: berryes/csengoserver
+
+    volumes:
+      - /root/pollak/sounds/:/data/sounds
+    environment:
+      PORT: 3000
+      HCAPTCHA_SECRET: "secret"
+      TOKEN_SECRET: "random long string"
+      DB_NAME: csengo
+      DB_USER: csengo
+      DB_PASS: csengopass
+      DB_HOST: csengopostgres
+    links:
+      - database
+    depends_on:
+      - database
+      - sessionstore
+
+    networks:
+      - csengo
+
+  client:
+    image: berryes/csengoclient
+    networks:
+      - csengo
+
+  sessionstore:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning --requirepass VErySecurePassWordHere123
+    networks:
+      - csengo
+
+  database:
+    image: "postgres:latest"
+    hostname: csengopostgres
+    ports:
+      - "5432"
+    environment:
+      POSTGRES_USER: csengo
+      POSTGRES_PASSWORD: csengopass
+      POSTGRES_DB: csengo
+
+    networks:
+      - csengo
+
+networks:
+  csengo:
+    driver: bridge
