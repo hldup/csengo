@@ -4,7 +4,7 @@ After=multi-user.target
  
 [Service]
 type=simple
-ExecStart=/usr/bin/python3 ~/csengo/player/play_sound.py
+ExecStart=/usr/bin/python3 /usr/bin/play_sound.py
  
 [install]
 wantedby=multi-user.target

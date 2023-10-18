@@ -82,9 +82,13 @@ play_song(song)
 
 # Schedule times
 schedule.every().day.at('00:01').do(get_songs) # Every night get the new music files (and delete the old ones)
+# TISZTA KOD ELVE!!!1111!!!!
 for t in csengo_times:
-    print(t)
-    schedule.every().day.at(t).do(csengo)      # Schedule for every break
+    schedule.every().monday.at(t).do(csengo)
+    schedule.every().tuesday.at(t).do(csengo)
+    schedule.every().wednesday.at(t).do(csengo)
+    schedule.every().thursday.at(t).do(csengo)
+    schedule.every().friday.at(t).do(csengo)
 
 
 # Wait for schedules
