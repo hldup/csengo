@@ -8,18 +8,17 @@ const router = express.Router();
 
 let unprotected_paths = ["/register", "/login"];
 router.use(async (req, res, next) => {
-	
+
 	// log request when done
 	res.on("finish", () => {
 		console.log(
-			`${res.statusCode} | (${
-				jwt.verify(
-					req.cookies["Ptoken"],
-					process.env.TOKEN_SECRET,
-					(err: JsonWebTokenError, data: JwtPayload) => {
-						return data;
-					}
-				)?.username || "someone"
+			`${res.statusCode} | (${jwt.verify(
+				req.cookies["Ptoken"],
+				process.env.TOKEN_SECRET,
+				(err: JsonWebTokenError, data: JwtPayload) => {
+					return data;
+				}
+			)?.username || "someone"
 			}) Request to ${req.path} from ${req.hostname} (${req.get(
 				"user-agent"
 			)}) | ${new Date()}`
@@ -40,7 +39,7 @@ router.use(async (req, res, next) => {
 		)
 			return res.status(400).send({
 				error: "INVALID_KEY",
-				message:"Your API key is invalid!"
+				message: "Your API key is invalid!"
 			});
 	}
 
@@ -48,13 +47,13 @@ router.use(async (req, res, next) => {
 	if (!req.headers.authorization) {
 
 		// of no cookie, just return
-		if(!req.session)
-			return res.status(401).send({error: "NO_AUTH", message: "You are not authenticated!" });
+		if (!req.session)
+			return res.status(401).send({ error: "NO_AUTH", message: "You are not authenticated!" });
 
 		// @ts-ignore
-		if (req.get("user-agent") != req.session["agent"]){
-			req.session.destroy(stuff =>{
-				console.log('destroyed',stuff)
+		if (req.get("user-agent") != req.session["agent"]) {
+			req.session.destroy(stuff => {
+				console.log('destroyed', stuff)
 			});
 			return res
 				.status(401)
@@ -68,13 +67,13 @@ router.use(async (req, res, next) => {
 
 	// Filtering here {in the middleware} instead of repeating this code 3x
 	if (["/sounds/vote", "/sounds/devote", "/sounds", "/weekly/winners"].includes(
-			req.path
-		)
+		req.path
+	)
 	) {
 		// checking if there is a voting session happening as of now
 		// if the api hit is asking for the weekly winners just get the last week's session
 		let this_week = await currentWeek();
-			
+
 		console.log(new Date())
 		if (!this_week?.isActive() && !req.path.includes("/weekly/winners"))
 			return res
@@ -83,7 +82,7 @@ router.use(async (req, res, next) => {
 					error: "SESSION_ENDED",
 					message: "The voting session has closed",
 				});
-	
+
 		else {
 			// TODO idk i forgor
 			this_week = await votingSession.findOne({
@@ -106,13 +105,16 @@ router.use(async (req, res, next) => {
 
 	// retarded filtering for administrator only routes
 	const protected_routes = [
-		"/weekly",
+		"/weekly/",
 		"/sounds/add",
 		"/sounds/delete",
 		"/sounds/all",
 		"/sounds/rename",
 		"/sounds/deletecheck",
 		"/token",
+		"/users/",
+		"/users/all",
+		"/users/delete"
 	];
 	if (!req.headers.authorization) {
 		// @ts-ignore
