@@ -15,14 +15,15 @@ import requests
 
 csengo_times = [
     '08:00', '08:45',
-    '08:55', '09:40',
-    '09:50', '10:35',
-    '10:45', '11:30',
+    '08:55', '09:25',
+    '10:45', '11:15',
     '11:40', '12:25',
     '12:35', '13:20',
     '13:25', '14:10',
+    '13:25', '14:10',
     '14:15', '15:00',
 ]
+
 
 config = dotenv_values(".env")
 
@@ -82,6 +83,7 @@ play_song(song)
 
 # Schedule times
 schedule.every().day.at('00:01').do(get_songs) # Every night get the new music files (and delete the old ones)
+
 # TISZTA KOD ELVE!!!1111!!!!
 for t in csengo_times:
     schedule.every().monday.at(t).do(csengo)
