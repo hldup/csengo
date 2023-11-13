@@ -67,10 +67,8 @@ router.post(
 
 		//@ts-ignore retarded js
 		req.session.userId = user.id,
-			//@ts-ignore retarded js
-			req.session.administrator = user.administrator,
-			//@ts-ignore
-			req.session.agent = req.get("user-agent"),
+		//@ts-ignore retarded js
+		req.session.administrator = user.administrator,
 
 
 			res.sendStatus(200);
