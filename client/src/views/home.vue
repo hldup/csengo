@@ -7,23 +7,13 @@
 			<div v-if="lastWinner.length != 0">
 				<h3>Előző nyertes</h3>
 				<div class="soundbox" v-for="sound in lastWinner" :key="sound.id">
-					<img
-						:id="sound.id"
-						@click="playSound(sound.id)"
-						src="/icons/play-fill.svg"
-						alt="Lejátszás"
-						height="64"
-					/>
+					<img :id="sound.id" @click="playSound(sound.id)" src="/icons/play-fill.svg" alt="Lejátszás"
+						height="64" />
 					<p class="soundname">{{ sound.name }}</p>
 					<div class="votestats">
 						<p>
 							{{ sound.votes }}
-							<img
-								height="24"
-								src="/icons/hand-thumbs-up.svg"
-								alt="Tetszik"
-								class="vote"
-							/>
+							<img height="24" src="/icons/hand-thumbs-up.svg" alt="Tetszik" class="vote" />
 						</p>
 					</div>
 				</div>
@@ -34,31 +24,13 @@
 			<!-- <countdown-vue :date="end" />  -->
 			<!-- <h4> Határidő <br>{{ new Intl.DateTimeFormat('hu-Hu').format(new Date(end))  }} {{end.getHours()}}:{{end.getMinutes()}}</h4> -->
 			<div class="soundbox" v-for="sound in sounds" :key="sound.id">
-				<img
-					:id="sound.id"
-					@click="playSound(sound.id)"
-					src="/icons/play-fill.svg"
-					alt="Lejátszás"
-					height="64"
-				/>
+				<img :id="sound.id" @click="playSound(sound.id)" src="/icons/play-fill.svg" alt="Lejátszás" height="64" />
 				<p class="soundname">{{ sound.name }}</p>
 				<div class="votestats">
-					<img
-						v-if="uservotes.includes(sound.id)"
-						height="32"
-						src="/icons/hand-thumbs-up-fill.svg"
-						alt="Tetszik"
-						class="vote"
-						@click="vote(sound)"
-					/>
-					<img
-						v-if="!uservotes.includes(sound.id)"
-						height="32"
-						src="/icons/hand-thumbs-up.svg"
-						alt="Tetszik"
-						class="vote"
-						@click="vote(sound)"
-					/>
+					<img v-if="uservotes.includes(sound.id)" height="32" src="/icons/hand-thumbs-up-fill.svg" alt="Tetszik"
+						class="vote" @click="vote(sound)" />
+					<img v-if="!uservotes.includes(sound.id)" height="32" src="/icons/hand-thumbs-up.svg" alt="Tetszik"
+						class="vote" @click="vote(sound)" />
 					<p>{{ sound.votes }}</p>
 				</div>
 			</div>
@@ -184,7 +156,7 @@ export default {
 					case 401:
 						window.$cookies.remove("Ptoken")
 						this.$router.push("/login")
-					break;
+						break;
 					default:
 						break;
 				}
@@ -204,6 +176,7 @@ body {
 	animation: reappear 2s linear normal forwards;
 	visibility: 0;
 }
+
 @keyframes reappear {
 	0% {
 		visibility: 1;

@@ -135,3 +135,4 @@ tanulok.csv
 output.txt
 local_dockercompose.yaml
 player/sound.mp3
+*.hurl

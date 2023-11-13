@@ -4,6 +4,7 @@ import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 
 import { defineConfig } from "vite";
 import { fileURLToPath, URL } from "node:url";
+// @ts-ignore
 import packageJson from "./package.json";
 export default defineConfig({
 	plugins: [

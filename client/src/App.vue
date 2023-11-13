@@ -1,13 +1,7 @@
 <template>
-
-
-
 	<!--  basic profile prompt to log out -->
-	<div
-		class="text-center profile-options"
-		v-if="!['/login','/admin','/register'].includes($route.path)
-		 "
-	>
+	<div class="text-center profile-options" v-if="!['/login', '/admin', '/register'].includes($route.path)
+		">
 		<v-menu open-on-hover open-on-click>
 			<template v-slot:activator="{ props }">
 				<img src="/icons/person.svg" alt="profil" v-bind="props" height="48" />
@@ -21,7 +15,6 @@
 			</v-list>
 		</v-menu>
 	</div>
-	<home-alert-vue  class="notice" @click="killnotice"  v-if="notice"/>
 
 	<!-- router -->
 	<router-view />
@@ -37,11 +30,10 @@ export default {
 			cache: false,
 		};
 	},
-	data(){return{
-		notice:  true,
-	}},
-	mounted(){	
-		if(window.$cookies.get("notice")) this.notice = false;
+	data() {
+		return {
+			notice: true,
+		}
 	},
 	methods: {
 		logout: function () {
@@ -50,8 +42,8 @@ export default {
 			this.$router.push({ path: "/login" });
 			console.log("Logged out");
 		},
-		killnotice(){
-			window.$cookies.set("notice",false)
+		killnotice() {
+			window.$cookies.set("notice", false)
 		}
 	},
 };
@@ -61,10 +53,11 @@ export default {
 body {
 	background-color: black;
 }
-.notice{
+
+.notice {
 	position: absolute;
-    left: 50%;
-    top: 6em;
-    z-index: 1;
+	left: 50%;
+	top: 6em;
+	z-index: 1;
 }
 </style>

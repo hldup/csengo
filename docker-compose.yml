@@ -1,54 +1,56 @@
 version: "3.9"
-# DONT FORGET TO BUILD THE IMAGES FIRST! AND MAKE SURE THEIR ALIASES ARE SET (berryes/csengoserver)
+# DONT FORGET TO BUILD THE IMAGES FIRST! AND MAKE SURE THEIR ALIASES ARE SET (hldup/csengoserver)
+# Todo add values from .env file via ${}
 services:
   server:
-    image: berryes/csengoserver
-
+    image: hldup/csengoserver
+    restart: always
     volumes:
-      - /root/pollak/sounds/:/data/sounds
+      - ./sounds:/usr/csengo/sounds
     environment:
-      PORT: 3000
-      HCAPTCHA_SECRET: "secret"
-      TOKEN_SECRET: "random long string"
-      DB_NAME: csengo
-      DB_USER: csengo
-      DB_PASS: csengopass
+      PORT: ${SERVER_PORT}
+      HCAPTCHA_SECRET: ${HCAPTCHA_SECRET}
+      TOKEN_SECRET: ${TOKEN_SECRET}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
       DB_HOST: csengopostgres
+      SESSION_STORE_PASSWORD: ${SESSION_STORE_PASSWORD}
+      SESSION_STORE_HOST: csengosessionstore
+      SESSION_STORE_PORT: 6379
+      DEV: ${DEV}
     links:
       - database
     depends_on:
       - database
       - sessionstore
-
     networks:
       - csengo
 
   client:
-    image: berryes/csengoclient
+    image: hldup/csengoclient
     networks:
       - csengo
 
   sessionstore:
     image: redis:latest
     restart: always
-    ports:
-      - "6379:6379"
-    command: redis-server --save 20 1 --loglevel warning --requirepass VErySecurePassWordHere123
+    hostname: csengosessionstore
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${SESSION_STORE_PASSWORD}
     networks:
       - csengo
 
   database:
     image: "postgres:latest"
     hostname: csengopostgres
-    ports:
-      - "5432"
     environment:
-      POSTGRES_USER: csengo
-      POSTGRES_PASSWORD: csengopass
-      POSTGRES_DB: csengo
-
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    
     networks:
       - csengo
+
 
 networks:
   csengo:

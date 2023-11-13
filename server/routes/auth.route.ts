@@ -9,7 +9,14 @@ router.post(
 	"/healthcheck",
 	async (req: Request, res: Response) => {
 		return res.send("Ok")
-});
+	});
+
+// TODO add root path
+router.post(
+	"/",
+	async (req: Request, res: Response) => {
+		return res.send("Szia :)")
+	});
 
 
 router.post(
@@ -60,13 +67,13 @@ router.post(
 
 		//@ts-ignore retarded js
 		req.session.userId = user.id,
-		//@ts-ignore retarded js
-		req.session.administrator = user.administrator,
-		//@ts-ignore
-		req.session.agent = req.get("user-agent"),
-		
+			//@ts-ignore retarded js
+			req.session.administrator = user.administrator,
+			//@ts-ignore
+			req.session.agent = req.get("user-agent"),
 
-		res.sendStatus(200);
+
+			res.sendStatus(200);
 	}
 );
 
@@ -145,13 +152,13 @@ router.post(
 
 		//@ts-ignore retarded js
 		req.session["userId"] = user.id,
-		//@ts-ignore retarded js
-		req.session["administrator"] = user.administrator,
-		//@ts-ignore  
-		req.session["agent"] = req.get("user-agent"),
-		
+			//@ts-ignore retarded js
+			req.session["administrator"] = user.administrator,
+			//@ts-ignore  
+			req.session["agent"] = req.get("user-agent"),
 
-		res.sendStatus(200);
+
+			res.sendStatus(200);
 	}
 );
 
