@@ -100,8 +100,8 @@ You can always make an [issue](https://github.com/hldup/csengo/issues) if you fo
 
 # Authors
 
-- Máté - _frontend & backend_ 
-
+- Máté - _frontend & backend_
+- Klepi - _operate and maintain w <3_
 # Acknowledgments
 
 - [Login](https://codepen.io/fghty/pen/PojKNEG) - foolish developer
