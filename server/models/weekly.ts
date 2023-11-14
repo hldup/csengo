@@ -74,13 +74,14 @@ class votingSession extends Model<votingSessionAttributes, votingSessionInput> {
 export async function currentWeek() {
 	// idk why i have to add +2 hours. idek and idegaf 
 	const now = new Date( Date.now() + 7_200_000 );
-	let week = await votingSession.findOne({
-		where: {
-			start: { [Op.lte]: now },
-			end: { [Op.gte]: now },
-		},
+	
+	let week = await votingSession.findAll({
+		  order: [
+		    ['createdAt', 'DESC']
+  		],
 	});
-	if (week) return week;
+
+	if (week) return week[1];
 	return null;
 }
 

@@ -200,8 +200,18 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 router.get("/winners", async (req: Request, res: Response) => {
+
+	const winners =   await currentWeek()
+	if(!winners) return res.send("No winners")
+
+	let sound = await Sound.findOne({
+		where: {
+			id: winners.sounds[0]
+		}
+	})
+
 	res.send({
-		sounds: await res.locals.weekly.getWinners(1),
+		sounds: sound
 	});
 });
 

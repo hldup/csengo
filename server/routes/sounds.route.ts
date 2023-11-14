@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import crypto from "crypto";
 import weekofyear from "dayjs/plugin/weekOfYear";
 import path from "path";
-import votingSession from "../models/weekly";
+import votingSession, { currentWeek } from "../models/weekly";
 import { Op } from "sequelize";
 dayjs.extend(weekofyear);
 
