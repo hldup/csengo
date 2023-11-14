@@ -6,7 +6,7 @@ services:
     image: hldup/csengoserver
     restart: always
     volumes:
-      - ./sounds:/usr/csengo/sounds
+      - ./sounds:/usr/csengo/data
     environment:
       PORT: ${SERVER_PORT}
       HCAPTCHA_SECRET: ${HCAPTCHA_SECRET}
@@ -54,4 +54,3 @@ services:
 
 networks:
   csengo:
-    driver: bridge
